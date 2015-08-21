@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="vp_black">#000000</color>
+    <color name="vp_definition_bg_color">#555048</color>
+    <color name="vp_progressbar_bg_color">#a7a69d</color>
+    <color name="vp_progressbar_second_color">#94938c</color>
+    <color name="vp_progressbar_seek_color">#d6d6d3</color>
+    <!-- 文字色值 -->
+    <!--文字色值：偏白色-->
+    <color name="vp_color_text_lightwhite">#eaeaea</color>
+    <color name="vp_text_default">#ebebeb</color>
+    <!--文字色值：灰白色-->
+    <color name="vp_color_text_graywhite">#ebebeb</color>
+    <!--文字色值：白灰色-->
+    <color name="vp_color_text_whitegray">#dadada</color>
+    <!--文字色值：灰色-->
+    <color name="vp_color_text_gray">#918f8b</color>
+    <!--文字色值：浅灰色-->
+    <color name="vp_color_text_lightgray">#767673</color>
+    <!--提示文字色值-->
+    <color name="vp_color_text_tips">#DDDDDD</color>               
+</resources>

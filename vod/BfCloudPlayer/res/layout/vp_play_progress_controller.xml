@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:vp="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <!-- 当前播放时长 -->
+    <TextView
+        android:id="@+id/time_current"
+        style="@style/BFYun.TextAppearance.Tiny.LightGray"
+        android:layout_width="40dip"
+        android:layout_height="match_parent"           
+        android:layout_alignParentLeft="true"        
+        android:gravity="center|right"
+        android:paddingLeft="1dip" 
+        android:paddingRight="1dip" />
+    
+    <!-- 播放总时长 -->
+    <TextView
+        android:id="@+id/time"
+        style="@style/BFYun.TextAppearance.Tiny.LightGray"
+        android:layout_width="40dip"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"  
+        android:gravity="center|left"                
+        android:paddingLeft="1dip"
+        android:paddingRight="1dip" />
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"        
+        android:layout_toRightOf="@id/time_current"
+		android:layout_toLeftOf="@id/time"
+        android:gravity="center"       
+        android:orientation="horizontal"
+        android:layout_marginLeft="1dip"   
+        android:layout_marginRight="1dip" >
+    	<!-- 进度条 -->
+    	<SeekBar
+        	android:id="@+id/mediacontroller_progress"
+        	android:layout_width="match_parent"
+        	android:layout_height="wrap_content"
+	        android:paddingLeft="17dip"                      
+    		android:paddingRight="17dip"     	                                                 
+        	android:maxHeight="4dip"        	        	
+       	 	android:progressDrawable="@drawable/vp_playprogress_seek_drawable"
+       	 	android:thumb="@drawable/vp_playprogress_seek_thumb"
+       	 	android:thumbOffset="17dip" />
+    </LinearLayout>
+
+</RelativeLayout>

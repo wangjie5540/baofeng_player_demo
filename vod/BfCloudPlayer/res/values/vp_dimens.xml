@@ -1,0 +1,28 @@
+<resources>
+    <!-- Default screen margins, per the Android Design guidelines. -->
+
+	<dimen name="vp_player_height">540dip</dimen>
+    <dimen name="vp_player_definite_width">80dip</dimen>
+    <dimen name="vp_player_definite_height">40dip</dimen>
+    <dimen name="vp_player_fullscreen_width">30dip</dimen>
+    <dimen name="vp_dimen_progressbar">30dip</dimen>
+
+    <!-- ui统一的字体大小，根据ui确定的大小统一修改  -->
+    <!--字号：最大  40px-->
+    <dimen name="vp_text_size_biggest">27dip</dimen>
+    <!--字号：更大  38px-->
+    <dimen name="vp_text_size_bigger">25.8dip</dimen>
+    <!--字号：大   26px-->
+    <dimen name="vp_text_size_big">18.6dip</dimen>
+    <!--字号：中  24px-->
+    <dimen name="vp_text_size_middle">17.4dip</dimen>
+    <!--字号：小  20px-->
+    <dimen name="vp_text_size_small">16.8dip</dimen>
+    <!--字号：更小  18px-->
+    <dimen name="vp_text_size_smaller">13.4dip</dimen>
+    <!--字号：最小  16px-->
+    <dimen name="vp_text_size_smallest">12dip</dimen>
+    <!--字号：微小  14.25px-->
+    <dimen name="vp_text_size_tiny">10dip</dimen>
+
+</resources>

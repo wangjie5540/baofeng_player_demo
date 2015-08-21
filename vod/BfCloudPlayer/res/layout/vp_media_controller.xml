@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- 头部 -->
+   <RelativeLayout
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="40dip"
+        android:layout_gravity="top"
+        android:background="@drawable/vp_top"
+        android:visibility="gone">
+
+        <!-- 切换到竖屏按钮 -->
+        <ImageView
+            android:id="@+id/backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="15dip"
+            android:src="@drawable/vp_back"/>
+
+        <!-- 视频标题 -->
+        <TextView
+            android:id="@+id/videoTitle"
+            style="@style/BFYun.TextAppearance.Bigger.GrayWhite"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_toRightOf="@id/backButton"
+            android:layout_marginLeft="15dip"
+            android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:gravity="center|left"
+            android:singleLine="true"/>
+    </RelativeLayout>
+
+    <!-- 尾部 -->
+    <LinearLayout
+        android:id="@+id/bottom"
+        android:layout_width="match_parent"
+        android:layout_height="60dip"
+        android:layout_gravity="bottom"
+        android:background="@drawable/vp_bottom"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- 暂停、播放按钮 -->
+        <bf.cloud.android.components.mediaplayer.widget.PlayPause
+            android:id="@+id/pausePlay"
+            android:layout_width="40dip"
+            android:layout_height="match_parent"/>
+
+        <!-- 播放进度控制器 -->
+        <bf.cloud.android.components.mediaplayer.playprogress.PlayProgressController
+            android:id="@+id/playProgressController"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="1dip"
+            android:layout_marginRight="1dip"
+            android:layout_weight="1" />
+
+        <bf.cloud.android.components.mediaplayer.definition.DefinitionController
+            android:id="@+id/definationController"
+            android:layout_width="@dimen/vp_player_definite_width"
+            android:layout_height="match_parent"
+			android:layout_marginRight="15dip"
+			android:layout_marginLeft="5dip"
+			android:visibility="gone"/>
+                
+        <Button
+            android:id="@+id/fullScreen"
+            android:layout_width="@dimen/vp_player_fullscreen_width"
+            android:layout_height="@dimen/vp_player_fullscreen_width"
+            android:layout_marginRight="10dip"
+            android:layout_marginLeft="5dip"
+            android:layout_marginBottom="18dip"
+            android:layout_marginTop="18dip"
+            android:background="@drawable/vp_fullscreen"/>
+    </LinearLayout>
+</FrameLayout>

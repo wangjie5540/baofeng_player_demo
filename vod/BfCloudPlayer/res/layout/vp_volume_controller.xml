@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/vp_bottom">
+
+    <!-- 音量条 -->
+    <!--
+    <bf.cloud.android.components.mediaplayer.volume.VolumeBar
+        android:id="@+id/volumeBar"
+        android:layout_width="wrap_content"
+        android:layout_height="150dip"
+        android:layout_marginLeft="12dip"
+        android:layout_marginRight="12dip"
+        android:layout_marginTop="10dip"
+        android:thumb="@drawable/vp_volume_thumb_normal"
+        android:progressDrawable="@drawable/vp_volume_seek_drawable"
+        android:maxHeight="10dip"
+        android:thumbOffset="4dip"/>
+    -->
+    <!-- 音量条 -->
+    <bf.cloud.android.components.mediaplayer.volume.VolumeBar
+        android:id="@+id/volumeBar"
+        android:layout_width="wrap_content"
+        android:layout_height="150dip"
+        android:layout_marginLeft="3dip"
+        android:layout_marginRight="3dip"
+        android:layout_marginTop="10dip"
+        android:thumb="@drawable/vp_playprogress_seek_thumb"
+        android:progressDrawable="@drawable/vp_playprogress_seek_drawable"
+        android:maxHeight="10dip"
+        android:thumbOffset="3.5dip"/>
+
+    <!-- 静音按钮 -->
+    <ImageButton
+        android:id="@+id/silenceButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/vp_volume_normal"
+        android:background="@null"
+        android:layout_marginLeft="3dip"
+        android:layout_marginRight="3dip"
+        android:layout_marginBottom="13dip"
+        android:layout_marginTop="13dip"
+        android:layout_gravity="center_horizontal"/>
+</LinearLayout>

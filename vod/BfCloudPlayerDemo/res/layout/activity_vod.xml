@@ -1,0 +1,125 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="${relativePackage}.${activityClass}"
+    android:id="@+id/playerParent" 
+    android:orientation="vertical"
+    android:background="#ffffff">
+    
+    <fragment
+    	android:id="@+id/playerFragment"    	
+        android:name="bf.cloud.android.fragment.VideoPlayerFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+	    android:scrollbars="vertical"  
+	    android:fadingEdge="vertical">
+	    
+	    <LinearLayout
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:padding="8dp"
+	        android:orientation="vertical"
+	        android:scrollbars="vertical"
+	        >
+	        
+	        <EditText
+	            android:id="@+id/tokenEditText"
+	            android:layout_width="match_parent"
+	            android:layout_height="wrap_content"
+	            android:ems="10"
+	            android:hint="请输入私有视频Token" >
+	        </EditText>
+
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onSetDecodeModeButtonClick"
+	            android:text="设置解码模式" />
+	        	        	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onSetDefinitionButtonClick"
+	            android:text="设置清晰度" />
+	        	        	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onStartButtonClick"
+	            android:text="播放" />
+	        	        	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onPauseButtonClick"
+	            android:text="暂停" />
+	        
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onResumeButtonClick"
+	            android:text="继续播放" />
+	        
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onStopButtonClick"
+	            android:text="停止" />
+	        	        	
+	        <Button
+		        android:layout_width="200dp"
+		        android:layout_height="wrap_content"
+		        android:onClick="onChangeButtonClick"
+		        android:text="切片"/>
+		    
+	        <Button
+		        android:layout_width="200dp"
+		        android:layout_height="wrap_content"
+		        android:onClick="onSeekButtonClick"
+		        android:text="seek" />
+	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onIncVolumeButtonClick"
+	            android:text="增加音量" />
+	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onDecVolumeButtonClick"
+	            android:text="降低音量" />
+	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onGetCurrentVolumeButtonClick"
+	            android:text="获取当前音量" />
+	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onGetCurrentPositionButtonClick"
+	            android:text="当前播放进度" />
+	
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onFullscreenButtonClick"
+	            android:text="全屏，5s后退出全屏" />
+	        
+	        <Button
+	            android:layout_width="200dp"
+	            android:layout_height="wrap_content"
+	            android:onClick="onSetAutoFullscreenButtonClick"
+	            android:text="设置是否自动全屏" />
+	        
+		</LinearLayout>
+    </ScrollView>
+    
+</LinearLayout>

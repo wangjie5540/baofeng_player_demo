@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/playerViewRoot"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000"
+    >
+
+    <!-- 视频容器 -->
+    <bf.cloud.android.modules.player.videoviewexo.VideoViewExo
+        android:id="@+id/videoView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="visible" />
+
+    <bf.cloud.android.components.mediaplayer.placeholder.BFYPlaceHolder
+        android:id="@+id/placeholder"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible" />           
+
+    <!-- 视频状态控制器 -->
+    <bf.cloud.android.components.mediaplayer.StatusController
+        android:id="@+id/statusController"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="invisible" />
+
+    <!-- 视频控制器 -->
+    <bf.cloud.android.components.mediaplayer.MediaController
+        android:id="@+id/mediaController"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
+    <!--音量状态显示 -->
+    <bf.cloud.android.components.mediaplayer.volume.VolumeLayer
+        android:id="@+id/volumeLayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!--亮度状态显示 -->
+    <bf.cloud.android.components.mediaplayer.brightness.BrightnessLayer
+        android:id="@+id/brightnessLayer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <!-- 播放进度浮层,快进、快退 -->
+    <bf.cloud.android.components.mediaplayer.playprogress.ProgressLayer
+        android:id="@+id/progressLayer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <bf.cloud.android.components.mediaplayer.complete.PlayCompleteHolder
+        android:id="@+id/playComplete"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+    
+    <bf.cloud.android.components.mediaplayer.error.PlayErrorHolder
+        android:id="@+id/playError"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+</FrameLayout>

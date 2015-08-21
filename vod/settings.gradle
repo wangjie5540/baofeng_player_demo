@@ -1,0 +1,2 @@
+include ':bfCloudPlayer'
+include ':bfCloudPlayerDemo'
