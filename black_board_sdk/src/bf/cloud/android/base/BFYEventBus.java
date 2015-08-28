@@ -2,6 +2,11 @@ package bf.cloud.android.base;
 
 import java.util.ArrayList;
 
+/**
+ * 
+ * @author wangtonggui 事件总线
+ *
+ */
 public class BFYEventBus {
 
 	/**
