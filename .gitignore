@@ -1,0 +1,9 @@
+/vod/BfCloudPlayer/bin
+/vod/BfCloudPlayer/gen
+/black_board/bin
+/black_board/gen
+/black_board_sdk/bin
+/black_board_sdk/gen
+/black_board/*.classpath
+/black_board/.settings/org.eclipse.core.resources.prefs
+/black_board_sdk/.settings/org.eclipse.core.resources.prefs
