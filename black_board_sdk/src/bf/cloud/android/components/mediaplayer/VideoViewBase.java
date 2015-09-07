@@ -5,13 +5,16 @@ import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy;
 import android.content.Context;
 import android.media.AudioManager;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-public class VideoViewBase extends SurfaceView implements SurfaceHolder.Callback, MediaControllerBase.MediaPlayerControl{
+public abstract class VideoViewBase extends SurfaceView implements
+		SurfaceHolder.Callback, MediaControllerBase.MediaPlayerControl{
+	private final String TAG = VideoViewBase.class.getSimpleName();
 	// All the stuff we need for playing and showing a video
-    private SurfaceHolder mSurfaceHolder = null;
-    private MediaPlayerProxy mMediaPlayerProxy = null;
+    protected SurfaceHolder mSurfaceHolder = null;
+    protected MediaPlayerProxy mMediaPlayerProxy = null;
     private int         mAudioSession;
     private int         mVideoWidth;
     private int         mVideoHeight;
@@ -38,6 +41,7 @@ public class VideoViewBase extends SurfaceView implements SurfaceHolder.Callback
     private static final int STATE_PLAYBACK_COMPLETED = 5;
 	private int mCurrentState = STATE_ERROR;
 	private int mTargetState = STATE_ERROR;
+	protected String mPath = null;
 	private Context mContext = null;;
     
 	public VideoViewBase(Context context) {
@@ -80,12 +84,17 @@ public class VideoViewBase extends SurfaceView implements SurfaceHolder.Callback
      */
     public void setVideoPath(String path) {
     	mMediaPlayerProxy.setDataSource(path);
+    	openVideo();
+    	requestLayout();
+        invalidate();
     }
+    
+    protected abstract void openVideo();
     
     /*
      * release the media player in any state
      */
-    private void release(boolean cleartargetstate) {
+    protected void release(boolean cleartargetstate) {
         if (mMediaPlayerProxy != null) {
 //        	mMediaPlayerProxy.reset();
 //        	mMediaPlayerProxy.release();
