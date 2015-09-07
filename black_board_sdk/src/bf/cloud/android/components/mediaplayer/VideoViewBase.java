@@ -11,36 +11,36 @@ import android.view.SurfaceView;
 
 public abstract class VideoViewBase extends SurfaceView implements
 		SurfaceHolder.Callback, MediaControllerBase.MediaPlayerControl{
-	private final String TAG = VideoViewBase.class.getSimpleName();
+	protected final String TAG = VideoViewBase.class.getSimpleName();
 	// All the stuff we need for playing and showing a video
     protected SurfaceHolder mSurfaceHolder = null;
     protected MediaPlayerProxy mMediaPlayerProxy = null;
-    private int         mAudioSession;
-    private int         mVideoWidth;
-    private int         mVideoHeight;
-    private int         mSurfaceWidth;
-    private int         mSurfaceHeight;
+    protected int         mAudioSession;
+    protected int         mVideoWidth;
+    protected int         mVideoHeight;
+    protected int         mSurfaceWidth;
+    protected int         mSurfaceHeight;
     private MediaControllerBase mMediaController;
 //    private OnCompletionListener mOnCompletionListener;
 //    private MediaPlayer.OnPreparedListener mOnPreparedListener;
-    private int         mCurrentBufferPercentage;
+    protected int         mCurrentBufferPercentage;
 //    private OnErrorListener mOnErrorListener;
 //    private OnInfoListener  mOnInfoListener;
-    private int         mSeekWhenPrepared;  // recording the seek position while preparing
-    private boolean     mCanPause;
-    private boolean     mCanSeekBack;
-    private boolean     mCanSeekForward;
+    protected int         mSeekWhenPrepared;  // recording the seek position while preparing
+    protected boolean     mCanPause;
+    protected boolean     mCanSeekBack;
+    protected boolean     mCanSeekForward;
     
     // all possible internal states
-    private static final int STATE_ERROR              = -1;
-    private static final int STATE_IDLE               = 0;
-    private static final int STATE_PREPARING          = 1;
-    private static final int STATE_PREPARED           = 2;
-    private static final int STATE_PLAYING            = 3;
-    private static final int STATE_PAUSED             = 4;
-    private static final int STATE_PLAYBACK_COMPLETED = 5;
-	private int mCurrentState = STATE_ERROR;
-	private int mTargetState = STATE_ERROR;
+    protected static final int STATE_ERROR              = -1;
+    protected static final int STATE_IDLE               = 0;
+    protected static final int STATE_PREPARING          = 1;
+    protected static final int STATE_PREPARED           = 2;
+    protected static final int STATE_PLAYING            = 3;
+    protected static final int STATE_PAUSED             = 4;
+    protected static final int STATE_PLAYBACK_COMPLETED = 5;
+    protected int mCurrentState = STATE_ERROR;
+    protected int mTargetState = STATE_ERROR;
 	protected String mPath = null;
 	private Context mContext = null;;
     
@@ -188,5 +188,37 @@ public abstract class VideoViewBase extends SurfaceView implements
 		// TODO Auto-generated method stub
 		return false;
 	}
+	
+	SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback()
+    {
+        public void surfaceChanged(SurfaceHolder holder, int format,
+                                    int w, int h)
+        {
+            mSurfaceWidth = w;
+            mSurfaceHeight = h;
+            boolean isValidState =  (mTargetState == STATE_PLAYING);
+            boolean hasValidSize = (mVideoWidth == w && mVideoHeight == h);
+            if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
+                if (mSeekWhenPrepared != 0) {
+                    seekTo(mSeekWhenPrepared);
+                }
+                start();
+            }
+        }
+
+        public void surfaceCreated(SurfaceHolder holder)
+        {
+            mSurfaceHolder = holder;
+            openVideo();
+        }
+
+        public void surfaceDestroyed(SurfaceHolder holder)
+        {
+            // after we return from this we can't use the surface any more
+            mSurfaceHolder = null;
+//            if (mMediaController != null) mMediaController.hide();
+            release(true);
+        }
+    };
 
 }

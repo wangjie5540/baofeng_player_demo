@@ -29,7 +29,6 @@ public class VideoViewExo extends VideoViewBase{
 	
 	
 	
-	
 	@Override
 	protected void openVideo() {
     	Log.d(TAG, "openVideo");
@@ -41,6 +40,9 @@ public class VideoViewExo extends VideoViewBase{
     	release(false);
     	//now we can create the MediaPlayerProxy
     	mMediaPlayerProxy = new MediaplayerExo();
+    	mMediaPlayerProxy.setDataSource(mPath);
+    	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
+    	mCurrentState = STATE_PREPARING;
 	}
 
 }

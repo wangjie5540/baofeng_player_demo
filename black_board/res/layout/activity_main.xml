@@ -10,5 +10,11 @@
 	    android:layout_height="wrap_content"
 	    android:text="StreamDemo"
 	    />
+	<Button 
+	    android:id="@+id/black_board_demo"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:text="blackBoardDemo"
+	    />
 
 </LinearLayout>

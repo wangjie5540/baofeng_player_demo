@@ -1,5 +1,7 @@
 package bf.cloud.android.components.mediaplayer.proxy;
 
+import android.view.SurfaceHolder;
+
 /**
  * 
  * @author wangtonggui
@@ -14,4 +16,5 @@ public abstract class MediaPlayerProxy {
 	public abstract void setDataSource(String path);
 	public abstract void prepare();
 	public abstract void setCurrentState(int state);
+	public abstract void setDisplay(SurfaceHolder sh);
 }

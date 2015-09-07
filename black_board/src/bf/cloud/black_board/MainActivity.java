@@ -23,5 +23,14 @@ public class MainActivity extends Activity {
 				startActivity(intent);
 			}
 		});
+		findViewById(R.id.black_board_demo).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent intent = new Intent();
+				intent.setClass(MainActivity.this, BlackBoardDemo.class);
+				startActivity(intent);
+			}
+		});
 	}
 }

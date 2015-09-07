@@ -1,6 +1,7 @@
 package bf.cloud.android.components.mediaplayer.proxy;
 
 import android.util.Log;
+import android.view.SurfaceHolder;
 import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer;
 import bf.cloud.android.modules.player.videoviewexo.HlsRendererBuilder;
 import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuilder;
@@ -88,4 +89,9 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 		
 	}
 
+	@Override
+	public void setDisplay(SurfaceHolder sh) {
+		// TODO Auto-generated method stub
+		
+	}
 }
