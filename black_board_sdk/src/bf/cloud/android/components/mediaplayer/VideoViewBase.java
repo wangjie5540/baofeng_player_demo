@@ -78,12 +78,12 @@ public abstract class VideoViewBase extends SurfaceView implements
     }
 	
 	/**
-     * Sets video path.
+     * Sets video data source.
      *
      * @param path the path of the video.
      */
-    public void setVideoPath(String path) {
-    	mMediaPlayerProxy.setDataSource(path);
+    public void setDataSource(String url) {
+    	mMediaPlayerProxy.setDataSource(url);
     	openVideo();
     	requestLayout();
         invalidate();
