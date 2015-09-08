@@ -2,14 +2,20 @@ package bf.cloud.android.modules.p2p;
 
 import java.util.ArrayList;
 
+import android.os.Handler;
+import android.os.Message;
+import android.os.Handler.Callback;
+import android.os.HandlerThread;
+import android.os.Process;
 import android.util.Log;
 import android.widget.MediaController.MediaPlayerControl;
 import bf.cloud.android.base.BFYConst;
+import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 
 /**
  * Created by wangtonggui
  */
-public class BFStream {
+public final class BFStream {
 
 	static final String TAG = BFStream.class.getSimpleName();
 
@@ -24,9 +30,22 @@ public class BFStream {
 	private int mStreamWaitToPlay = MediaCenter.INVALID_STREAM_ID;
 	private int mPort = BFYConst.DEFAULT_P2P_PORT;
 	private int mStreamMode;
-	private static boolean isMediaCenterInited = false;
+	private static P2pHandlerThread mP2pHandlerThread = null;
+	private static String mSettingDataPath = null;
+	private static int mNetState = NetState.NET_NOT_REACHABLE;
 
-	public BFStream() {
+	public BFStream(String settingDataPath, int netState) {
+		if (settingDataPath == null || netState == NetState.NET_NOT_REACHABLE) {
+			throw new NullPointerException(
+					"dataPath is null, or netState is NET_NOT_REACHABLE");
+		}
+		mSettingDataPath = settingDataPath;
+		mNetState = netState;
+		if (mP2pHandlerThread == null) {
+			mP2pHandlerThread = new P2pHandlerThread(TAG,
+					Process.THREAD_PRIORITY_FOREGROUND);
+			mP2pHandlerThread.start();
+		}
 		mCallBackHandler = new StateCallBackHandler();
 		mMediaCenter.setCallback(mCallBackHandler);
 	}
@@ -35,8 +54,29 @@ public class BFStream {
 		public final static int MSG_TYPE_ERROR = 0;
 		public final static int MSG_TYPE_NORMAL = 1;
 
+		/**
+		 * 从MediaCenter里面回调的消息，分为MSG_TYPE_ERROR和MSG_TYPE_NORMAL两种
+		 * @param type MSG_TYPE_ERROR或MSG_TYPE_NORMAL
+		 * @param data
+		 * @param error 错误码
+		 */
 		public void onMessage(int type, int data, int error);
+
+		/**
+		 * 流已经开启就绪
+		 */
 		public void onStreamReady();
+		
+		/**
+		 * MediaCenter初始化成功
+		 */
+		public void onMediaCenterInitSuccess();
+		
+		/**
+		 * MediaCenter初始化失败
+		 */
+		public void onMediaCenterInitFailed(int error);
+
 	}
 
 	public BFStreamMessageListener getListener() {
@@ -127,6 +167,11 @@ public class BFStream {
 
 		return result;
 	}
+	
+	private void initMediaCenter(){
+		mP2pHandlerThread.p2pHandler
+		.sendEmptyMessage(P2pHandlerThread.INIT_MEDIA_CENTER);
+	}
 
 	/**
 	 * 创建流
@@ -145,6 +190,7 @@ public class BFStream {
 	/**
 	 * 开启流(可以在BFStreamMessageListener的onStreamReady中调用)
 	 * 流地址：http://127.0.0.1:mPort/live.m3u8
+	 * 
 	 * @param
 	 */
 	public int startStream() {
@@ -164,8 +210,7 @@ public class BFStream {
 						mStreamId, mStreamMode, mPort);
 				switch (result) {
 				case MediaCenter.NativeReturnType.NO_ERROR: {
-					Log.d(TAG, "Start Stream Bind Port[" + mPort
-							+ "] Success");
+					Log.d(TAG, "Start Stream Bind Port[" + mPort + "] Success");
 				}
 				case MediaCenter.NativeReturnType.PORT_BIND_FAILED:
 					continue;
@@ -186,17 +231,17 @@ public class BFStream {
 	 */
 	public int closeStream() {
 		int ret = -1;
-		if (MediaCenter.INVALID_MEDIA_HANDLE != mMediaHandle){
+		if (MediaCenter.INVALID_MEDIA_HANDLE != mMediaHandle) {
 			ret = mMediaCenter.StopStreamService(mMediaHandle);
 			mStreamId = -1;
 		}
 		return ret;
 	}
-	
+
 	/**
 	 * 销毁流
 	 */
-	public int destoryStream(){
+	public int destoryStream() {
 		int ret = -1;
 		ret = closeStream();
 		if (ret < 0)
@@ -207,52 +252,6 @@ public class BFStream {
 	}
 
 	// //////////////////////////////////////////////////////////////////////////////////////////////
-
-	/**
-	 * init Media Center
-	 * 
-	 * @param dataPath
-	 *            : location to save data
-	 * @param netState
-	 *            : current net state
-	 * @return error code
-	 */
-	public static int init(String dataPath, int netState) {
-		Log.d(TAG, "Init Media Center. data_path:[" + dataPath + "]");
-		int ret = -1;
-		if (!isMediaCenterInited){
-			ret = mMediaCenter.InitMediaCenter(dataPath, netState);
-			if (ret < 0){
-				isMediaCenterInited = false;
-			}else{
-				isMediaCenterInited = true;
-			}
-		}else{
-			ret = 0;
-		}
-		return ret;
-	}
-
-	/**
-	 * uninit Media Center
-	 * 
-	 * @return error code
-	 */
-	public static int uninit() {
-		Log.d(TAG, "Uninit Media Center");
-		int ret = -1;
-		if (!isMediaCenterInited){
-			ret = 0;
-		}else{
-			ret = mMediaCenter.MediaCenterCleanup();
-			if (ret < 0){
-				return ret;
-			}else{
-				isMediaCenterInited = false;
-			}
-		}
-		return ret;
-	}
 
 	/**
 	 * 设置网络类型，静态方法
@@ -292,12 +291,12 @@ public class BFStream {
 	public int setCurPlayTime(int time) {
 		return mMediaCenter.SetCurPlayTime(mMediaHandle, time);
 	}
-	
-	public int getStreamId(){
+
+	public int getStreamId() {
 		return mStreamId;
 	}
-	
-	public String getStreamUrl(){
+
+	public String getStreamUrl() {
 		String url = null;
 		switch (mStreamMode) {
 		case MediaCenter.StreamMode.STREAM_MP4_MODE:
@@ -317,4 +316,72 @@ public class BFStream {
 		return mMediaCenter.GetErrorInfo(error);
 	}
 
+	private enum P2pState {
+		NOT_INIT(-1), INITING(0), INITED(1);
+		private P2pState(int state) {
+			this.state = state;
+		}
+
+		private int state = -1;
+
+		private int value() {
+			return state;
+		}
+
+	}
+
+	private class P2pHandlerThread extends HandlerThread {
+		private final static int INIT_MEDIA_CENTER = 1;
+		private final static int UNINIT_MEDIA_CENTER = 2;
+
+		private Handler p2pHandler = null;
+		private P2pState state = P2pState.NOT_INIT;
+		private Callback callback = new Callback() {
+
+			@Override
+			public boolean handleMessage(Message msg) {
+				switch (msg.what) {
+				case INIT_MEDIA_CENTER:
+					if (state == P2pState.NOT_INIT) {
+						Log.d(TAG, "Init Media Center. data_path:["
+								+ mSettingDataPath + "]");
+						int ret = -1;
+						state = P2pState.INITING;
+						ret = mMediaCenter.InitMediaCenter(mSettingDataPath,
+								mNetState);
+						if (ret < 0) {
+							state = P2pState.NOT_INIT;
+						} else {
+							Log.d(TAG, "Init Media Center success");
+							state = P2pState.INITED;
+						}
+					}
+					break;
+				case UNINIT_MEDIA_CENTER:
+					//这里暂时对MediaCenter不进行卸载操作，思路是：一旦加载，就不卸载了
+				default:
+					break;
+				}
+				return false;
+			}
+		};
+
+		public P2pHandlerThread(String name, int priority) {
+			super(name, priority);
+			Log.d(TAG, "new P2pHandlerThread " + name);
+		}
+
+		@Override
+		protected void onLooperPrepared() {
+			Log.d(TAG, "thread " + getName() + " onLooperPrepared");
+			p2pHandler = new Handler(getLooper(), callback);
+			initMediaCenter();
+			super.onLooperPrepared();
+		}
+		
+		@Override
+		public void run() {
+			super.run();
+		}
+	}
 }

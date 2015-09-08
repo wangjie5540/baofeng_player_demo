@@ -3,7 +3,7 @@ package bf.cloud.android.modules.p2p;
 /**
  * Created by zhangsong on 14-9-23.
  */
-public class MediaCenter {
+public final class MediaCenter {
     private static MediaCenter instance = null;
 
     public static final int INVALID_MEDIA_HANDLE = 0;
