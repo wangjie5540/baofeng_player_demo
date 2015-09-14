@@ -2,11 +2,7 @@ package bf.cloud.android.playutils;
 
 public class VodPlayer extends BasePlayer{
 	
-	private VodPlayer(){
-		
-	}
-	
-	public VodPlayer(VideoFrame vf) {
-		super(vf);
+	public VodPlayer(VideoFrame vf, String settingDataPath) {
+		super(vf, settingDataPath);
 	}
 }

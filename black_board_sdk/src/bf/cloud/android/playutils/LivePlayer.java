@@ -2,13 +2,8 @@ package bf.cloud.android.playutils;
 
 public class LivePlayer extends BasePlayer{
 	
-	private LivePlayer(){
-		
-	}
-
-	public LivePlayer(VideoFrame vf) {
-		super(vf);
-		// TODO Auto-generated constructor stub
+	public LivePlayer(VideoFrame vf, String settingDataPath) {
+		super(vf, settingDataPath);
 	}
 
 }

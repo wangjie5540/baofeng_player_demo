@@ -2,28 +2,34 @@ package bf.cloud.android.playutils;
 
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
+import bf.cloud.android.modules.p2p.BFStream;
+import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
+import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 
 /**
  * Created by wangtonggui
  */
-public abstract class BasePlayer {
+public abstract class BasePlayer implements BFStreamMessageListener{
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
 	protected String mToken = null;
 	// 这里的变化必须要对应一个变化mode的消息
 	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE; 
 	protected VideoFrame mVideoFrame = null;
+	private BFStream mBfStream = null;
+	private String mDataSource = null;
 	
 	protected BasePlayer(){
 		
 	}
 	
-	protected BasePlayer(VideoFrame vf){
+	protected BasePlayer(VideoFrame vf, String settingDataPath){
 		if (vf == null){
 			throw new NullPointerException("VideoFrame is null");
 		}
 		mVideoFrame = vf;
 		mVideoView = mVideoFrame.getVideoView();
+		mBfStream = new BFStream("/sdcard", NetState.NET_WIFI_REACHABLE);
 	}
 
 	/**
@@ -35,7 +41,8 @@ public abstract class BasePlayer {
 	 *            )
 	 */
 	public void setDataSource(String url) {
-		mVideoView.setDataSource(url);
+//		mVideoView.setDataSource(url);
+		mDataSource = url;
 	}
 
 	/**
@@ -153,6 +160,30 @@ public abstract class BasePlayer {
 	 * 设置移动设备横屏时是否自动全屏
 	 */
 	public void setAutoFullscreen(boolean autoFullscreen) {
+	}
+
+	@Override
+	public void onMessage(int type, int data, int error) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onStreamReady() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaCenterInitSuccess() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMediaCenterInitFailed(int error) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	/**

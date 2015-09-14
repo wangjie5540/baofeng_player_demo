@@ -63,7 +63,7 @@ public final class BFStream {
 		public void onMessage(int type, int data, int error);
 
 		/**
-		 * 流已经开启就绪
+		 * 流创建就绪
 		 */
 		public void onStreamReady();
 		
