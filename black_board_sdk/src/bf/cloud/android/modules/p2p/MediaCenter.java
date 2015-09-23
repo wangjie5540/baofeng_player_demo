@@ -1,5 +1,7 @@
 package bf.cloud.android.modules.p2p;
 
+import android.util.Log;
+
 /**
  * Created by wangtonggui
  */
@@ -76,6 +78,7 @@ public class MediaCenter {
 
     static {
         try {
+        	Log.d(TAG, "load mediacenter");
             System.loadLibrary("mediacenter");
         }
         catch (UnsatisfiedLinkError e) {

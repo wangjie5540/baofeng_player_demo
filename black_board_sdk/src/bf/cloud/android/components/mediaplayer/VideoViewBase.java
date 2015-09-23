@@ -120,18 +120,28 @@ public abstract class VideoViewBase extends SurfaceView implements
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		// TODO Auto-generated method stub
-		
+		mSurfaceWidth = width;
+        mSurfaceHeight = height;
+        boolean isValidState =  (mTargetState == STATE_PLAYING);
+        boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
+        if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
+            if (mSeekWhenPrepared != 0) {
+                seekTo(mSeekWhenPrepared);
+            }
+            start();
+        }
 	}
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		
+		mSurfaceHolder = holder;
+        openVideo();
 	}
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		// TODO Auto-generated method stub
-		
+		// after we return from this we can't use the surface any more
+        mSurfaceHolder = null;
+//        if (mMediaController != null) mMediaController.hide();
+        release(true);
 	}
 	
 	
@@ -188,37 +198,4 @@ public abstract class VideoViewBase extends SurfaceView implements
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	SurfaceHolder.Callback mSHCallback = new SurfaceHolder.Callback()
-    {
-        public void surfaceChanged(SurfaceHolder holder, int format,
-                                    int w, int h)
-        {
-            mSurfaceWidth = w;
-            mSurfaceHeight = h;
-            boolean isValidState =  (mTargetState == STATE_PLAYING);
-            boolean hasValidSize = (mVideoWidth == w && mVideoHeight == h);
-            if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
-                if (mSeekWhenPrepared != 0) {
-                    seekTo(mSeekWhenPrepared);
-                }
-                start();
-            }
-        }
-
-        public void surfaceCreated(SurfaceHolder holder)
-        {
-            mSurfaceHolder = holder;
-            openVideo();
-        }
-
-        public void surfaceDestroyed(SurfaceHolder holder)
-        {
-            // after we return from this we can't use the surface any more
-            mSurfaceHolder = null;
-//            if (mMediaController != null) mMediaController.hide();
-            release(true);
-        }
-    };
-
 }

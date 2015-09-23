@@ -33,8 +33,10 @@ public final class BFStream {
 	private static P2pHandlerThread mP2pHandlerThread = null;
 	private static String mSettingDataPath = null;
 	private static int mNetState = NetState.NET_NOT_REACHABLE;
+	private static P2pState mP2pState = P2pState.NOT_INIT;
 
 	public BFStream(String settingDataPath, int netState) {
+		Log.d(TAG, "new BFStream settingDataPath:" + settingDataPath + ",netState:" + netState);
 		if (settingDataPath == null || netState == NetState.NET_NOT_REACHABLE) {
 			throw new NullPointerException(
 					"dataPath is null, or netState is NET_NOT_REACHABLE");
@@ -169,8 +171,9 @@ public final class BFStream {
 	}
 	
 	private void initMediaCenter(){
+		Log.d(TAG, "initMediaCenter");
 		mP2pHandlerThread.p2pHandler
-		.sendEmptyMessage(P2pHandlerThread.INIT_MEDIA_CENTER);
+			.sendEmptyMessage(P2pHandlerThread.INIT_MEDIA_CENTER);
 	}
 
 	/**
@@ -179,6 +182,8 @@ public final class BFStream {
 	 * @return 正常返回0，异常返回-1
 	 */
 	public int createStream(String url, String token, int mode) {
+		if (P2pState.NOT_INIT == mP2pState)
+			return -1;
 		mMediaHandle = mMediaCenter.CreateMediaHandle(url, token);
 		Log.d(TAG, "mMediaHandle = " + mMediaHandle);
 		if (mMediaHandle == MediaCenter.INVALID_MEDIA_HANDLE) {
@@ -194,6 +199,7 @@ public final class BFStream {
 	 * @param
 	 */
 	public int startStream() {
+		Log.d(TAG, "startStream");
 		int result = MediaCenter.NativeReturnType.NO_ERROR;
 		if (mStreamWaitToPlay == MediaCenter.INVALID_STREAM_ID)
 			mStreamId = getDefaultStreamId();
@@ -230,6 +236,7 @@ public final class BFStream {
 	 * 关闭流
 	 */
 	public int closeStream() {
+		Log.d(TAG, "closeStream");
 		int ret = -1;
 		if (MediaCenter.INVALID_MEDIA_HANDLE != mMediaHandle) {
 			ret = mMediaCenter.StopStreamService(mMediaHandle);
@@ -242,6 +249,7 @@ public final class BFStream {
 	 * 销毁流
 	 */
 	public int destoryStream() {
+		Log.d(TAG, "destoryStream");
 		int ret = -1;
 		ret = closeStream();
 		if (ret < 0)
@@ -335,25 +343,29 @@ public final class BFStream {
 		private final static int UNINIT_MEDIA_CENTER = 2;
 
 		private Handler p2pHandler = null;
-		private P2pState state = P2pState.NOT_INIT;
 		private Callback callback = new Callback() {
 
 			@Override
 			public boolean handleMessage(Message msg) {
+				Log.d(TAG, "handleMessage what = " + msg.what);
 				switch (msg.what) {
 				case INIT_MEDIA_CENTER:
-					if (state == P2pState.NOT_INIT) {
+					if (mP2pState == P2pState.NOT_INIT) {
 						Log.d(TAG, "Init Media Center. data_path:["
 								+ mSettingDataPath + "]");
 						int ret = -1;
-						state = P2pState.INITING;
+						mP2pState = P2pState.INITING;
 						ret = mMediaCenter.InitMediaCenter(mSettingDataPath,
 								mNetState);
 						if (ret < 0) {
-							state = P2pState.NOT_INIT;
+							mP2pState = P2pState.NOT_INIT;
+							if (mListener != null)
+								mListener.onMediaCenterInitFailed(ret);
 						} else {
 							Log.d(TAG, "Init Media Center success");
-							state = P2pState.INITED;
+							if (mListener != null)
+								mListener.onMediaCenterInitSuccess();
+							mP2pState = P2pState.INITED;
 						}
 					}
 					break;

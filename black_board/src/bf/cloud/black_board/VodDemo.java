@@ -4,11 +4,13 @@ import bf.cloud.android.playutils.VideoFrame;
 import bf.cloud.android.playutils.VodPlayer;
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 
 public class VodDemo extends Activity{
+	private final String TAG = VodDemo.class.getSimpleName();
 	private VodPlayer mPlayer = null;
 	private VideoFrame mVideoFrame = null;
 	private Button btStart = null;
@@ -27,6 +29,7 @@ public class VodDemo extends Activity{
 			
 			@Override
 			public void onClick(View v) {
+				Log.d(TAG, "Start onClick");
 				mPlayer.setDataSource(mUrls);
 				mPlayer.stop();
 				mPlayer.start();
