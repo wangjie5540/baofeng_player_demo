@@ -24,11 +24,6 @@ public class VideoViewExo extends VideoViewBase{
 	
 	
 	
-	
-	
-	
-	
-	
 	@Override
 	protected void openVideo() {
     	Log.d(TAG, "openVideo");

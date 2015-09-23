@@ -3,7 +3,7 @@ package bf.cloud.android.utils;
 import android.os.Environment;
 
 /**
- * 文件操作工具类
+ * 文件操作工具类 
  *
  * Created by gehuanfei on 2014/9/18.
  */

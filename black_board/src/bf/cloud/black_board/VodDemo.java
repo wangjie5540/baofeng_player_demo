@@ -33,6 +33,6 @@ public class VodDemo extends Activity{
 			}
 		});
 		
-		mPlayer = new VodPlayer(mVideoFrame);
+		mPlayer = new VodPlayer(mVideoFrame, "");
 	}
 }

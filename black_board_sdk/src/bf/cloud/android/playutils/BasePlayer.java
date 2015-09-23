@@ -112,25 +112,19 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	/**
 	 * 暂停播放
 	 */
-	public void pause() {
+	protected void pause() {
 
 	}
 
-	// /**
-	// * 继续播放
-	// */
-	// public void resume() {
-	// if (mPlayerController != null) {
-	// mPlayerController.getMediaController().getMediaPlayer().start();
-	// // mPlayerController.continuePlay();
-	// }
-	// }
-
-	/**
-	 * 重置播放器
+	 /**
+	 * 继续播放
 	 */
-	// public void reset() {
-	// }
+	 public void resume() {
+//		 if (mPlayerController != null) {
+//		 mPlayerController.getMediaController().getMediaPlayer().start();
+//		 // mPlayerController.continuePlay();
+//		 }
+	 }
 
 	/**
 	 * 增加音量
