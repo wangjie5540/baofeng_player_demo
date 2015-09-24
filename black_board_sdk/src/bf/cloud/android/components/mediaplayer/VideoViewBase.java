@@ -41,7 +41,7 @@ public abstract class VideoViewBase extends SurfaceView implements
     protected static final int STATE_PLAYBACK_COMPLETED = 5;
     protected int mCurrentState = STATE_ERROR;
     protected int mTargetState = STATE_ERROR;
-	protected String mPath = null;
+	protected String mPath = "";
 	private Context mContext = null;;
     
 	public VideoViewBase(Context context) {
@@ -71,6 +71,8 @@ public abstract class VideoViewBase extends SurfaceView implements
 	}
 	
 	private boolean isInPlaybackState() {
+		Log.d(TAG, "mMediaPlayerProxy:" + mMediaPlayerProxy 
+						+ ",mCurrentState:" + mCurrentState);
         return (mMediaPlayerProxy != null &&
                 mCurrentState != STATE_ERROR &&
                 mCurrentState != STATE_IDLE &&
@@ -83,7 +85,8 @@ public abstract class VideoViewBase extends SurfaceView implements
      * @param path the path of the video.
      */
     public void setDataSource(String url) {
-    	mMediaPlayerProxy.setDataSource(url);
+    	Log.d(TAG, "setDataSource url:" + url);
+    	mPath = url;
     	openVideo();
     	requestLayout();
         invalidate();
@@ -120,6 +123,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
+		Log.d(TAG, "surfaceChanged");
 		mSurfaceWidth = width;
         mSurfaceHeight = height;
         boolean isValidState =  (mTargetState == STATE_PLAYING);
@@ -133,11 +137,13 @@ public abstract class VideoViewBase extends SurfaceView implements
 	}
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
+		Log.d(TAG, "surfaceCreated");
 		mSurfaceHolder = holder;
         openVideo();
 	}
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
+		Log.d(TAG, "surfaceDestroyed");
 		// after we return from this we can't use the surface any more
         mSurfaceHolder = null;
 //        if (mMediaController != null) mMediaController.hide();
@@ -147,6 +153,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	@Override
 	public void start(){
+		Log.d(TAG, "VideoView start");
 		if (isInPlaybackState()){
 			mMediaPlayerProxy.start();
 			mCurrentState = STATE_PLAYING;

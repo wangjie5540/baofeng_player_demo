@@ -1,5 +1,10 @@
 package bf.cloud.android.playutils;
 
+import android.os.Handler;
+import android.os.Handler.Callback;
+import android.os.HandlerThread;
+import android.os.Message;
+import android.os.Process;
 import android.util.Log;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
@@ -19,12 +24,30 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	protected VideoFrame mVideoFrame = null;
 	private BFStream mBfStream = null;
 	private String mDataSource = null;
+	private PlayerHandlerThread mPlayerHandlerThread = null;
 	
-	protected BasePlayer(){
+	private static final int MSG_STREAM_CREATE = 10000;
+	private static final int MSG_STREAM_ONREADY = 10001;
+	private static final int MSG_STREAM_START = 10002;
+	private static final int MSG_STREAM_STOP = 10003;
+	private static final int MSG_STREAM_DESTORY = 10004;
+	
+	
+	
+	private Handler mUIHandler = new Handler(new Callback() {
 		
-	}
+		@Override
+		public boolean handleMessage(Message msg) {
+			Log.d(TAG, "mUIHandler msg");
+			mVideoView.setDataSource(mBfStream.getStreamUrl());
+			mVideoView.start();
+			return false;
+		}
+	});
 	
 	protected BasePlayer(VideoFrame vf, String settingDataPath){
+		mPlayerHandlerThread = new PlayerHandlerThread(this.toString(), Process.THREAD_PRIORITY_FOREGROUND);
+		mPlayerHandlerThread.start();
 		if (vf == null){
 			throw new NullPointerException("VideoFrame is null");
 		}
@@ -98,13 +121,6 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 		int ret = mBfStream.createStream(mDataSource, mToken, 0);
 		if (ret < 0)
 			Log.d(TAG, "createStream error");
-			
-		//启动播放器
-//		if (mVideoView != null)
-//			mVideoView.start();
-//		else {
-//
-//		}
 	}
 
 	/**
@@ -168,10 +184,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	@Override
 	public void onStreamReady() {
 		Log.d(TAG, "onStreamReady");
-		int ret = mBfStream.startStream();
-		if (ret < 0)
-			Log.d(TAG, "startStream error");
-		//mVideoView.setDataSource(mBfStream.getStreamUrl());
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_ONREADY);
 	}
 
 	@Override
@@ -236,5 +249,42 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	// mPlayerController.unregisterPlayerVideoEventListener(eventListener);
 	// }
 	// }
+	
+	private class PlayerHandlerThread extends HandlerThread{
+		private Handler playerHandler = null;
+		private Handler.Callback callback = new Callback() {
+			
+			@Override
+			public boolean handleMessage(Message msg) {
+				Log.d(TAG, "PlayerHandlerThread msg.what = " + msg.what);
+				switch (msg.what) {
+				case MSG_STREAM_ONREADY:{
+					int ret = mBfStream.startStream();
+					if (ret < 0)
+						Log.d(TAG, "startStream error");
+					mUIHandler.sendEmptyMessage(0);
+				}
+					break;
+
+				default:
+					break;
+				}
+				return false;
+			}
+		};
+
+		public PlayerHandlerThread(String name, int priority) {
+			super(name, priority);
+			Log.d(TAG, "new PlayerHandlerThread name:" + name);
+		}
+		
+		@Override
+		protected void onLooperPrepared() {
+			Log.d(TAG, "thread " + getName() + " onLooperPrepared");
+			playerHandler = new Handler(getLooper(), callback);
+			super.onLooperPrepared();
+		}
+		
+	}
 
 }

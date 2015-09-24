@@ -29,7 +29,7 @@ public final class BFStream {
 	private boolean mIsReadyToStartStream = false;
 	private int mStreamWaitToPlay = MediaCenter.INVALID_STREAM_ID;
 	private int mPort = BFYConst.DEFAULT_P2P_PORT;
-	private int mStreamMode;
+	private int mStreamMode = MediaCenter.StreamMode.STREAM_HLS_MODE;
 	private static P2pHandlerThread mP2pHandlerThread = null;
 	private static String mSettingDataPath = null;
 	private static int mNetState = NetState.NET_NOT_REACHABLE;
@@ -97,20 +97,20 @@ public final class BFStream {
 		protected static final String LOG_TAG = "BFStream_StateCallBack";
 
 		public void OnStateChanged(int handle, int state, int error) {
+			Log.d(TAG, "Handle State Changed to [" + state
+					+ "] (0.IDLE 1.RUNNABLE 2.RUNNING 3.ACCOMPLISH 4.ERROR)");
 			if (handle != mMediaHandle) {
+				Log.d(TAG, "mMediaHandle error");
 				return;
 			}
 
-			Log.d(LOG_TAG, "Handle State Changed to [" + state
-					+ "] (0.IDLE 1.RUNNABLE 2.RUNNING 3.ACCOMPLISH 4.ERROR)");
 			if (mListener != null) {
 				if (MediaCenter.MediaHandleState.MEDIA_HANDLE_ERROR == state) {
 					mListener.onMessage(BFStreamMessageListener.MSG_TYPE_ERROR,
 							state, error);
 				} else {
 					mListener.onMessage(
-							BFStreamMessageListener.MSG_TYPE_NORMAL, state,
-							error);
+							BFStreamMessageListener.MSG_TYPE_NORMAL, state,error);
 				}
 			}
 			switch (state) {
@@ -211,23 +211,23 @@ public final class BFStream {
 					mPort = BFYConst.DEFAULT_P2P_PORT + i;
 				}
 				mPort += i;
-				// 设置流ID
 				result = mMediaCenter.StartStreamService(mMediaHandle,
 						mStreamId, mStreamMode, mPort);
 				switch (result) {
 				case MediaCenter.NativeReturnType.NO_ERROR: {
 					Log.d(TAG, "Start Stream Bind Port[" + mPort + "] Success");
+					return result;
 				}
 				case MediaCenter.NativeReturnType.PORT_BIND_FAILED:
 					continue;
 				default:
-					return -1;
+					return result;
 				}
 			}
 			Log.d(TAG, "Bind Port fail, try to [" + mPort + "]");
 		} else {
 			Log.d(TAG, "Stream not ready or not want to start");
-			return -1;
+			return result;
 		}
 		return result;
 	}
@@ -317,6 +317,7 @@ public final class BFStream {
 			url = BFYConst.P2PSERVER + ":" + mPort;
 			break;
 		}
+		Log.d(TAG, "getStreamUrl:" + url);
 		return url;
 	}
 

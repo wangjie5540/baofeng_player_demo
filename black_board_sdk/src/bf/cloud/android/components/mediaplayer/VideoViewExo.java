@@ -6,7 +6,6 @@ import android.util.AttributeSet;
 import android.util.Log;
 
 public class VideoViewExo extends VideoViewBase{
-	private final String TAG = VideoViewExo.class.getSimpleName();
 	
 	public VideoViewExo(Context context) {
 		super(context);
@@ -23,16 +22,16 @@ public class VideoViewExo extends VideoViewBase{
 	
 	@Override
 	protected void openVideo() {
-    	Log.d(TAG, "VideoViewExo openVideo");
+    	Log.d(TAG, "VideoViewExo openVideo mPath:" + mPath);
     	if (mPath == null || mPath.length() == 0 || mSurfaceHolder == null) {
             return;
         }
     	// we shouldn't clear the target state, because somebody might have
         // called start() previously
     	release(false);
+    	Log.d(TAG, "VideoViewExo openVideo mPath111:" + mPath);
     	//now we can create the MediaPlayerProxy
-    	mMediaPlayerProxy = new MediaplayerExo();
-    	mMediaPlayerProxy.setDataSource(mPath);
+    	mMediaPlayerProxy = new MediaplayerExo(mPath);
     	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
     	mCurrentState = STATE_PREPARING;
 	}
