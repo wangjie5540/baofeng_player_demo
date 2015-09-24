@@ -49,6 +49,7 @@ public class MediaCenter {
     }
     
     public class StreamInfo {
+    	public String gcid = null;
         public int streamId = MediaCenter.INVALID_STREAM_ID;
         public String streamName = null;
         public boolean defaultStream = false;

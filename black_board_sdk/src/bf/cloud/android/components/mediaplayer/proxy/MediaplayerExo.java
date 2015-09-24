@@ -9,11 +9,9 @@ import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuild
 public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.Listener{
 	private final String TAG = MediaplayerExo.class.getSimpleName();
 	private ExoVideoPlayer mPlayer = null;
-	private String mPath = null;
-	private boolean mPlayerInitilized = false;
 
 	public MediaplayerExo() {
-		
+		Log.d(TAG, "new MediaplayerExo");
 	}
 	
 	private RendererBuilder getRendererBuilder() {
@@ -27,6 +25,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void start() {
+		Log.d(TAG, "MediaplayerExo start");
 		if (mPath == null || mPath.length() == 0){
 			Log.d(TAG, "dataSource is invailid");
 		}
@@ -39,7 +38,6 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 			mPlayerInitilized  = true;
 		}
 		mPlayer.getPlayerControl().start();
-//		set
 	}
 
 	@Override
@@ -53,7 +51,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void setDataSource(String path) {
-		if (mPath == null || mPath.length() == 0){
+		if (path == null || path.length() == 0){
 			Log.d(TAG, "dataSource is invailid");
 		}
 		mPath = path;

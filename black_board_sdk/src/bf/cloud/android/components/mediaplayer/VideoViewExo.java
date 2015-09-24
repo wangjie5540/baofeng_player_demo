@@ -21,13 +21,10 @@ public class VideoViewExo extends VideoViewBase{
 	}
 
 	
-	
-	
-	
 	@Override
 	protected void openVideo() {
-    	Log.d(TAG, "openVideo");
-    	if (mPath == null || mSurfaceHolder == null) {
+    	Log.d(TAG, "VideoViewExo openVideo");
+    	if (mPath == null || mPath.length() == 0 || mSurfaceHolder == null) {
             return;
         }
     	// we shouldn't clear the target state, because somebody might have

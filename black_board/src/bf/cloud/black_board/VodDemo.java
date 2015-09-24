@@ -14,7 +14,7 @@ public class VodDemo extends Activity{
 	private VodPlayer mPlayer = null;
 	private VideoFrame mVideoFrame = null;
 	private Button btStart = null;
-	private String mUrls = "";
+	private String mUrls = "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

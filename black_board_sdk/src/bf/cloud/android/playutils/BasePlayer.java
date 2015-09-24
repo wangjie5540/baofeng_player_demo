@@ -1,5 +1,6 @@
 package bf.cloud.android.playutils;
 
+import android.util.Log;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.modules.p2p.BFStream;
@@ -12,7 +13,7 @@ import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 public abstract class BasePlayer implements BFStreamMessageListener{
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
-	protected String mToken = null;
+	protected String mToken = "";
 	// 这里的变化必须要对应一个变化mode的消息
 	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE; 
 	protected VideoFrame mVideoFrame = null;
@@ -30,27 +31,27 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 		mVideoFrame = vf;
 		mVideoView = mVideoFrame.getVideoView();
 		mBfStream = new BFStream("/sdcard", NetState.NET_WIFI_REACHABLE);
+		mBfStream.registerListener(this);
 	}
 
 	/**
 	 * 设置播放数据源
 	 * 
-	 * @param url
-	 *            播放数据源 (如：
-	 *            "servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0"
-	 *            )
+	 * @param url 播放数据源 (如："servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0")
 	 */
 	public void setDataSource(String url) {
-//		mVideoView.setDataSource(url);
 		mDataSource = url;
 	}
-
+	
 	/**
-	 * 设置播放 token (播放私有视频时需要指定 token)
+	 * 设置播放数据源
+	 * 
+	 * @param url 播放数据源 (如："servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0")
+	 * @param playToken 播放token
 	 */
-	public void setPlayToken(String playToken) {
-		if (playToken != null)
-			mToken = playToken;
+	public void setDataSource(String url, String playToken) {
+		mDataSource = url;
+		mToken = playToken;
 	}
 
 	/**
@@ -92,15 +93,18 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	 * 开始播放
 	 */
 	public void start() {
-		//启动p2p，获取stream
-		
-		
+		Log.d(TAG, "start");
+		//这个时候要保证p2p已经启动，创建stream
+		int ret = mBfStream.createStream(mDataSource, mToken, 0);
+		if (ret < 0)
+			Log.d(TAG, "createStream error");
+			
 		//启动播放器
-		if (mVideoView != null)
-			mVideoView.start();
-		else {
-
-		}
+//		if (mVideoView != null)
+//			mVideoView.start();
+//		else {
+//
+//		}
 	}
 
 	/**
@@ -158,14 +162,16 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 
 	@Override
 	public void onMessage(int type, int data, int error) {
-		// TODO Auto-generated method stub
-		
+		Log.d(TAG, "onMessage type:" + type + ",data:" + data + ",error:" + error);
 	}
 
 	@Override
 	public void onStreamReady() {
-		// TODO Auto-generated method stub
-		
+		Log.d(TAG, "onStreamReady");
+		int ret = mBfStream.startStream();
+		if (ret < 0)
+			Log.d(TAG, "startStream error");
+		//mVideoView.setDataSource(mBfStream.getStreamUrl());
 	}
 
 	@Override

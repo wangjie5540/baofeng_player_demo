@@ -8,6 +8,8 @@ import android.view.SurfaceHolder;
  *
  */
 public abstract class MediaPlayerProxy {
+	protected String mPath = null;
+	protected boolean mPlayerInitilized = false;
 	//Todo:播放器状态
 	
 	public abstract void start();
