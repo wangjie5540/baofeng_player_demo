@@ -25,14 +25,20 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	private BFStream mBfStream = null;
 	private String mDataSource = null;
 	private PlayerHandlerThread mPlayerHandlerThread = null;
+	private STATE mState = STATE.IDLE;
 	
 	private static final int MSG_STREAM_CREATE = 10000;
-	private static final int MSG_STREAM_ONREADY = 10001;
-	private static final int MSG_STREAM_START = 10002;
-	private static final int MSG_STREAM_STOP = 10003;
-	private static final int MSG_STREAM_DESTORY = 10004;
+	private static final int MSG_STREAM_START = 10001;
+	private static final int MSG_STREAM_STOP = 10002;
+	private static final int MSG_STREAM_DESTORY = 10003;
 	
-	
+	private enum STATE{
+		IDLE(0);
+		int state = 0;
+		STATE(int state){
+			this.state = state;
+		}
+	}
 	
 	private Handler mUIHandler = new Handler(new Callback() {
 		
@@ -117,10 +123,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	 */
 	public void start() {
 		Log.d(TAG, "start");
-		//这个时候要保证p2p已经启动，创建stream
-		int ret = mBfStream.createStream(mDataSource, mToken, 0);
-		if (ret < 0)
-			Log.d(TAG, "createStream error");
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
 	}
 
 	/**
@@ -184,7 +187,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	@Override
 	public void onStreamReady() {
 		Log.d(TAG, "onStreamReady");
-		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_ONREADY);
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_START);
 	}
 
 	@Override
@@ -258,14 +261,32 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 			public boolean handleMessage(Message msg) {
 				Log.d(TAG, "PlayerHandlerThread msg.what = " + msg.what);
 				switch (msg.what) {
-				case MSG_STREAM_ONREADY:{
+				case MSG_STREAM_START:{
 					int ret = mBfStream.startStream();
 					if (ret < 0)
 						Log.d(TAG, "startStream error");
 					mUIHandler.sendEmptyMessage(0);
-				}
 					break;
-
+				}
+				case MSG_STREAM_CREATE:{
+					//这个时候要保证p2p已经启动，创建stream
+					int ret = mBfStream.createStream(mDataSource, mToken, 0);
+					if (ret < 0)
+						Log.d(TAG, "createStream error");
+					break;
+				}
+				case MSG_STREAM_STOP:{
+					int ret = mBfStream.closeStream();
+					if (ret < 0)
+						Log.d(TAG, "closeStream error");
+					break;
+				}
+				case MSG_STREAM_DESTORY:{
+					int ret = mBfStream.destoryStream();
+					if (ret < 0)
+						Log.d(TAG, "destoryStream error");
+					break;
+				}
 				default:
 					break;
 				}
