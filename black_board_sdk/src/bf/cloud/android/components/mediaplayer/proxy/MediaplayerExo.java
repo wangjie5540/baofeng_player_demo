@@ -58,7 +58,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void prepare() {
-		mPlayer = new ExoVideoPlayer(getRendererBuilder());
+		
 	}
 
 	@Override
@@ -74,7 +74,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 			break;
 
 		case ExoPlayer.STATE_READY:
-//			doStateReady();
+			
 			break;
 		
 		case ExoPlayer.STATE_ENDED:

@@ -29,11 +29,11 @@ public class VideoViewExo extends VideoViewBase{
     	// we shouldn't clear the target state, because somebody might have
         // called start() previously
     	release(false);
-    	Log.d(TAG, "VideoViewExo openVideo mPath111:" + mPath);
     	//now we can create the MediaPlayerProxy
     	mMediaPlayerProxy = new MediaplayerExo(mPath);
     	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
-    	mCurrentState = STATE_PREPARING;
+    	mMediaPlayerProxy.prepare();
+    	mCurrentState = STATE_PREPARED;
 	}
 
 }
