@@ -34,6 +34,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	private static final int MSG_STREAM_DESTORY = 10003;
 	
 	private static final int MSG_P2P_INIT = 10004;
+	private static final int MSG_P2P_UNINIT = 10005;
 	
 	private static final int MSG_UI_ = 20000;
 	
@@ -278,10 +279,11 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 				Log.d(TAG, "PlayerHandlerThread msg.what = " + msg.what);
 				switch (msg.what) {
 				case MSG_P2P_INIT:{
-					if (mBfStream == null){
-						
-					}
 					BFStream.startP2p();
+					break;
+				}
+				case MSG_P2P_UNINIT:{
+					BFStream.stopP2P();
 					break;
 				}
 				case MSG_STREAM_START:{

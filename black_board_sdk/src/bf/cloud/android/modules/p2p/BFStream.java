@@ -59,6 +59,13 @@ public final class BFStream {
 		}
 	}
 	
+	public static void stopP2P(){
+		Log.d(TAG, "uninitP2p");
+		if (mP2pHandlerThread != null) {
+			mP2pHandlerThread.p2pHandler.sendEmptyMessage(P2pHandlerThread.UNINIT_MEDIA_CENTER);
+		}
+	}
+	
 	public interface BFP2PListener{
 		/**
 		 * MediaCenter初始化成功
@@ -395,8 +402,10 @@ public final class BFStream {
 						}
 					}
 					break;
-				case UNINIT_MEDIA_CENTER:
+				case UNINIT_MEDIA_CENTER:{
 					//这里暂时对MediaCenter不进行卸载操作，思路是：一旦加载，就不卸载了
+					Log.d(TAG, "uninit Media Center");
+				}
 				default:
 					break;
 				}
