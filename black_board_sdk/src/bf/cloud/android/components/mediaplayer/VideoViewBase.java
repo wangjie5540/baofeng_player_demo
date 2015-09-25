@@ -162,8 +162,10 @@ public abstract class VideoViewBase extends SurfaceView implements
 	}
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
-		
+		if (mCurrentState == STATE_PLAYING){
+			mMediaPlayerProxy.pause();
+			mCurrentState = STATE_PAUSED;
+		}
 	}
 	@Override
 	public int getDuration() {

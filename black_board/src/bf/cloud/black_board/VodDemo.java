@@ -14,6 +14,8 @@ public class VodDemo extends Activity{
 	private VodPlayer mPlayer = null;
 	private VideoFrame mVideoFrame = null;
 	private Button btStart = null;
+	private Button btPause = null;
+	private Button btResume = null;
 	private String mUrls = "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +37,22 @@ public class VodDemo extends Activity{
 				mPlayer.start();
 			}
 		});
-		
+		btPause = (Button)findViewById(R.id.pause);
+		btPause.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPlayer.pause();
+			}
+		});
+		btResume = (Button)findViewById(R.id.resume);
+		btResume.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPlayer.resume();
+			}
+		});
 		mPlayer = new VodPlayer(mVideoFrame, "");
 	}
 }

@@ -54,6 +54,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 			mState = STATE.PREPARED;
 			mVideoView.setDataSource(mBfStream.getStreamUrl());
 			mVideoView.start();
+			mState = STATE.PLAYING;
 			return false;
 		}
 	});
@@ -145,6 +146,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 * 暂停播放
 	 */
 	protected void pause() {
+		Log.d(TAG, "pause");
 		if (mState == STATE.PLAYING){
 			mVideoView.pause();
 			mState = STATE.PAUSED;
@@ -157,10 +159,13 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 * 继续播放
 	 */
 	 public void resume() {
-//		 if (mPlayerController != null) {
-//		 mPlayerController.getMediaController().getMediaPlayer().start();
-//		 // mPlayerController.continuePlay();
-//		 }
+		 Log.d(TAG, "resume");
+		 if (mState == STATE.PAUSED){
+			 mVideoView.start();
+			 mState = STATE.PLAYING;
+		 }else{
+			 Log.d(TAG, "Player state is not PAUSED");
+		 }
 	 }
 
 	/**
