@@ -139,7 +139,6 @@ public abstract class VideoViewBase extends SurfaceView implements
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.d(TAG, "surfaceCreated");
 		mSurfaceHolder = holder;
-        openVideo();
 	}
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {

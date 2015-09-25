@@ -148,6 +148,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 * 停止播放
 	 */
 	public void stop() {
+//		mVideoView.stop();
+//		mVideoFrame.updateViews();
 	}
 
 	/**

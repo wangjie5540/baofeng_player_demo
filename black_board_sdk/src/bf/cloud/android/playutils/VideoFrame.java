@@ -31,7 +31,7 @@ public class VideoFrame extends FrameLayout {
 		updateViews();
 	}
 
-	private void updateViews() {
+	public void updateViews() {
 		// make view
 		if (mDecodeMode == DecodeMode.AUTO) {
 			mVideoViewBase = new VideoViewExo(mContext);
