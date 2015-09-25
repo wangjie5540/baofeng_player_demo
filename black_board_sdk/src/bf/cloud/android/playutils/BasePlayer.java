@@ -32,8 +32,10 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	private static final int MSG_STREAM_STOP = 10002;
 	private static final int MSG_STREAM_DESTORY = 10003;
 	
+	private static final int MSG_UI_ = 20000;
+	
 	private enum STATE{
-		IDLE(0);
+		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(-1);
 		int state = 0;
 		STATE(int state){
 			this.state = state;
@@ -45,6 +47,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 		@Override
 		public boolean handleMessage(Message msg) {
 			Log.d(TAG, "mUIHandler msg");
+			mState = STATE.PREPARED;
 			mVideoView.setDataSource(mBfStream.getStreamUrl());
 			mVideoView.start();
 			return false;
@@ -123,6 +126,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	 */
 	public void start() {
 		Log.d(TAG, "start");
+		mState = STATE.PREPARING;
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
 	}
 
@@ -136,7 +140,12 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	 * 暂停播放
 	 */
 	protected void pause() {
-
+		if (mState == STATE.PLAYING){
+			mVideoView.pause();
+			mState = STATE.PAUSED;
+		}else{
+			Log.d(TAG, "Player state is not PLAYING");
+		}
 	}
 
 	 /**
@@ -182,6 +191,10 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	@Override
 	public void onMessage(int type, int data, int error) {
 		Log.d(TAG, "onMessage type:" + type + ",data:" + data + ",error:" + error);
+		if (data == BFStreamMessageListener.MSG_TYPE_ERROR){
+			mState = STATE.ERROR;
+			// TODO handle the errors
+		}
 	}
 
 	@Override
