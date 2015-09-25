@@ -38,7 +38,7 @@ public class StreamDemo extends Activity{
 
 	private void init() {
 		mStream = new BFStream("/sdcard/", MediaCenter.NetState.NET_WIFI_REACHABLE);
-		mStream.registerListener(new BFStreamMessageListener() {
+		mStream.registerStreamListener(new BFStreamMessageListener() {
 			
 			@Override
 			public void onStreamReady() {
@@ -54,18 +54,6 @@ public class StreamDemo extends Activity{
 				}else if (type == BFStreamMessageListener.MSG_TYPE_NORMAL){
 					mHandler.obtainMessage(STREAM_STATE, data, 0).sendToTarget();
 				}
-			}
-
-			@Override
-			public void onMediaCenterInitSuccess() {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void onMediaCenterInitFailed(int error) {
-				// TODO Auto-generated method stub
-				
 			}
 		});
 		EditText url = (EditText)findViewById(R.id.url);

@@ -9,13 +9,14 @@ import android.util.Log;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.modules.p2p.BFStream;
+import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
 import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 
 /**
  * Created by wangtonggui
  */
-public abstract class BasePlayer implements BFStreamMessageListener{
+public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListener{
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
 	protected String mToken = "";
@@ -31,6 +32,8 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	private static final int MSG_STREAM_START = 10001;
 	private static final int MSG_STREAM_STOP = 10002;
 	private static final int MSG_STREAM_DESTORY = 10003;
+	
+	private static final int MSG_P2P_INIT = 10004;
 	
 	private static final int MSG_UI_ = 20000;
 	
@@ -63,7 +66,8 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 		mVideoFrame = vf;
 		mVideoView = mVideoFrame.getVideoView();
 		mBfStream = new BFStream("/sdcard", NetState.NET_WIFI_REACHABLE);
-		mBfStream.registerListener(this);
+		mBfStream.registerStreamListener(this);
+		mBfStream.registerP2PListener(this);
 	}
 
 	/**
@@ -127,7 +131,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 	public void start() {
 		Log.d(TAG, "start");
 		mState = STATE.PREPARING;
-		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
 	}
 
 	/**
@@ -205,8 +209,7 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 
 	@Override
 	public void onMediaCenterInitSuccess() {
-		// TODO Auto-generated method stub
-		
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
 	}
 
 	@Override
@@ -274,6 +277,13 @@ public abstract class BasePlayer implements BFStreamMessageListener{
 			public boolean handleMessage(Message msg) {
 				Log.d(TAG, "PlayerHandlerThread msg.what = " + msg.what);
 				switch (msg.what) {
+				case MSG_P2P_INIT:{
+					if (mBfStream == null){
+						
+					}
+					BFStream.startP2p();
+					break;
+				}
 				case MSG_STREAM_START:{
 					int ret = mBfStream.startStream();
 					if (ret < 0)

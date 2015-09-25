@@ -1,6 +1,8 @@
 package bf.cloud.android.modules.p2p;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import android.os.Handler;
 import android.os.Message;
@@ -25,7 +27,8 @@ public final class BFStream {
 	private MediaCenter.MediaInfo mMediaInfo = null;
 	private ArrayList<MediaCenter.StreamInfo> mStreamInfoList = new ArrayList<MediaCenter.StreamInfo>();
 	private StateCallBackHandler mCallBackHandler = null;
-	private BFStreamMessageListener mListener = null;
+	private BFStreamMessageListener mStreamListener = null;
+	private static CopyOnWriteArrayList<BFP2PListener> mP2PListeners = new CopyOnWriteArrayList<BFP2PListener>();
 	private boolean mIsReadyToStartStream = false;
 	private int mStreamWaitToPlay = MediaCenter.INVALID_STREAM_ID;
 	private int mPort = BFYConst.DEFAULT_P2P_PORT;
@@ -43,13 +46,29 @@ public final class BFStream {
 		}
 		mSettingDataPath = settingDataPath;
 		mNetState = netState;
+		mCallBackHandler = new StateCallBackHandler();
+		mMediaCenter.setCallback(mCallBackHandler);
+	}
+	
+	public static void startP2p(){
+		Log.d(TAG, "startP2p");
 		if (mP2pHandlerThread == null) {
 			mP2pHandlerThread = new P2pHandlerThread(TAG,
 					Process.THREAD_PRIORITY_FOREGROUND);
 			mP2pHandlerThread.start();
 		}
-		mCallBackHandler = new StateCallBackHandler();
-		mMediaCenter.setCallback(mCallBackHandler);
+	}
+	
+	public interface BFP2PListener{
+		/**
+		 * MediaCenter初始化成功
+		 */
+		public void onMediaCenterInitSuccess();
+		
+		/**
+		 * MediaCenter初始化失败
+		 */
+		public void onMediaCenterInitFailed(int error);
 	}
 
 	public interface BFStreamMessageListener {
@@ -68,29 +87,33 @@ public final class BFStream {
 		 * 流创建就绪
 		 */
 		public void onStreamReady();
-		
-		/**
-		 * MediaCenter初始化成功
-		 */
-		public void onMediaCenterInitSuccess();
-		
-		/**
-		 * MediaCenter初始化失败
-		 */
-		public void onMediaCenterInitFailed(int error);
-
 	}
 
 	public BFStreamMessageListener getListener() {
-		return mListener;
+		return mStreamListener;
 	}
 
-	public void registerListener(BFStreamMessageListener listener) {
-		mListener = listener;
+	public void registerStreamListener(BFStreamMessageListener listener) {
+		mStreamListener = listener;
 	}
 
-	public void unregisterListener() {
-		mListener = null;
+	public void unregisterStreamListener() {
+		mStreamListener = null;
+	}
+	
+	public void registerP2PListener(BFP2PListener listener){
+		if (mP2PListeners.contains(listener)){
+			Log.d(TAG, "listener exists");
+		}
+		synchronized (BFStream.TAG) {
+			mP2PListeners.add(listener);
+		}
+	}
+	
+	public void unregisterP2PListener(BFP2PListener listener){
+		if (mP2PListeners.contains(listener)){
+			mP2PListeners.remove(listener);
+		}
 	}
 
 	class StateCallBackHandler implements MediaCenter.HandleStateCallback {
@@ -104,12 +127,12 @@ public final class BFStream {
 				return;
 			}
 
-			if (mListener != null) {
+			if (mStreamListener != null) {
 				if (MediaCenter.MediaHandleState.MEDIA_HANDLE_ERROR == state) {
-					mListener.onMessage(BFStreamMessageListener.MSG_TYPE_ERROR,
+					mStreamListener.onMessage(BFStreamMessageListener.MSG_TYPE_ERROR,
 							state, error);
 				} else {
-					mListener.onMessage(
+					mStreamListener.onMessage(
 							BFStreamMessageListener.MSG_TYPE_NORMAL, state,error);
 				}
 			}
@@ -132,8 +155,8 @@ public final class BFStream {
 				}
 				if (!mIsReadyToStartStream) {
 					mIsReadyToStartStream = true;
-					if (mListener != null)
-						mListener.onStreamReady();
+					if (mStreamListener != null)
+						mStreamListener.onStreamReady();
 				}
 				break;
 			}
@@ -170,7 +193,7 @@ public final class BFStream {
 		return result;
 	}
 	
-	private void initMediaCenter(){
+	private static void initMediaCenter(){
 		Log.d(TAG, "initMediaCenter");
 		mP2pHandlerThread.p2pHandler
 			.sendEmptyMessage(P2pHandlerThread.INIT_MEDIA_CENTER);
@@ -339,7 +362,7 @@ public final class BFStream {
 
 	}
 
-	private class P2pHandlerThread extends HandlerThread {
+	private static class P2pHandlerThread extends HandlerThread {
 		private final static int INIT_MEDIA_CENTER = 1;
 		private final static int UNINIT_MEDIA_CENTER = 2;
 
@@ -360,13 +383,15 @@ public final class BFStream {
 								mNetState);
 						if (ret < 0) {
 							mP2pState = P2pState.NOT_INIT;
-							if (mListener != null)
-								mListener.onMediaCenterInitFailed(ret);
+							for (int i = 0; i < mP2PListeners.size(); i++){
+								mP2PListeners.get(i).onMediaCenterInitFailed(ret);
+							}
 						} else {
 							Log.d(TAG, "Init Media Center success");
-							if (mListener != null)
-								mListener.onMediaCenterInitSuccess();
 							mP2pState = P2pState.INITED;
+							for (int i = 0; i < mP2PListeners.size(); i++){
+								mP2PListeners.get(i).onMediaCenterInitSuccess();
+							}
 						}
 					}
 					break;
