@@ -154,12 +154,17 @@ public abstract class VideoViewBase extends SurfaceView implements
 	@Override
 	public void start(){
 		Log.d(TAG, "VideoView start");
-		if (isInPlaybackState()){
-			mMediaPlayerProxy.start();
-			mCurrentState = STATE_PLAYING;
-		}
-		mTargetState = STATE_PLAYING;
+		mMediaPlayerProxy.start(mPath);
+		mCurrentState = STATE_PLAYING;
 	}
+	
+	@Override
+	public void stop() {
+		if (mMediaPlayerProxy != null)
+			mMediaPlayerProxy.stop();
+		mCurrentState = STATE_IDLE;
+	}
+	
 	@Override
 	public void pause() {
 		if (mCurrentState == STATE_PLAYING){
@@ -167,6 +172,15 @@ public abstract class VideoViewBase extends SurfaceView implements
 			mCurrentState = STATE_PAUSED;
 		}
 	}
+	
+	@Override
+	public void resume() {
+		if (mCurrentState == STATE_PAUSED){
+			mMediaPlayerProxy.resume();
+			mCurrentState = STATE_PLAYING;
+		}
+	}
+	
 	@Override
 	public int getDuration() {
 		// TODO Auto-generated method stub

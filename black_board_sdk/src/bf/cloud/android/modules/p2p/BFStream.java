@@ -29,7 +29,6 @@ public final class BFStream {
 	private StateCallBackHandler mCallBackHandler = null;
 	private BFStreamMessageListener mStreamListener = null;
 	private static CopyOnWriteArrayList<BFP2PListener> mP2PListeners = new CopyOnWriteArrayList<BFP2PListener>();
-	private boolean mIsReadyToStartStream = false;
 	private int mStreamWaitToPlay = MediaCenter.INVALID_STREAM_ID;
 	private int mPort = BFYConst.DEFAULT_P2P_PORT;
 	private int mStreamMode = MediaCenter.StreamMode.STREAM_HLS_MODE;
@@ -160,11 +159,8 @@ public final class BFStream {
 				for (int i = 0; i < mMediaInfo.mediaStreamCount; i++) {
 					mStreamInfoList.add(i, streamInfoList[i]);
 				}
-				if (!mIsReadyToStartStream) {
-					mIsReadyToStartStream = true;
-					if (mStreamListener != null)
-						mStreamListener.onStreamReady();
-				}
+				if (mStreamListener != null)
+					mStreamListener.onStreamReady();
 				break;
 			}
 			case MediaCenter.MediaHandleState.MEDIA_HANDLE_RUNNING:
@@ -235,30 +231,26 @@ public final class BFStream {
 			mStreamId = getDefaultStreamId();
 		else
 			mStreamId = mStreamWaitToPlay;
-		if (mIsReadyToStartStream) {
-			for (int i = 0; i < 50; i++) {
-				if (mPort > 65400) {
-					mPort = BFYConst.DEFAULT_P2P_PORT + i;
-				}
-				mPort += i;
-				result = mMediaCenter.StartStreamService(mMediaHandle,
-						mStreamId, mStreamMode, mPort);
-				switch (result) {
-				case MediaCenter.NativeReturnType.NO_ERROR: {
-					Log.d(TAG, "Start Stream Bind Port[" + mPort + "] Success");
-					return result;
-				}
-				case MediaCenter.NativeReturnType.PORT_BIND_FAILED:
-					continue;
-				default:
-					return result;
-				}
+		
+		for (int i = 0; i < 50; i++) {
+			if (mPort > 65400) {
+				mPort = BFYConst.DEFAULT_P2P_PORT + i;
 			}
-			Log.d(TAG, "Bind Port fail, try to [" + mPort + "]");
-		} else {
-			Log.d(TAG, "Stream not ready or not want to start");
-			return result;
+			mPort += i;
+			result = mMediaCenter.StartStreamService(mMediaHandle,
+					mStreamId, mStreamMode, mPort);
+			switch (result) {
+			case MediaCenter.NativeReturnType.NO_ERROR: {
+				Log.d(TAG, "Start Stream Bind Port[" + mPort + "] Success");
+				return result;
+			}
+			case MediaCenter.NativeReturnType.PORT_BIND_FAILED:
+				continue;
+			default:
+				return result;
+			}
 		}
+		Log.d(TAG, "Bind Port fail, try to [" + mPort + "]");
 		return result;
 	}
 

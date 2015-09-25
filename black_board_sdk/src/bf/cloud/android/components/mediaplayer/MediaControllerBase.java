@@ -3,7 +3,9 @@ package bf.cloud.android.components.mediaplayer;
 public abstract class MediaControllerBase {
 	public interface MediaPlayerControl{
         void    start();
+        void	stop();
         void    pause();
+        void	resume();
         int     getDuration();
         int     getCurrentPosition();
         void    seekTo(int pos);

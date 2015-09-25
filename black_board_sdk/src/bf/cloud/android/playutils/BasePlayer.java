@@ -27,6 +27,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	private String mDataSource = null;
 	private PlayerHandlerThread mPlayerHandlerThread = null;
 	private STATE mState = STATE.IDLE;
+	private boolean isMediaCenterInited = false;
 	
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
@@ -132,8 +133,15 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 */
 	public void start() {
 		Log.d(TAG, "start");
+		mVideoView.stop();
+		if (!isMediaCenterInited && mState == STATE.IDLE){
+			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
+		}else if (isMediaCenterInited){
+			Log.d(TAG, "start isMediaCenterInited:" + isMediaCenterInited);
+			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
+			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
+		}
 		mState = STATE.PREPARING;
-		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
 	}
 
 	/**
@@ -161,7 +169,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 public void resume() {
 		 Log.d(TAG, "resume");
 		 if (mState == STATE.PAUSED){
-			 mVideoView.start();
+			 mVideoView.resume();
 			 mState = STATE.PLAYING;
 		 }else{
 			 Log.d(TAG, "Player state is not PAUSED");
@@ -215,6 +223,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 
 	@Override
 	public void onMediaCenterInitSuccess() {
+		isMediaCenterInited = true;
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
 	}
 

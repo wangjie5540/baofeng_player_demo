@@ -13,8 +13,9 @@ public abstract class MediaPlayerProxy {
 	protected boolean mPlayerInitilized = false;
 	//Todo:播放器状态
 	
-	public abstract void start();
+	public abstract void start(String url);
 	public abstract void pause();
+	public abstract void resume();
 	public abstract void stop();
 	public abstract void setDataSource(String path);
 	public abstract void prepare();

@@ -3,6 +3,7 @@ package bf.cloud.android.components.mediaplayer.proxy;
 import com.google.android.exoplayer.ExoPlayer;
 
 import android.util.Log;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer;
 import bf.cloud.android.modules.player.videoviewexo.HlsRendererBuilder;
@@ -10,17 +11,10 @@ import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuild
 
 public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.Listener{
 	private ExoVideoPlayer mPlayer = null;
+	private Surface mSurface = null;
 
 	public MediaplayerExo(String url) {
 		Log.d(TAG, "new MediaplayerExo");
-		mPath = url;
-		if (mPlayer == null){
-			mPlayer = new ExoVideoPlayer(getRendererBuilder());
-			mPlayer.addListener(this);
-			mPlayer.prepare();
-			mPlayer.setPlayWhenReady(false);
-			mPlayerInitilized  = true;
-		}
 	}
 	
 	private RendererBuilder getRendererBuilder() {
@@ -34,8 +28,16 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	}
 
 	@Override
-	public void start() {
+	public void start(String url) {
 		Log.d(TAG, "MediaplayerExo start");
+		stop();
+		mPath = url;
+		mPlayer = new ExoVideoPlayer(getRendererBuilder());
+		mPlayer.addListener(this);
+		mPlayer.prepare();
+		mPlayer.setPlayWhenReady(false);
+		mPlayer.setSurface(mSurface);
+		mPlayerInitilized  = true;
 		if (mPath == null || mPath.length() == 0){
 			Log.d(TAG, "dataSource is invailid");
 		}
@@ -48,7 +50,18 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	}
 
 	@Override
+	public void resume() {
+		mPlayer.getPlayerControl().start();
+	}
+	
+	@Override
 	public void stop() {
+		if (mPlayerInitilized){
+			mPlayer.blockingClearSurface();
+			mPlayer.release();
+			mPlayer = null;
+			mPlayerInitilized = false;
+		}
 	}
 
 	@Override
@@ -107,6 +120,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void setDisplay(SurfaceHolder sh) {
-		mPlayer.setSurface(sh.getSurface());
+		mSurface  = sh.getSurface();
 	}
+
 }
