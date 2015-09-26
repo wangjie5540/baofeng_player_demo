@@ -133,7 +133,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 */
 	public void start() {
 		Log.d(TAG, "start");
-		mVideoView.stop();
+		mVideoFrame.updateViews();
+		mVideoView = mVideoFrame.getVideoView();
 		if (!isMediaCenterInited && mState == STATE.IDLE){
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
 		}else if (isMediaCenterInited){
@@ -148,8 +149,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 * 停止播放
 	 */
 	public void stop() {
-//		mVideoView.stop();
-//		mVideoFrame.updateViews();
+		mVideoView.stop();
 	}
 
 	/**

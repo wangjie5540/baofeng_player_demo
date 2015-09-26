@@ -21,10 +21,10 @@ public class VideoViewExo extends VideoViewBase{
 
 	
 	@Override
-	protected void openVideo() {
+	protected int openVideo() {
     	Log.d(TAG, "VideoViewExo openVideo mPath:" + mPath);
     	if (mPath == null || mPath.length() == 0 || mSurfaceHolder == null) {
-            return;
+            return -1;
         }
     	// we shouldn't clear the target state, because somebody might have
         // called start() previously
@@ -34,6 +34,7 @@ public class VideoViewExo extends VideoViewBase{
     	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
     	mMediaPlayerProxy.prepare();
     	mCurrentState = STATE_PREPARED;
+    	return 0;
 	}
 
 }

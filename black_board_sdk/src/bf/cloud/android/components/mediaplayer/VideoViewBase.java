@@ -42,7 +42,8 @@ public abstract class VideoViewBase extends SurfaceView implements
     protected int mCurrentState = STATE_ERROR;
     protected int mTargetState = STATE_ERROR;
 	protected String mPath = "";
-	private Context mContext = null;;
+	private Context mContext = null;
+	private boolean startWhenSurfaceReady = false;
     
 	public VideoViewBase(Context context) {
 		super(context);
@@ -87,12 +88,14 @@ public abstract class VideoViewBase extends SurfaceView implements
     public void setDataSource(String url) {
     	Log.d(TAG, "setDataSource url:" + url);
     	mPath = url;
-    	openVideo();
+    	int ret = openVideo();
+    	if (ret < 0)
+    		startWhenSurfaceReady = true;
     	requestLayout();
         invalidate();
     }
     
-    protected abstract void openVideo();
+    protected abstract int openVideo();
     
     /*
      * release the media player in any state
@@ -119,26 +122,30 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	
 	
-	
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
 		Log.d(TAG, "surfaceChanged");
-		mSurfaceWidth = width;
-        mSurfaceHeight = height;
-        boolean isValidState =  (mTargetState == STATE_PLAYING);
-        boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
-        if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
-            if (mSeekWhenPrepared != 0) {
-                seekTo(mSeekWhenPrepared);
-            }
-            start();
-        }
+		mSurfaceHolder = holder;
+//		mSurfaceWidth = width;
+//        mSurfaceHeight = height;
+//        boolean isValidState =  (mTargetState == STATE_PLAYING);
+//        boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
+//        if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
+//            if (mSeekWhenPrepared != 0) {
+//                seekTo(mSeekWhenPrepared);
+//            }
+//            start();
+//        }
 	}
 	@Override
 	public void surfaceCreated(SurfaceHolder holder) {
 		Log.d(TAG, "surfaceCreated");
 		mSurfaceHolder = holder;
+		if (startWhenSurfaceReady){
+			start();
+			startWhenSurfaceReady = false;
+		}
 	}
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
@@ -153,8 +160,10 @@ public abstract class VideoViewBase extends SurfaceView implements
 	@Override
 	public void start(){
 		Log.d(TAG, "VideoView start");
-		mMediaPlayerProxy.start(mPath);
-		mCurrentState = STATE_PLAYING;
+		if (mMediaPlayerProxy != null){
+			mMediaPlayerProxy.start(mPath);
+			mCurrentState = STATE_PLAYING;
+		}
 	}
 	
 	@Override
