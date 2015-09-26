@@ -8,6 +8,7 @@ import android.os.Process;
 import android.util.Log;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
+import bf.cloud.android.components.mediaplayer.proxy.BFVolumeManager;
 import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
@@ -28,6 +29,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	private PlayerHandlerThread mPlayerHandlerThread = null;
 	private STATE mState = STATE.IDLE;
 	private boolean isMediaCenterInited = false;
+	private BFVolumeManager mBFVolumeManager = null;
 	
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
@@ -66,11 +68,15 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 		if (vf == null){
 			throw new NullPointerException("VideoFrame is null");
 		}
+		if (settingDataPath == null || settingDataPath.length() == 0){
+			throw new NullPointerException("settingDataPath is invailid");
+		}
 		mVideoFrame = vf;
 		mVideoView = mVideoFrame.getVideoView();
 		mBfStream = new BFStream("/sdcard", NetState.NET_WIFI_REACHABLE);
 		mBfStream.registerStreamListener(this);
 		mBfStream.registerP2PListener(this);
+		mBFVolumeManager = BFVolumeManager.getInstance(mVideoFrame.getContext());
 	}
 
 	/**
@@ -103,8 +109,9 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	// }
 
 	/**
-	 * 设置用于存储信息的本地目录
+	 * 设置用于存储信息的本地目录(这个接口没啥用)
 	 */
+	@Deprecated
 	public void setDataPath(String dataPath) {
 
 	}
@@ -182,18 +189,21 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 * 增加音量
 	 */
 	public void incVolume() {
+		mBFVolumeManager.incVolume();
 	}
 
 	/**
 	 * 减小音量
 	 */
 	public void decVolume() {
+		mBFVolumeManager.decVolume();
 	}
 
 	/**
 	 * 设置音量
 	 */
 	public void setVolume(int value) {
+		mBFVolumeManager.setVolume(value);
 	}
 
 	/**
@@ -239,14 +249,16 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	/**
 	 * 取得当前音量
 	 */
-	// public int getCurrentVolume() {
-	// }
+	 public int getCurrentVolume() {
+		 return mBFVolumeManager.getCurrentVolume();
+	 }
 
 	/**
 	 * 取得最大音量
 	 */
-	// public int getMaxVolume() {
-	// }
+	 public int getMaxVolume() {
+		 return mBFVolumeManager.getMaxVolume();
+	 }
 
 	/**
 	 * 取得当前的解码模式

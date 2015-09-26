@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.Toast;
 
 public class VodDemo extends Activity{
 	private final String TAG = VodDemo.class.getSimpleName();
@@ -16,6 +17,10 @@ public class VodDemo extends Activity{
 	private Button btStart = null;
 	private Button btPause = null;
 	private Button btResume = null;
+	private Button btIncVolume = null;
+	private Button btDecVolume = null;
+	private Button btGetCurVolume = null;
+	private Button btGetMAZVolume = null;
 	private String mUrls = "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +58,40 @@ public class VodDemo extends Activity{
 				mPlayer.resume();
 			}
 		});
-		mPlayer = new VodPlayer(mVideoFrame, "");
+		btIncVolume = (Button)findViewById(R.id.inc_volume);
+		btIncVolume.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPlayer.incVolume();
+			}
+		});
+		btDecVolume = (Button)findViewById(R.id.dec_volume);
+		btDecVolume.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPlayer.decVolume();
+			}
+		});
+		btGetCurVolume = (Button)findViewById(R.id.get_current_volume);
+		btGetCurVolume.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				int value = mPlayer.getCurrentVolume();
+				Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT).show();
+			}
+		});
+		btGetMAZVolume = (Button)findViewById(R.id.get_max_volume);
+		btGetMAZVolume.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				int value = mPlayer.getMaxVolume();
+				Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT).show();
+			}
+		});
+		mPlayer = new VodPlayer(mVideoFrame, "/sdcard/");
 	}
 }
