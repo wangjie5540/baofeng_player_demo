@@ -31,6 +31,7 @@ public class VideoViewExo extends VideoViewBase{
     	release(false);
     	//now we can create the MediaPlayerProxy
     	mMediaPlayerProxy = new MediaplayerExo(mPath);
+    	mMediaPlayerProxy.setDataSource(mPath);
     	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
     	mMediaPlayerProxy.prepare();
     	mCurrentState = STATE_PREPARED;

@@ -28,19 +28,10 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	}
 
 	@Override
-	public void start(String url) {
+	public void start() {
 		Log.d(TAG, "MediaplayerExo start");
 		stop();
-		mPath = url;
-		mPlayer = new ExoVideoPlayer(getRendererBuilder());
-		mPlayer.addListener(this);
-		mPlayer.prepare();
-		mPlayer.setPlayWhenReady(false);
-		mPlayer.setSurface(mSurface);
-		mPlayerInitilized  = true;
-		if (mPath == null || mPath.length() == 0){
-			Log.d(TAG, "dataSource is invailid");
-		}
+		prepare();
 		mPlayer.getPlayerControl().start();
 	}
 
@@ -55,6 +46,11 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	}
 	
 	@Override
+	public void seekTo(int pos) {
+		mPlayer.getPlayerControl().seekTo(pos);
+	}
+	
+	@Override
 	public void stop() {
 		if (mPlayerInitilized){
 			mPlayer.blockingClearSurface();
@@ -66,12 +62,21 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void setDataSource(String path) {
-		
+		mPath = path;
 	}
 
 	@Override
 	public void prepare() {
-		
+		if (!mPlayerInitilized){
+			mPlayer = new ExoVideoPlayer(getRendererBuilder());
+			mPlayer.addListener(this);
+			mPlayer.prepare();
+			mPlayer.setPlayWhenReady(false);
+			mPlayer.setSurface(mSurface);
+			mPlayerInitilized  = true;
+		} else {
+			Log.d(TAG, "PlayerInitilized has been inited");
+		}
 	}
 
 	@Override

@@ -30,6 +30,7 @@ public abstract class VideoViewBase extends SurfaceView implements
     protected boolean     mCanPause;
     protected boolean     mCanSeekBack;
     protected boolean     mCanSeekForward;
+    protected int		  mDuration = 0;
     
     // all possible internal states
     protected static final int STATE_ERROR              = -1;
@@ -161,7 +162,9 @@ public abstract class VideoViewBase extends SurfaceView implements
 	public void start(){
 		Log.d(TAG, "VideoView start");
 		if (mMediaPlayerProxy != null){
-			mMediaPlayerProxy.start(mPath);
+			mMediaPlayerProxy.stop();
+			mMediaPlayerProxy.setDataSource(mPath);
+			mMediaPlayerProxy.start();
 			mCurrentState = STATE_PLAYING;
 		}
 	}
@@ -191,8 +194,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	@Override
 	public int getDuration() {
-		// TODO Auto-generated method stub
-		return 0;
+		return mDuration;
 	}
 	@Override
 	public int getCurrentPosition() {
@@ -201,13 +203,17 @@ public abstract class VideoViewBase extends SurfaceView implements
 	}
 	@Override
 	public void seekTo(int pos) {
-		// TODO Auto-generated method stub
-		
+		if ((mCurrentState == STATE_PAUSED || mCurrentState == STATE_PLAYING) 
+				&& mMediaPlayerProxy != null){
+			mMediaPlayerProxy.seekTo(pos);
+		}
 	}
 	@Override
 	public boolean isPlaying() {
-		// TODO Auto-generated method stub
-		return false;
+		if (mCurrentState == STATE_PLAYING || mCurrentState == STATE_PAUSED)
+			return true;
+		else
+			return false;
 	}
 	@Override
 	public int getBufferPercentage() {
@@ -216,8 +222,10 @@ public abstract class VideoViewBase extends SurfaceView implements
 	}
 	@Override
 	public boolean canPause() {
-		// TODO Auto-generated method stub
-		return false;
+		if (mCurrentState == STATE_PLAYING)
+			return true;
+		else
+			return false;
 	}
 	@Override
 	public boolean canSeekBackward() {

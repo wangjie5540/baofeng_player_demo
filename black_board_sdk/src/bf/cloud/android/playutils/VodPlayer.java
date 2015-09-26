@@ -8,7 +8,11 @@ public class VodPlayer extends BasePlayer{
 	
 	@Override
 	public void pause() {
-		// TODO Auto-generated method stub
 		super.pause();
+	}
+	
+	@Override
+	public void resume() {
+		super.resume();
 	}
 }

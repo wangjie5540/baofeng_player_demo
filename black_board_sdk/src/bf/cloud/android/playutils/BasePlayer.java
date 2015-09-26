@@ -17,12 +17,13 @@ import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 /**
  * Created by wangtonggui
  */
-public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListener{
+public abstract class BasePlayer implements BFStreamMessageListener,
+		BFP2PListener {
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
 	protected String mToken = "";
 	// 这里的变化必须要对应一个变化mode的消息
-	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE; 
+	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
 	protected VideoFrame mVideoFrame = null;
 	private BFStream mBfStream = null;
 	private String mDataSource = null;
@@ -30,27 +31,29 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	private STATE mState = STATE.IDLE;
 	private boolean isMediaCenterInited = false;
 	private BFVolumeManager mBFVolumeManager = null;
-	
+
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
 	private static final int MSG_STREAM_STOP = 10002;
 	private static final int MSG_STREAM_DESTORY = 10003;
-	
+
 	private static final int MSG_P2P_INIT = 10004;
 	private static final int MSG_P2P_UNINIT = 10005;
-	
+
 	private static final int MSG_UI_ = 20000;
-	
-	private enum STATE{
-		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(-1);
+
+	private enum STATE {
+		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(
+				-1);
 		int state = 0;
-		STATE(int state){
+
+		STATE(int state) {
 			this.state = state;
 		}
 	}
-	
+
 	private Handler mUIHandler = new Handler(new Callback() {
-		
+
 		@Override
 		public boolean handleMessage(Message msg) {
 			Log.d(TAG, "mUIHandler msg");
@@ -61,14 +64,15 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 			return false;
 		}
 	});
-	
-	protected BasePlayer(VideoFrame vf, String settingDataPath){
-		mPlayerHandlerThread = new PlayerHandlerThread(this.toString(), Process.THREAD_PRIORITY_FOREGROUND);
+
+	protected BasePlayer(VideoFrame vf, String settingDataPath) {
+		mPlayerHandlerThread = new PlayerHandlerThread(this.toString(),
+				Process.THREAD_PRIORITY_FOREGROUND);
 		mPlayerHandlerThread.start();
-		if (vf == null){
+		if (vf == null) {
 			throw new NullPointerException("VideoFrame is null");
 		}
-		if (settingDataPath == null || settingDataPath.length() == 0){
+		if (settingDataPath == null || settingDataPath.length() == 0) {
 			throw new NullPointerException("settingDataPath is invailid");
 		}
 		mVideoFrame = vf;
@@ -76,23 +80,31 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 		mBfStream = new BFStream("/sdcard", NetState.NET_WIFI_REACHABLE);
 		mBfStream.registerStreamListener(this);
 		mBfStream.registerP2PListener(this);
-		mBFVolumeManager = BFVolumeManager.getInstance(mVideoFrame.getContext());
+		mBFVolumeManager = BFVolumeManager
+				.getInstance(mVideoFrame.getContext());
 	}
 
 	/**
 	 * 设置播放数据源
 	 * 
-	 * @param url 播放数据源 (如："servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0")
+	 * @param url
+	 *            播放数据源 (如：
+	 *            "servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0"
+	 *            )
 	 */
 	public void setDataSource(String url) {
 		mDataSource = url;
 	}
-	
+
 	/**
 	 * 设置播放数据源
 	 * 
-	 * @param url 播放数据源 (如："servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0")
-	 * @param playToken 播放token
+	 * @param url
+	 *            播放数据源 (如：
+	 *            "servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0"
+	 *            )
+	 * @param playToken
+	 *            播放token
 	 */
 	public void setDataSource(String url, String playToken) {
 		mDataSource = url;
@@ -140,14 +152,15 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 */
 	public void start() {
 		Log.d(TAG, "start");
-		mVideoFrame.updateViews();
 		mVideoView = mVideoFrame.getVideoView();
-		if (!isMediaCenterInited && mState == STATE.IDLE){
+		if (!isMediaCenterInited && mState == STATE.IDLE) {
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
-		}else if (isMediaCenterInited){
+		} else if (isMediaCenterInited) {
 			Log.d(TAG, "start isMediaCenterInited:" + isMediaCenterInited);
-			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
-			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_CREATE);
+			mPlayerHandlerThread.playerHandler
+					.sendEmptyMessage(MSG_STREAM_DESTORY);
+			mPlayerHandlerThread.playerHandler
+					.sendEmptyMessage(MSG_STREAM_CREATE);
 		}
 		mState = STATE.PREPARING;
 	}
@@ -157,6 +170,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 */
 	public void stop() {
 		mVideoView.stop();
+		mVideoFrame.updateViews();
 	}
 
 	/**
@@ -164,26 +178,38 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	 */
 	protected void pause() {
 		Log.d(TAG, "pause");
-		if (mState == STATE.PLAYING){
+		if (mState == STATE.PLAYING) {
 			mVideoView.pause();
 			mState = STATE.PAUSED;
-		}else{
+		} else {
 			Log.d(TAG, "Player state is not PLAYING");
 		}
 	}
 
-	 /**
+	/**
 	 * 继续播放
 	 */
-	 public void resume() {
-		 Log.d(TAG, "resume");
-		 if (mState == STATE.PAUSED){
-			 mVideoView.resume();
-			 mState = STATE.PLAYING;
-		 }else{
-			 Log.d(TAG, "Player state is not PAUSED");
-		 }
-	 }
+	protected void resume() {
+		Log.d(TAG, "resume");
+		if (mState == STATE.PAUSED) {
+			mVideoView.resume();
+			mState = STATE.PLAYING;
+		} else {
+			Log.d(TAG, "Player state is not PAUSED");
+		}
+	}
+	
+	/**
+     * 拖动到指定播放点
+     */
+	protected void seekTo(int ms) {
+    	Log.d(TAG, "seekTo ms:" + ms);
+    	if (mState == STATE.PAUSED || mState == STATE.PLAYING){
+    		mVideoView.seekTo(ms);
+    	} else {
+    		Log.d(TAG, "Player state is not PAUSED or PLAYING");
+    	}
+    }
 
 	/**
 	 * 增加音量
@@ -220,8 +246,9 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 
 	@Override
 	public void onMessage(int type, int data, int error) {
-		Log.d(TAG, "onMessage type:" + type + ",data:" + data + ",error:" + error);
-		if (data == BFStreamMessageListener.MSG_TYPE_ERROR){
+		Log.d(TAG, "onMessage type:" + type + ",data:" + data + ",error:"
+				+ error);
+		if (data == BFStreamMessageListener.MSG_TYPE_ERROR) {
 			mState = STATE.ERROR;
 			// TODO handle the errors
 		}
@@ -243,28 +270,29 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	@Override
 	public void onMediaCenterInitFailed(int error) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	/**
 	 * 取得当前音量
 	 */
-	 public int getCurrentVolume() {
-		 return mBFVolumeManager.getCurrentVolume();
-	 }
+	public int getCurrentVolume() {
+		return mBFVolumeManager.getCurrentVolume();
+	}
 
 	/**
 	 * 取得最大音量
 	 */
-	 public int getMaxVolume() {
-		 return mBFVolumeManager.getMaxVolume();
-	 }
+	public int getMaxVolume() {
+		return mBFVolumeManager.getMaxVolume();
+	}
 
 	/**
 	 * 取得当前的解码模式
 	 */
-	// public DecodeMode getDecodeMode() {
-	// }
+	public DecodeMode getDecodeMode() {
+		return mDecodeMode;
+	}
 
 	/**
 	 * 取得当前播放位置 (毫秒)
@@ -298,44 +326,44 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 	// mPlayerController.unregisterPlayerVideoEventListener(eventListener);
 	// }
 	// }
-	
-	private class PlayerHandlerThread extends HandlerThread{
+
+	private class PlayerHandlerThread extends HandlerThread {
 		private Handler playerHandler = null;
 		private Handler.Callback callback = new Callback() {
-			
+
 			@Override
 			public boolean handleMessage(Message msg) {
 				Log.d(TAG, "PlayerHandlerThread msg.what = " + msg.what);
 				switch (msg.what) {
-				case MSG_P2P_INIT:{
+				case MSG_P2P_INIT: {
 					BFStream.startP2p();
 					break;
 				}
-				case MSG_P2P_UNINIT:{
+				case MSG_P2P_UNINIT: {
 					BFStream.stopP2P();
 					break;
 				}
-				case MSG_STREAM_START:{
+				case MSG_STREAM_START: {
 					int ret = mBfStream.startStream();
 					if (ret < 0)
 						Log.d(TAG, "startStream error");
 					mUIHandler.sendEmptyMessage(0);
 					break;
 				}
-				case MSG_STREAM_CREATE:{
-					//这个时候要保证p2p已经启动，创建stream
+				case MSG_STREAM_CREATE: {
+					// 这个时候要保证p2p已经启动，创建stream
 					int ret = mBfStream.createStream(mDataSource, mToken, 0);
 					if (ret < 0)
 						Log.d(TAG, "createStream error");
 					break;
 				}
-				case MSG_STREAM_STOP:{
+				case MSG_STREAM_STOP: {
 					int ret = mBfStream.closeStream();
 					if (ret < 0)
 						Log.d(TAG, "closeStream error");
 					break;
 				}
-				case MSG_STREAM_DESTORY:{
+				case MSG_STREAM_DESTORY: {
 					int ret = mBfStream.destoryStream();
 					if (ret < 0)
 						Log.d(TAG, "destoryStream error");
@@ -352,14 +380,14 @@ public abstract class BasePlayer implements BFStreamMessageListener,BFP2PListene
 			super(name, priority);
 			Log.d(TAG, "new PlayerHandlerThread name:" + name);
 		}
-		
+
 		@Override
 		protected void onLooperPrepared() {
 			Log.d(TAG, "thread " + getName() + " onLooperPrepared");
 			playerHandler = new Handler(getLooper(), callback);
 			super.onLooperPrepared();
 		}
-		
+
 	}
 
 }

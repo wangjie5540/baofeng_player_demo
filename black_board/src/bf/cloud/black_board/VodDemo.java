@@ -15,6 +15,7 @@ public class VodDemo extends Activity{
 	private VodPlayer mPlayer = null;
 	private VideoFrame mVideoFrame = null;
 	private Button btStart = null;
+	private Button btStop = null;
 	private Button btPause = null;
 	private Button btResume = null;
 	private Button btIncVolume = null;
@@ -37,9 +38,17 @@ public class VodDemo extends Activity{
 			@Override
 			public void onClick(View v) {
 				Log.d(TAG, "Start onClick");
-				mPlayer.setDataSource(mUrls);
 				mPlayer.stop();
+				mPlayer.setDataSource(mUrls);
 				mPlayer.start();
+			}
+		});
+		btStop = (Button)findViewById(R.id.stop);
+		btStop.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPlayer.stop();
 			}
 		});
 		btPause = (Button)findViewById(R.id.pause);
