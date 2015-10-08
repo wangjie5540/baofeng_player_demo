@@ -81,9 +81,9 @@ public class VideoFrame extends FrameLayout {
 		}
 			
 		if (flag)
-			mPlaceHolder.setVisibility(View.INVISIBLE);
-		else
 			mPlaceHolder.setVisibility(View.VISIBLE);
+		else
+			mPlaceHolder.setVisibility(View.INVISIBLE);
 	}
 
 }

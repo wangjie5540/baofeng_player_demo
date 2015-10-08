@@ -22,5 +22,6 @@ public abstract class MediaPlayerProxy {
 	public abstract void prepare();
 	public abstract void setCurrentState(int state);
 	public abstract void setDisplay(SurfaceHolder sh);
+	public abstract void clearDisplay();
 	public abstract void seekTo(int pos);
 }

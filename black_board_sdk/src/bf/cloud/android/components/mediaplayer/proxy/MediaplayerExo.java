@@ -54,7 +54,6 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	@Override
 	public void stop() {
 		if (mPlayerInitilized){
-			mPlayer.blockingClearSurface();
 			mPlayer.release();
 			mPlayer = null;
 			mPlayerInitilized = false;
@@ -130,7 +129,11 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void setDisplay(SurfaceHolder sh) {
+		Log.d(TAG, "setDisplay mPlayer:" + mPlayer);
 		mSurface  = sh.getSurface();
+		if (mPlayer != null){
+			mPlayer.setSurface(mSurface);
+		}
 	}
 	
 	public interface SizeChangedListener{
@@ -143,6 +146,12 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	
 	public void unregistSizeChangedListener(){
 		mSizeChangedListener = null;
+	}
+
+	@Override
+	public void clearDisplay() {
+		if (mPlayer != null)
+			mPlayer.blockingClearSurface();
 	}
 
 }

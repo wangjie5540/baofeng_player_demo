@@ -130,8 +130,11 @@ public abstract class VideoViewBase extends SurfaceView implements
 	@Override
 	public void surfaceChanged(SurfaceHolder holder, int format, int width,
 			int height) {
-		Log.d(TAG, "surfaceChanged");
+		Log.d(TAG, "surfaceChanged mMediaPlayerProxy:" + mMediaPlayerProxy);
 		mSurfaceHolder = holder;
+		if (mMediaPlayerProxy != null){
+			mMediaPlayerProxy.setDisplay(mSurfaceHolder);
+		}
 //		mSurfaceWidth = width;
 //        mSurfaceHeight = height;
 //        boolean isValidState =  (mTargetState == STATE_PLAYING);
@@ -156,9 +159,9 @@ public abstract class VideoViewBase extends SurfaceView implements
 	public void surfaceDestroyed(SurfaceHolder holder) {
 		Log.d(TAG, "surfaceDestroyed");
 		// after we return from this we can't use the surface any more
+		if (mMediaPlayerProxy != null)
+        	mMediaPlayerProxy.clearDisplay();
         mSurfaceHolder = null;
-//        if (mMediaController != null) mMediaController.hide();
-        release(true);
 	}
 	
 	
@@ -177,6 +180,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	public void stop() {
 		if (mMediaPlayerProxy != null)
 			mMediaPlayerProxy.stop();
+		release(false);
 		mCurrentState = STATE_IDLE;
 	}
 	

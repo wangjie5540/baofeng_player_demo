@@ -29,7 +29,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private String mDataSource = null;
 	private PlayerHandlerThread mPlayerHandlerThread = null;
 	private STATE mState = STATE.IDLE;
-	private boolean isMediaCenterInited = false;
+	private static boolean isMediaCenterInited = false;
 	private BFVolumeManager mBFVolumeManager = null;
 
 	private static final int MSG_STREAM_CREATE = 10000;
@@ -151,7 +151,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	 * 开始播放
 	 */
 	public void start() {
-		Log.d(TAG, "start");
+		Log.d(TAG, "start isMediaCenterInited:" + isMediaCenterInited + "/mState:" + mState);
 		mVideoView = mVideoFrame.getVideoView();
 		if (!isMediaCenterInited && mState == STATE.IDLE) {
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
@@ -169,8 +169,12 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	 * 停止播放
 	 */
 	public void stop() {
+		Log.d(TAG, "stop");
+		mPlayerHandlerThread.playerHandler
+			.sendEmptyMessage(MSG_STREAM_DESTORY);
 		mVideoView.stop();
 		mVideoFrame.updateViews();
+		mState = STATE.IDLE;
 	}
 
 	/**

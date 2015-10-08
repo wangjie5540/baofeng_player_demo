@@ -103,4 +103,22 @@ public class VodDemo extends Activity{
 		});
 		mPlayer = new VodPlayer(mVideoFrame, "/sdcard/");
 	}
+	
+	@Override
+	protected void onPause() {
+		mPlayer.pause();
+		super.onPause();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		mPlayer.stop();
+		super.onDestroy();
+	}
+	
+	@Override
+	protected void onStart() {
+		mPlayer.resume();
+		super.onStart();
+	}
 }

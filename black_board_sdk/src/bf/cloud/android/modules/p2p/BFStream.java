@@ -258,7 +258,7 @@ public final class BFStream {
 	 * 关闭流
 	 */
 	public int closeStream() {
-		Log.d(TAG, "closeStream");
+		Log.d(TAG, "closeStream mMediaHandle:" + mMediaHandle);
 		int ret = -1;
 		if (MediaCenter.INVALID_MEDIA_HANDLE != mMediaHandle) {
 			ret = mMediaCenter.StopStreamService(mMediaHandle);

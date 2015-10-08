@@ -20,7 +20,7 @@ public class VideoViewExo extends VideoViewBase{
 			Log.d(TAG, "handleMessage ");
 			if (mVideoFrame == null)
 				mVideoFrame = (VideoFrame) getParent();
-			mVideoFrame.showPlaceHolder(true);
+			mVideoFrame.showPlaceHolder(false);
 			requestLayout();
 			return false;
 		}
@@ -62,7 +62,7 @@ public class VideoViewExo extends VideoViewBase{
 		});
     	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
     	mVideoFrame = (VideoFrame) getParent();
-    	mVideoFrame.showPlaceHolder(false);
+    	mVideoFrame.showPlaceHolder(true);
     	mMediaPlayerProxy.prepare();
     	mCurrentState = STATE_PREPARED;
     	return 0;
