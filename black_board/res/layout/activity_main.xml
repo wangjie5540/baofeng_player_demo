@@ -2,19 +2,22 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
     tools:context="bf.cloud.black_board.MainActivity" >
-	<Button 
-	    android:id="@+id/stream_demo"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:text="StreamDemo"
-	    />
-	<Button 
-	    android:id="@+id/black_board_demo"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:text="blackBoardDemo"
-	    />
+
+    <Button
+        android:id="@+id/stream_demo"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="StreamDemo" />
+
+    <Button
+        android:id="@+id/black_board_demo"
+        android:layout_width="200dp"
+        android:layout_marginTop="20dp"
+        android:layout_height="wrap_content"
+        android:text="blackBoardDemo" />
 
 </LinearLayout>

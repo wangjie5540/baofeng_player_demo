@@ -2,8 +2,10 @@ package bf.cloud.android.components.mediaplayer;
 
 
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy;
+import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
 import android.media.AudioManager;
+import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -15,6 +17,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	// All the stuff we need for playing and showing a video
     protected SurfaceHolder mSurfaceHolder = null;
     protected MediaPlayerProxy mMediaPlayerProxy = null;
+    protected VideoFrame mVideoFrame = null;
     protected int         mAudioSession;
     protected int         mVideoWidth;
     protected int         mVideoHeight;
@@ -64,6 +67,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	
 	private void initVideoView() {
+		mVideoFrame = (VideoFrame) getParent();
 		getHolder().addCallback(this);
 		setFocusable(true);
 		setFocusableInTouchMode(true);

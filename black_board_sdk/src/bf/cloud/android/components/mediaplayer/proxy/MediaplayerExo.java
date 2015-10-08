@@ -12,6 +12,7 @@ import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuild
 public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.Listener{
 	private ExoVideoPlayer mPlayer = null;
 	private Surface mSurface = null;
+	private SizeChangedListener mSizeChangedListener = null;
 
 	public MediaplayerExo(String url) {
 		Log.d(TAG, "new MediaplayerExo");
@@ -113,8 +114,12 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	@Override
 	public void onVideoSizeChanged(int width, int height,
 			float pixelWidthHeightRatio) {
-		// TODO Auto-generated method stub
-		
+		Log.d(TAG, "onVideoSizeChanged width:" + width 
+											   + "/height:" + height 
+											   + "/ratio:" + pixelWidthHeightRatio);
+		if (mSizeChangedListener != null){
+			mSizeChangedListener.onSizeChanged(pixelWidthHeightRatio);
+		}
 	}
 
 	@Override
@@ -126,6 +131,18 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	@Override
 	public void setDisplay(SurfaceHolder sh) {
 		mSurface  = sh.getSurface();
+	}
+	
+	public interface SizeChangedListener{
+		void onSizeChanged(float ratio);
+	}
+	
+	public void registSizeChangedListener(SizeChangedListener scl){
+		mSizeChangedListener = scl;
+	}
+	
+	public void unregistSizeChangedListener(){
+		mSizeChangedListener = null;
 	}
 
 }

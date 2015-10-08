@@ -1,5 +1,6 @@
 package bf.cloud.android.components.mediaplayer.proxy;
 
+import bf.cloud.android.components.mediaplayer.proxy.MediaplayerExo.SizeChangedListener;
 import android.view.SurfaceHolder;
 
 /**
