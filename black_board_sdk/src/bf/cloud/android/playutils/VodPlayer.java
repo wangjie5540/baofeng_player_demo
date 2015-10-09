@@ -15,4 +15,9 @@ public class VodPlayer extends BasePlayer{
 	public void resume() {
 		super.resume();
 	}
+	
+	@Override
+	public void seekTo(int ms) {
+		super.seekTo(ms);
+	}
 }

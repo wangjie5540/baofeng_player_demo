@@ -18,6 +18,7 @@ public class VodDemo extends Activity{
 	private Button btStop = null;
 	private Button btPause = null;
 	private Button btResume = null;
+	private Button btSeekTo = null;
 	private Button btIncVolume = null;
 	private Button btDecVolume = null;
 	private Button btGetCurVolume = null;
@@ -65,6 +66,14 @@ public class VodDemo extends Activity{
 			@Override
 			public void onClick(View v) {
 				mPlayer.resume();
+			}
+		});
+		btSeekTo = (Button)findViewById(R.id.seekto);
+		btSeekTo.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mPlayer.seekTo(30000);
 			}
 		});
 		btIncVolume = (Button)findViewById(R.id.inc_volume);

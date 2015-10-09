@@ -5,6 +5,7 @@ import android.os.Handler.Callback;
 import android.os.HandlerThread;
 import android.os.Message;
 import android.os.Process;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
@@ -18,7 +19,7 @@ import bf.cloud.android.modules.p2p.MediaCenter.NetState;
  * Created by wangtonggui
  */
 public abstract class BasePlayer implements BFStreamMessageListener,
-		BFP2PListener{
+		BFP2PListener {
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
 	protected String mToken = "";
@@ -31,6 +32,10 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private STATE mState = STATE.IDLE;
 	private static boolean isMediaCenterInited = false;
 	private BFVolumeManager mBFVolumeManager = null;
+	private String mVideoName = null;
+	private PlayErrorListener mPlayErrorListener = null;
+	private PlayEventListener mPlayEventListener = null;
+	private boolean mLowLatencyFlag = false;
 
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
@@ -43,7 +48,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private static final int MSG_UI_ = 20000;
 
 	private enum STATE {
-		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(-1);
+		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(
+				-1);
 		int state = 0;
 
 		STATE(int state) {
@@ -86,7 +92,10 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	/**
 	 * 设置播放数据源
 	 * 
-	 * @param url 播放数据源 (如："servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0")
+	 * @param url
+	 *            播放数据源 (如：
+	 *            "servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0"
+	 *            )
 	 */
 	public void setDataSource(String url) {
 		mDataSource = url;
@@ -108,16 +117,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	}
 
 	/**
-	 * 设置用于显示界面上的视频名称 (可选)
-	 */
-	// public void setVideoName(String videoName) {
-	// if (mPlayerFragment != null) {
-	// mPlayerFragment.setVideoName(videoName);
-	// }
-	// }
-
-	/**
-	 * 设置用于存储信息的本地目录(这个接口没啥用)
+	 * 设置用于存储信息的本地目录(此接口已废弃)
 	 */
 	@Deprecated
 	public void setDataPath(String dataPath) {
@@ -135,19 +135,11 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	}
 
 	/**
-	 * 设置播放错误事件监听器
-	 */
-	// public void setPlayErrorListener(PlayErrorListener listener) {
-	// if (mPlayerFragment != null) {
-	// mPlayerFragment.setPlayErrorListener(listener);
-	// }
-	// }
-
-	/**
 	 * 开始播放
 	 */
 	public void start() {
-		Log.d(TAG, "start isMediaCenterInited:" + isMediaCenterInited + "/mState:" + mState);
+		Log.d(TAG, "start isMediaCenterInited:" + isMediaCenterInited
+				+ "/mState:" + mState);
 		mVideoView = mVideoFrame.getVideoView();
 		if (!isMediaCenterInited && mState == STATE.IDLE) {
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
@@ -166,8 +158,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	 */
 	public void stop() {
 		Log.d(TAG, "stop");
-		mPlayerHandlerThread.playerHandler
-			.sendEmptyMessage(MSG_STREAM_DESTORY);
+		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
 		mVideoView.stop();
 		mVideoFrame.updateViews();
 		mState = STATE.IDLE;
@@ -198,18 +189,18 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 			Log.d(TAG, "Player state is not PAUSED");
 		}
 	}
-	
+
 	/**
-     * 拖动到指定播放点
-     */
+	 * 拖动到指定播放点
+	 */
 	protected void seekTo(int ms) {
-    	Log.d(TAG, "seekTo ms:" + ms);
-    	if (mState == STATE.PAUSED || mState == STATE.PLAYING){
-    		mVideoView.seekTo(ms);
-    	} else {
-    		Log.d(TAG, "Player state is not PAUSED or PLAYING");
-    	}
-    }
+		Log.d(TAG, "seekTo ms:" + ms);
+		if (mState == STATE.PAUSED || mState == STATE.PLAYING) {
+			mVideoView.seekTo(ms);
+		} else {
+			Log.d(TAG, "Player state is not PAUSED or PLAYING");
+		}
+	}
 
 	/**
 	 * 增加音量
@@ -230,18 +221,6 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	 */
 	public void setVolume(int value) {
 		mBFVolumeManager.setVolume(value);
-	}
-
-	/**
-	 * 设置是否全屏
-	 */
-	public void setFullscreen(boolean fullscreen) {
-	}
-
-	/**
-	 * 设置移动设备横屏时是否自动全屏
-	 */
-	public void setAutoFullscreen(boolean autoFullscreen) {
 	}
 
 	@Override
@@ -269,8 +248,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 
 	@Override
 	public void onMediaCenterInitFailed(int error) {
-		// TODO Auto-generated method stub
-
+		
 	}
 
 	/**
@@ -297,35 +275,79 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	/**
 	 * 取得当前播放位置 (毫秒)
 	 */
-	// public int getCurrentPosition() {
-	// }
+	protected int getCurrentPosition() {
+		return mVideoView.getCurrentPosition();
+	}
 
 	/**
-	 * 取得当前是否自动全屏
+	 * 
+	 * @return String VideoName
 	 */
-	// public boolean getAutoFullscreen() {
-	// if (mPlayerController != null) {
-	// return mPlayerController.getAutoFullscreen();
-	// } else {
-	// return true;
-	// }
-	// }
+	@Nullable
+	protected String getVideoName() {
+		return mVideoName;
+	}
 
-	// public void
-	// registerPlayEvent(PlayerController.PlayerViewControl.PlayerControllerListener
-	// eventListener) {
-	// if (mPlayerController != null) {
-	// mPlayerController.registerPlayerVideoEventListener(eventListener);
-	// }
-	// }
+	/**
+	 * 设置播放错误监听器
+	 * 
+	 * @param listener
+	 */
+	public void setPlayErrorListener(PlayErrorListener listener) {
+		mPlayErrorListener = listener;
+	}
 
-	// public void
-	// unregisterPlayEvent(PlayerController.PlayerViewControl.PlayerControllerListener
-	// eventListener) {
-	// if (mPlayerController != null) {
-	// mPlayerController.unregisterPlayerVideoEventListener(eventListener);
-	// }
-	// }
+	/**
+	 * 注册事件监听器
+	 */
+	public void registPlayEventListener(PlayEventListener listener) {
+		mPlayEventListener = listener;
+	}
+
+	/**
+	 * 注销事件监听器
+	 */
+	public void unregistPlayEventListener(){
+		mPlayEventListener = null;
+	}
+	
+	/**
+	 * 设置视频播放清晰度
+	 */
+	protected void setDefinition() {
+		
+	}
+	
+	/**
+	 * 取得当前视频清晰度
+	 */
+	protected int getCurrentDefinition() {
+		return 0;
+	}
+	
+	/**
+	 * 取得片长 (毫秒)
+	 */
+	protected int getDuration() {
+		return mVideoView.getDuration();
+	}
+	
+	/**
+	 * 设置直播低延时
+	 */
+	protected void setLowLatency(boolean lowLatency) {
+		mLowLatencyFlag = lowLatency;
+		if (mLowLatencyFlag && !mDataSource.contains("&livelowlatency=1")){
+			mDataSource += "&livelowlatency=1";
+		}
+	}
+	
+	/**
+	 * 获取直播是否低延时
+	 */
+	protected boolean getLowLatency() {
+		return mLowLatencyFlag;
+	}
 
 	private class PlayerHandlerThread extends HandlerThread {
 		private Handler playerHandler = null;
@@ -388,6 +410,14 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 			super.onLooperPrepared();
 		}
 
+	}
+	
+	public interface PlayErrorListener{
+		void onError(int errorCode);
+	}
+	
+	public interface PlayEventListener{
+		void onEvent(int eventCode);
 	}
 
 }
