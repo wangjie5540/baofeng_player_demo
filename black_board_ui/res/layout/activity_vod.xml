@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <bf.cloud.black_board_ui.VideoFrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="300dp" >
+
+        <bf.cloud.android.playutils.VideoFrame
+            android:id="@+id/vod_frame"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+        </bf.cloud.android.playutils.VideoFrame>
+    </bf.cloud.black_board_ui.VideoFrameLayout>
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:text="start" />
+
+</LinearLayout>
