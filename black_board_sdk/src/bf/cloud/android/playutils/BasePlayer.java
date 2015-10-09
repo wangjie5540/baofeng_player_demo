@@ -18,7 +18,7 @@ import bf.cloud.android.modules.p2p.MediaCenter.NetState;
  * Created by wangtonggui
  */
 public abstract class BasePlayer implements BFStreamMessageListener,
-		BFP2PListener {
+		BFP2PListener{
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
 	protected String mToken = "";
@@ -43,8 +43,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private static final int MSG_UI_ = 20000;
 
 	private enum STATE {
-		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(
-				-1);
+		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(-1);
 		int state = 0;
 
 		STATE(int state) {
@@ -87,10 +86,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	/**
 	 * 设置播放数据源
 	 * 
-	 * @param url
-	 *            播放数据源 (如：
-	 *            "servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0"
-	 *            )
+	 * @param url 播放数据源 (如："servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0")
 	 */
 	public void setDataSource(String url) {
 		mDataSource = url;

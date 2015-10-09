@@ -60,6 +60,8 @@ public class VideoViewExo extends VideoViewBase{
 				mHandler.sendEmptyMessage(0);
 			}
 		});
+    	if (mMediaPlayerStateChangedListener != null)
+    		mMediaPlayerProxy.registStateChangedListener(mMediaPlayerStateChangedListener);
     	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
     	mVideoFrame = (VideoFrame) getParent();
     	mVideoFrame.showPlaceHolder(true);

@@ -2,6 +2,7 @@ package bf.cloud.android.components.mediaplayer;
 
 
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy;
+import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChangedListener;
 import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
 import android.media.AudioManager;
@@ -17,6 +18,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	// All the stuff we need for playing and showing a video
     protected SurfaceHolder mSurfaceHolder = null;
     protected MediaPlayerProxy mMediaPlayerProxy = null;
+    protected StateChangedListener mMediaPlayerStateChangedListener = null;
     protected VideoFrame mVideoFrame = null;
     protected int         mAudioSession;
     protected int         mVideoWidth;
@@ -109,6 +111,7 @@ public abstract class VideoViewBase extends SurfaceView implements
         if (mMediaPlayerProxy != null) {
 //        	mMediaPlayerProxy.reset();
 //        	mMediaPlayerProxy.release();
+        	mMediaPlayerProxy.unregistStateChangedListener();
         	mMediaPlayerProxy = null;
 //            mPendingSubtitleTracks.clear();
             mCurrentState = STATE_IDLE;
@@ -244,5 +247,13 @@ public abstract class VideoViewBase extends SurfaceView implements
 	public boolean canSeekForward() {
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public void registMediaPlayerStateChangedListener(StateChangedListener scl){
+		mMediaPlayerStateChangedListener =  scl;
+	}
+
+	public void unregistMediaPlayerStateChangedListener(){
+		mMediaPlayerStateChangedListener = null;
 	}
 }

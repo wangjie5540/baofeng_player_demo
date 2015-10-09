@@ -85,18 +85,25 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 		switch (playbackState) {
 		case ExoPlayer.STATE_PREPARING:
 //			doStatePreparing();
+			if (mStateChangedListener != null)
+				mStateChangedListener.onStatePreparing();
 			break;
 		
 		case ExoPlayer.STATE_BUFFERING:
 //			doStateBuffering();
+			if (mStateChangedListener != null)
+				mStateChangedListener.onStateBuffering();
 			break;
 
 		case ExoPlayer.STATE_READY:
-			
+			if (mStateChangedListener != null)
+				mStateChangedListener.onStateReady();
 			break;
 		
 		case ExoPlayer.STATE_ENDED:
 //			doStateEnded();
+			if (mStateChangedListener != null)
+				mStateChangedListener.onStateEnded();
 			break;
 
 		default:
@@ -152,6 +159,12 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	public void clearDisplay() {
 		if (mPlayer != null)
 			mPlayer.blockingClearSurface();
+	}
+
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
