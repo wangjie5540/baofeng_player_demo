@@ -7,7 +7,7 @@
     <bf.cloud.android.playutils.VideoFrame
         android:id="@+id/video_frame"
         android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        android:layout_height="300dp" />
 
     <ScrollView
         android:layout_width="match_parent"

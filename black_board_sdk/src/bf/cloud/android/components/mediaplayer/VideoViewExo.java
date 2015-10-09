@@ -80,19 +80,12 @@ public class VideoViewExo extends VideoViewBase{
 		int height = getMeasuredHeight();
 		Log.d(TAG, "onMeasure width:" + width + "/height:" + height);
 		if (mVideoAspectRatio  != 0) {
-//			float viewAspectRatio = (float) width / height;
-//			float aspectDeformation = mVideoAspectRatio / viewAspectRatio - 1;
-//			if (aspectDeformation > MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
-//				height = (int) (width / mVideoAspectRatio);
-//			} else if (aspectDeformation < -MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
-//				width = (int) (height * mVideoAspectRatio);
-//			}
-			if (mVideoAspectRatio < 1){
-				width = (int)(width * mVideoAspectRatio);
-			}else if (mVideoAspectRatio > 1){
-				
-			}else{
-				
+			float viewAspectRatio = (float) width / height;
+			float aspectDeformation = mVideoAspectRatio / viewAspectRatio - 1;
+			if (aspectDeformation > MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
+				height = (int) (width / mVideoAspectRatio);
+			} else if (aspectDeformation < -MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {
+				width = (int) (height * mVideoAspectRatio);
 			}
 		}
 		setMeasuredDimension(width, height);

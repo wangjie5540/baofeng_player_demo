@@ -8,3 +8,7 @@
 /black_board/.settings/org.eclipse.core.resources.prefs
 /black_board_sdk/.settings/org.eclipse.core.resources.prefs
 /vod/BfCloudPlayerDemo/bin
+
+/black_board_ui/bin
+/black_board_ui/gen
+/black_board_ui/*.classpath

@@ -123,8 +123,9 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 		Log.d(TAG, "onVideoSizeChanged width:" + width 
 											   + "/height:" + height 
 											   + "/ratio:" + pixelWidthHeightRatio);
+		
 		if (mSizeChangedListener != null){
-			mSizeChangedListener.onSizeChanged(pixelWidthHeightRatio);
+			mSizeChangedListener.onSizeChanged(height == 0 ? 1 : (width * pixelWidthHeightRatio) / height);
 		}
 	}
 
