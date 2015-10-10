@@ -1,5 +1,7 @@
 package bf.cloud.android.playutils;
 
+import android.content.Context;
+import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.HandlerThread;
@@ -16,13 +18,16 @@ import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
 import bf.cloud.android.modules.p2p.MediaCenter;
 import bf.cloud.android.modules.p2p.MediaCenter.NetState;
+import bf.cloud.android.utils.BFYNetworkUtil;
 
 /**
  * Created by wangtonggui
  */
 public abstract class BasePlayer implements BFStreamMessageListener,
 		BFP2PListener, MediaPlayerErrorListener {
-	public final String TAG = BasePlayer.class.getSimpleName();
+	private final String TAG = BasePlayer.class.getSimpleName();
+	
+	private Context mContext = null;
 	private VideoViewBase mVideoView = null;
 	protected String mToken = "";
 	// 这里的变化必须要对应一个变化mode的消息
@@ -38,6 +43,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private PlayErrorListener mPlayErrorListener = null;
 	private PlayEventListener mPlayEventListener = null;
 	private boolean mLowLatencyFlag = false;
+	private boolean mForceStartFlag = false;
 
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
@@ -83,12 +89,12 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 			throw new NullPointerException("settingDataPath is invailid");
 		}
 		mVideoFrame = vf;
+		mContext = mVideoFrame.getContext();
 		mVideoView = mVideoFrame.getVideoView();
-		mBfStream = new BFStream("/sdcard", NetState.NET_WIFI_REACHABLE);
+		mBfStream = new BFStream("/sdcard");
 		mBfStream.registerStreamListener(this);
 		mBfStream.registerP2PListener(this);
-		mBFVolumeManager = BFVolumeManager
-				.getInstance(mVideoFrame.getContext());
+		mBFVolumeManager = BFVolumeManager.getInstance(mContext);
 	}
 
 	/**
@@ -142,6 +148,15 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	public void start() {
 		Log.d(TAG, "start isMediaCenterInited:" + isMediaCenterInited
 				+ "/mState:" + mState);
+		synchronized (BasePlayer.class) {
+			int type = detectNetwork(mContext, mForceStartFlag);
+			if (type == NetState.NET_NOT_REACHABLE){
+				Log.d(TAG, "network is not usable");
+				if (mPlayErrorListener != null)
+					mPlayErrorListener.onError(BFYConst.NO_NETWORK);
+				return;
+			}
+		}
 		mVideoView = mVideoFrame.getVideoView();
 		if (!isMediaCenterInited && mState == STATE.IDLE) {
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
@@ -153,6 +168,31 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 					.sendEmptyMessage(MSG_STREAM_CREATE);
 		}
 		mState = STATE.PREPARING;
+	}
+
+	private int detectNetwork(Context c, boolean forceFlag) {
+		if (!BFYNetworkUtil.hasNetwork(c)){
+			BFStream.setNetState(NetState.NET_NOT_REACHABLE);
+			return BFYNetworkUtil.NETWORK_CONNECTION_NONE;
+		}
+		
+		if (BFYNetworkUtil.isWifiEnabled(c)){
+			BFStream.setNetState(NetState.NET_WIFI_REACHABLE);
+			return BFYNetworkUtil.NETWORK_CONNECTION_WIFI;
+		}else if (BFYNetworkUtil.isEthernetEnabled(c)){
+			BFStream.setNetState(NetState.NET_WWAN_REACHABLE);
+			return BFYNetworkUtil.NETWORK_CONNECTION_ETHERNET;
+		} else if (BFYNetworkUtil.isMobileEnabled(c)){
+			if (forceFlag)
+				BFStream.setNetState(NetState.NET_WWAN_REACHABLE);
+			else{
+				if (mPlayErrorListener != null)
+					mPlayErrorListener.onError(BFYConst.MOBILE_NO_PLAY);
+			}
+				
+			return BFYNetworkUtil.NETWORK_CONNECTION_MOBILE;
+		}
+		return BFYNetworkUtil.NETWORK_CONNECTION_NONE;
 	}
 
 	/**
@@ -500,5 +540,13 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		if (mPlayErrorListener != null)
 			mPlayErrorListener.onError(BFYConst.EXOPLAYER_DECODE_FAILED);
 	}
-
+	
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+	}
+	
+	public void setForceStartFlag(boolean flag){
+		mForceStartFlag = flag;
+	}
 }

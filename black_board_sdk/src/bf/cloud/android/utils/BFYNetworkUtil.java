@@ -5,9 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import bf.cloud.android.base.BFYEventBus;
-import bf.cloud.android.components.BFYNetworkStatusData;
-import bf.cloud.android.events.BFYNetworkStatusReportEvent;
 import bf.cloud.android.modules.log.BFYLog;
 
 /**
@@ -16,8 +13,14 @@ import bf.cloud.android.modules.log.BFYLog;
 
 public class BFYNetworkUtil extends BroadcastReceiver{
 	
-    private final static String TAG = "BFYNetworkUtil";
-    private static int mCode = BFYNetworkStatusData.NETWORK_CONNECTION_NONE;
+    private final static String TAG = BFYNetworkUtil.class.getSimpleName();
+    
+    public static final int NETWORK_CONNECTION_NONE = 4;
+    public static final int NETWORK_CONNECTION_ETHERNET = 3;
+    public static final int NETWORK_CONNECTION_MOBILE = 2;
+    public static final int NETWORK_CONNECTION_WIFI = 1;
+    
+    private static int mCode = NETWORK_CONNECTION_NONE;
     private static BFYNetworkUtil mInstance = null;
     
     public static BFYNetworkUtil getInstance() {
@@ -30,11 +33,11 @@ public class BFYNetworkUtil extends BroadcastReceiver{
     @Override
     public void onReceive(Context context, Intent intent) {
         //mCode = intent.getIntExtra("status", BFYNetworkStatusData.NETWORK_CONNECTION_NONE);
-    	int code = BFYNetworkStatusData.NETWORK_CONNECTION_NONE;
+    	int code = NETWORK_CONNECTION_NONE;
     	if (isWifiEnabled(context)) {
-    		code = BFYNetworkStatusData.NETWORK_CONNECTION_WIFI;
+    		code = NETWORK_CONNECTION_WIFI;
     	} else if (isMobileEnabled(context)) {
-    		code = BFYNetworkStatusData.NETWORK_CONNECTION_MOBILE;
+    		code = NETWORK_CONNECTION_MOBILE;
     	} 
     	
         BFYLog.d(TAG, "onReceive,network util old status is " + mCode + "new status is " + code);
@@ -45,8 +48,7 @@ public class BFYNetworkUtil extends BroadcastReceiver{
     }
 
     private void sendEvent() {
-        BFYEventBus.getInstance().post(
-        		new BFYNetworkStatusReportEvent(new BFYNetworkStatusData(mCode)));
+//        BFYEventBus.getInstance().post(null);
     }
     
     public static boolean isWifiEnabled(Context context) {
@@ -54,6 +56,16 @@ public class BFYNetworkUtil extends BroadcastReceiver{
         NetworkInfo wifiNetInfo = connectMgr.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         if (wifiNetInfo != null && wifiNetInfo.isConnected()) {
         	//mCode = BFYNetworkStatusData.NETWORK_CONNECTION_WIFI;
+        	return true;
+        } else {
+        	return false;
+        }
+    }
+    
+    public static boolean isEthernetEnabled(Context context) {
+        ConnectivityManager connectMgr = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);        
+        NetworkInfo ethernetNetInfo = connectMgr.getNetworkInfo(ConnectivityManager.TYPE_ETHERNET);
+        if (ethernetNetInfo != null && ethernetNetInfo.isConnected()) {
         	return true;
         } else {
         	return false;
@@ -87,10 +99,11 @@ public class BFYNetworkUtil extends BroadcastReceiver{
     	BFYLog.d(TAG, "has network " + mCode);
         boolean mobEnabled = isMobileEnabled(context);
         boolean wifiEnabled = isWifiEnabled(context);
-        if (mobEnabled || wifiEnabled) {
+        boolean ethernetEnabled = isEthernetEnabled(context);
+        if (mobEnabled || wifiEnabled || ethernetEnabled) {
         	return true;
         } else {
-        	mCode = BFYNetworkStatusData.NETWORK_CONNECTION_NONE;
+        	mCode = NETWORK_CONNECTION_NONE;
         	return false;
         }        
     }

@@ -1,10 +1,10 @@
 package bf.cloud.black_board;
 
-import bf.cloud.android.components.BFYNetworkStatusData;
 import bf.cloud.android.modules.log.BFYLog;
 import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
 import bf.cloud.android.modules.p2p.MediaCenter;
+import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -37,7 +37,8 @@ public class StreamDemo extends Activity{
 	}
 
 	private void init() {
-		mStream = new BFStream("/sdcard/", MediaCenter.NetState.NET_WIFI_REACHABLE);
+		mStream = new BFStream("/sdcard/");
+		BFStream.setNetState(NetState.NET_WIFI_REACHABLE);
 		mStream.registerStreamListener(new BFStreamMessageListener() {
 			
 			@Override

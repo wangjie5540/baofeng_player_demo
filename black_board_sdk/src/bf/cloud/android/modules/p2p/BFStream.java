@@ -50,14 +50,13 @@ public final class BFStream {
 	public final static int FILE_IO_ERROR = -12;		// 文件IO错误
 	public final static int ALLOC_MEMORY_FAILED = -13;	// 分配内存失败
 
-	public BFStream(String settingDataPath, int netState) {
-		Log.d(TAG, "new BFStream settingDataPath:" + settingDataPath + ",netState:" + netState);
-		if (settingDataPath == null || netState == NetState.NET_NOT_REACHABLE) {
+	public BFStream(String settingDataPath) {
+		Log.d(TAG, "new BFStream settingDataPath:" + settingDataPath);
+		if (settingDataPath == null) {
 			throw new NullPointerException(
-					"dataPath is null, or netState is NET_NOT_REACHABLE");
+					"dataPath is null");
 		}
 		mSettingDataPath = settingDataPath;
-		mNetState = netState;
 		mCallBackHandler = new StateCallBackHandler();
 		mMediaCenter.setCallback(mCallBackHandler);
 	}
