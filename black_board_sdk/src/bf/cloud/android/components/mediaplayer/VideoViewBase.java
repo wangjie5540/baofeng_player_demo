@@ -35,7 +35,7 @@ public abstract class VideoViewBase extends SurfaceView implements
     protected boolean     mCanPause;
     protected boolean     mCanSeekBack;
     protected boolean     mCanSeekForward;
-    protected int		  mDuration = 0;
+    protected long		  mDuration = 0;
     
     // all possible internal states
     protected static final int STATE_ERROR              = -1;
@@ -204,13 +204,18 @@ public abstract class VideoViewBase extends SurfaceView implements
 	}
 	
 	@Override
-	public int getDuration() {
-		return mDuration;
+	public long getDuration() {
+		if (mMediaPlayerProxy != null)
+			return mMediaPlayerProxy.getDuration();
+		else
+			return 0;
 	}
 	@Override
-	public int getCurrentPosition() {
-		// TODO Auto-generated method stub
-		return 0;
+	public long getCurrentPosition() {
+		if (mMediaPlayerProxy != null)
+			return mMediaPlayerProxy.getCurrentPosition();
+		else
+			return 0;
 	}
 	@Override
 	public void seekTo(int pos) {

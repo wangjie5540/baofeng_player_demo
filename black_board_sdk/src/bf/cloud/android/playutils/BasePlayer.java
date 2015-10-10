@@ -365,7 +365,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	/**
 	 * 取得当前播放位置 (毫秒)
 	 */
-	protected int getCurrentPosition() {
+	protected long getCurrentPosition() {
 		return mVideoView.getCurrentPosition();
 	}
 
@@ -413,14 +413,14 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	/**
 	 * 取得当前视频清晰度
 	 */
-	protected int getCurrentDefinition() {
-		return 0;
+	protected VideoDefinition getCurrentDefinition() {
+		return mVideoDefinition;
 	}
 	
 	/**
 	 * 取得片长 (毫秒)
 	 */
-	protected int getDuration() {
+	protected long getDuration() {
 		return mVideoView.getDuration();
 	}
 	

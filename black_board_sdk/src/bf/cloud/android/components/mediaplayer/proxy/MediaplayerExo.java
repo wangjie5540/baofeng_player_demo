@@ -168,4 +168,14 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 		
 	}
 
+	@Override
+	public long getDuration() {
+		return mPlayer.getDuration();
+	}
+
+	@Override
+	public long getCurrentPosition() {
+		return mPlayer.getCurrentPosition();
+	}
+
 }

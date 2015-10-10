@@ -23,6 +23,8 @@ public class VodDemo extends Activity{
 	private Button btDecVolume = null;
 	private Button btGetCurVolume = null;
 	private Button btGetMAZVolume = null;
+	private Button btGetCurrentPosition = null;
+	private Button btGetDuration = null;
 	private String mUrls = "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +109,24 @@ public class VodDemo extends Activity{
 			@Override
 			public void onClick(View v) {
 				int value = mPlayer.getMaxVolume();
+				Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT).show();
+			}
+		});
+		btGetCurrentPosition = (Button)findViewById(R.id.get_cur_position);
+		btGetCurrentPosition.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				long value = mPlayer.getCurrentPosition();
+				Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT).show();
+			}
+		});
+		btGetDuration = (Button)findViewById(R.id.get_duration);
+		btGetDuration.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				long value = mPlayer.getDuration();
 				Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT).show();
 			}
 		});

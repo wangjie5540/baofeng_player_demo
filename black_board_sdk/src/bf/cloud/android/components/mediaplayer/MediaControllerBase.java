@@ -6,8 +6,8 @@ public abstract class MediaControllerBase {
         void	stop();
         void    pause();
         void	resume();
-        int     getDuration();
-        int     getCurrentPosition();
+        long     getDuration();
+        long     getCurrentPosition();
         void    seekTo(int pos);
         boolean isPlaying();
         int     getBufferPercentage();

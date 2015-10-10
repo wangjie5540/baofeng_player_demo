@@ -20,4 +20,24 @@ public class VodPlayer extends BasePlayer{
 	public void seekTo(int ms) {
 		super.seekTo(ms);
 	}
+	
+	@Override
+	public void setDefinition(VideoDefinition definition) {
+		super.setDefinition(definition);
+	}
+	
+	@Override
+	public VideoDefinition getCurrentDefinition() {
+		return super.getCurrentDefinition();
+	}
+	
+	@Override
+	public long getDuration() {
+		return super.getDuration();
+	}
+	
+	@Override
+	public long getCurrentPosition() {
+		return super.getCurrentPosition();
+	}
 }
