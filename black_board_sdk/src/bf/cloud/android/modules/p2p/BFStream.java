@@ -10,9 +10,9 @@ import android.os.Handler.Callback;
 import android.os.HandlerThread;
 import android.os.Process;
 import android.util.Log;
-import android.widget.MediaController.MediaPlayerControl;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.modules.p2p.MediaCenter.NetState;
+import bf.cloud.android.playutils.VideoDefinition;
 
 /**
  * Created by wangtonggui
@@ -36,32 +36,31 @@ public final class BFStream {
 	private static String mSettingDataPath = null;
 	private static int mNetState = NetState.NET_NOT_REACHABLE;
 	private static P2pState mP2pState = P2pState.NOT_INIT;
-	
-	public final static int NO_ERROR = 0;				// 无错误
-	public final static int UNKNOWN_ERROR = -1;			// 未知错误
-	public final static int INVALID_PARAM = -2;			// 无效的参数
-	public final static int INVALID_HANDLE = -3;		// 无效句柄
-	public final static int INIT_ERROR = -4;			// 初始化错误
-	public final static int PORT_BIND_FAILED = -5;		// 端口绑定失败
-	public final static int INVALID_STREAM_ID = -6;		// 无效的流ID
-	public final static int GENERATE_URL_FAILED = -8;	// 生成URL失败
-	public final static int INVALID_URL = -10;			// 无效的URL
-	public final static int NOT_ENOUGH_SPACE = -11;		// 存储空间不足
-	public final static int FILE_IO_ERROR = -12;		// 文件IO错误
-	public final static int ALLOC_MEMORY_FAILED = -13;	// 分配内存失败
+
+	public final static int NO_ERROR = 0; // 无错误
+	public final static int UNKNOWN_ERROR = -1; // 未知错误
+	public final static int INVALID_PARAM = -2; // 无效的参数
+	public final static int INVALID_HANDLE = -3; // 无效句柄
+	public final static int INIT_ERROR = -4; // 初始化错误
+	public final static int PORT_BIND_FAILED = -5; // 端口绑定失败
+	public final static int INVALID_STREAM_ID = -6; // 无效的流ID
+	public final static int GENERATE_URL_FAILED = -8; // 生成URL失败
+	public final static int INVALID_URL = -10; // 无效的URL
+	public final static int NOT_ENOUGH_SPACE = -11; // 存储空间不足
+	public final static int FILE_IO_ERROR = -12; // 文件IO错误
+	public final static int ALLOC_MEMORY_FAILED = -13; // 分配内存失败
 
 	public BFStream(String settingDataPath) {
 		Log.d(TAG, "new BFStream settingDataPath:" + settingDataPath);
 		if (settingDataPath == null) {
-			throw new NullPointerException(
-					"dataPath is null");
+			throw new NullPointerException("dataPath is null");
 		}
 		mSettingDataPath = settingDataPath;
 		mCallBackHandler = new StateCallBackHandler();
 		mMediaCenter.setCallback(mCallBackHandler);
 	}
-	
-	public static void startP2p(){
+
+	public static void startP2p() {
 		Log.d(TAG, "startP2p");
 		if (mP2pHandlerThread == null) {
 			mP2pHandlerThread = new P2pHandlerThread(TAG,
@@ -69,20 +68,21 @@ public final class BFStream {
 			mP2pHandlerThread.start();
 		}
 	}
-	
-	public static void stopP2P(){
+
+	public static void stopP2P() {
 		Log.d(TAG, "uninitP2p");
 		if (mP2pHandlerThread != null) {
-			mP2pHandlerThread.p2pHandler.sendEmptyMessage(P2pHandlerThread.UNINIT_MEDIA_CENTER);
+			mP2pHandlerThread.p2pHandler
+					.sendEmptyMessage(P2pHandlerThread.UNINIT_MEDIA_CENTER);
 		}
 	}
-	
-	public interface BFP2PListener{
+
+	public interface BFP2PListener {
 		/**
 		 * MediaCenter初始化成功
 		 */
 		public void onMediaCenterInitSuccess();
-		
+
 		/**
 		 * MediaCenter初始化失败
 		 */
@@ -95,9 +95,12 @@ public final class BFStream {
 
 		/**
 		 * 从MediaCenter里面回调的消息，分为MSG_TYPE_ERROR和MSG_TYPE_NORMAL两种
-		 * @param type MSG_TYPE_ERROR或MSG_TYPE_NORMAL
+		 * 
+		 * @param type
+		 *            MSG_TYPE_ERROR或MSG_TYPE_NORMAL
 		 * @param data
-		 * @param error 错误码
+		 * @param error
+		 *            错误码
 		 */
 		public void onMessage(int type, int data, int error);
 
@@ -105,7 +108,7 @@ public final class BFStream {
 		 * 流创建就绪
 		 */
 		public void onStreamReady();
-		
+
 		/**
 		 * 获取媒体信息失败
 		 */
@@ -123,18 +126,18 @@ public final class BFStream {
 	public void unregisterStreamListener() {
 		mStreamListener = null;
 	}
-	
-	public void registerP2PListener(BFP2PListener listener){
-		if (mP2PListeners.contains(listener)){
+
+	public void registerP2PListener(BFP2PListener listener) {
+		if (mP2PListeners.contains(listener)) {
 			Log.d(TAG, "listener exists");
 		}
 		synchronized (BFStream.TAG) {
 			mP2PListeners.add(listener);
 		}
 	}
-	
-	public void unregisterP2PListener(BFP2PListener listener){
-		if (mP2PListeners.contains(listener)){
+
+	public void unregisterP2PListener(BFP2PListener listener) {
+		if (mP2PListeners.contains(listener)) {
 			mP2PListeners.remove(listener);
 		}
 	}
@@ -152,11 +155,13 @@ public final class BFStream {
 
 			if (mStreamListener != null) {
 				if (MediaCenter.MediaHandleState.MEDIA_HANDLE_ERROR == state) {
-					mStreamListener.onMessage(BFStreamMessageListener.MSG_TYPE_ERROR,
-							state, error);
+					mStreamListener.onMessage(
+							BFStreamMessageListener.MSG_TYPE_ERROR, state,
+							error);
 				} else {
 					mStreamListener.onMessage(
-							BFStreamMessageListener.MSG_TYPE_NORMAL, state,error);
+							BFStreamMessageListener.MSG_TYPE_NORMAL, state,
+							error);
 				}
 			}
 			switch (state) {
@@ -214,11 +219,11 @@ public final class BFStream {
 
 		return result;
 	}
-	
-	private static void initMediaCenter(){
+
+	private static void initMediaCenter() {
 		Log.d(TAG, "initMediaCenter");
 		mP2pHandlerThread.p2pHandler
-			.sendEmptyMessage(P2pHandlerThread.INIT_MEDIA_CENTER);
+				.sendEmptyMessage(P2pHandlerThread.INIT_MEDIA_CENTER);
 	}
 
 	/**
@@ -250,14 +255,14 @@ public final class BFStream {
 			mStreamId = getDefaultStreamId();
 		else
 			mStreamId = mStreamWaitToPlay;
-		
+
 		for (int i = 0; i < 50; i++) {
 			if (mPort > 65400) {
 				mPort = BFYConst.DEFAULT_P2P_PORT + i;
 			}
 			mPort += i;
-			result = mMediaCenter.StartStreamService(mMediaHandle,
-					mStreamId, mStreamMode, mPort);
+			result = mMediaCenter.StartStreamService(mMediaHandle, mStreamId,
+					mStreamMode, mPort);
 			switch (result) {
 			case MediaCenter.NativeReturnType.NO_ERROR: {
 				Log.d(TAG, "Start Stream Bind Port[" + mPort + "] Success");
@@ -401,20 +406,21 @@ public final class BFStream {
 								mNetState);
 						if (ret < 0) {
 							mP2pState = P2pState.NOT_INIT;
-							for (int i = 0; i < mP2PListeners.size(); i++){
-								mP2PListeners.get(i).onMediaCenterInitFailed(ret);
+							for (int i = 0; i < mP2PListeners.size(); i++) {
+								mP2PListeners.get(i).onMediaCenterInitFailed(
+										ret);
 							}
 						} else {
 							Log.d(TAG, "Init Media Center success");
 							mP2pState = P2pState.INITED;
-							for (int i = 0; i < mP2PListeners.size(); i++){
+							for (int i = 0; i < mP2PListeners.size(); i++) {
 								mP2PListeners.get(i).onMediaCenterInitSuccess();
 							}
 						}
 					}
 					break;
-				case UNINIT_MEDIA_CENTER:{
-					//这里暂时对MediaCenter不进行卸载操作，思路是：一旦加载，就不卸载了
+				case UNINIT_MEDIA_CENTER: {
+					// 这里暂时对MediaCenter不进行卸载操作，思路是：一旦加载，就不卸载了
 					Log.d(TAG, "uninit Media Center");
 				}
 				default:
@@ -436,10 +442,71 @@ public final class BFStream {
 			initMediaCenter();
 			super.onLooperPrepared();
 		}
-		
+
 		@Override
 		public void run() {
 			super.run();
 		}
+	}
+	
+	public void changeDefinition(VideoDefinition definition){
+		mStreamWaitToPlay = getStreamIdByDefinition(definition);
+	}
+
+	private int getStreamIdByDefinition(VideoDefinition definition) {
+		int result = MediaCenter.INVALID_STREAM_ID;
+		int streamCount = (mStreamInfoList != null) ? mStreamInfoList.size() : 0;
+
+		if (streamCount > 0) {
+			int defaultStreamId = MediaCenter.INVALID_STREAM_ID;
+			for (int i = 0; i < streamCount; ++i) {
+				MediaCenter.StreamInfo streamInfo = mStreamInfoList.get(i);
+				if (streamInfo.defaultStream) {
+					defaultStreamId = streamInfo.streamId;
+					break;
+				}
+			}
+
+			if (definition == VideoDefinition.UNKNOWN) {
+				result = defaultStreamId;
+			} else {
+				for (int i = 0; i < streamCount; ++i) {
+					MediaCenter.StreamInfo streamInfo = mStreamInfoList.get(i);
+					if (streamInfo.streamName.equalsIgnoreCase(definition
+							.toString())) {
+						result = streamInfo.streamId;
+						break;
+					}
+				}
+			}
+
+			if (result == MediaCenter.INVALID_STREAM_ID) {
+				switch (definition) {
+				case FLUENT:
+					result = mStreamInfoList.get(0).streamId;
+					break;
+				case STANDARD:
+					result = mStreamInfoList.get(1).streamId;
+				case HIGH:
+					result = mStreamInfoList.get(streamCount / 2).streamId;
+					break;
+				case P1080:
+					result = mStreamInfoList.get(streamCount / 2 + 1).streamId;
+					break;
+				case K2:
+					result = mStreamInfoList.get(streamCount - 1).streamId;
+					break;
+				default:
+					result = mStreamInfoList.get(0).streamId;
+					break;
+				}
+			}
+
+			if (result == MediaCenter.INVALID_STREAM_ID) {
+				result = defaultStreamId;
+			}
+		}
+
+		return result;
 	}
 }

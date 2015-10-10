@@ -1,7 +1,6 @@
 package bf.cloud.android.playutils;
 
 import android.content.Context;
-import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Handler.Callback;
 import android.os.HandlerThread;
@@ -16,7 +15,6 @@ import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.MediaPlaye
 import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
-import bf.cloud.android.modules.p2p.MediaCenter;
 import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 import bf.cloud.android.utils.BFYNetworkUtil;
 
@@ -44,6 +42,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private PlayEventListener mPlayEventListener = null;
 	private boolean mLowLatencyFlag = false;
 	private boolean mForceStartFlag = false;
+	private VideoDefinition mVideoDefinition = VideoDefinition.UNKNOWN;
 
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
@@ -405,8 +404,10 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	/**
 	 * 设置视频播放清晰度
 	 */
-	protected void setDefinition() {
-		
+	protected void setDefinition(VideoDefinition definition) {
+		mVideoDefinition = definition;
+		if (mBfStream != null)
+			mBfStream.changeDefinition(mVideoDefinition);
 	}
 	
 	/**
