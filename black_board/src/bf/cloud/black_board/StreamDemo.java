@@ -55,6 +55,12 @@ public class StreamDemo extends Activity{
 					mHandler.obtainMessage(STREAM_STATE, data, 0).sendToTarget();
 				}
 			}
+
+			@Override
+			public void onMediaInfoNotFound() {
+				// TODO Auto-generated method stub
+				
+			}
 		});
 		EditText url = (EditText)findViewById(R.id.url);
 		url.setText("servicetype=1&uid=5284077&fid=5ABDC9CF335D035A78BA78A89A59EFE0");
