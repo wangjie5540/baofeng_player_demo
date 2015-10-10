@@ -10,16 +10,18 @@ import android.util.Log;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.components.mediaplayer.proxy.BFVolumeManager;
+import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.MediaPlayerErrorListener;
 import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
+import bf.cloud.android.modules.p2p.MediaCenter;
 import bf.cloud.android.modules.p2p.MediaCenter.NetState;
 
 /**
  * Created by wangtonggui
  */
 public abstract class BasePlayer implements BFStreamMessageListener,
-		BFP2PListener {
+		BFP2PListener, MediaPlayerErrorListener {
 	public final String TAG = BasePlayer.class.getSimpleName();
 	private VideoViewBase mVideoView = null;
 	protected String mToken = "";
@@ -229,7 +231,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 				+ error);
 		if (data == BFStreamMessageListener.MSG_TYPE_ERROR) {
 			mState = STATE.ERROR;
-			// TODO handle the errors
+			if (mPlayErrorListener != null)
+				mPlayErrorListener.onError(error);
 		}
 	}
 
@@ -237,6 +240,13 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	public void onStreamReady() {
 		Log.d(TAG, "onStreamReady");
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_START);
+	}
+	
+	@Override
+	public void onMediaInfoNotFound() {
+		mState = STATE.ERROR;
+		if (mPlayErrorListener != null)
+			mPlayErrorListener.onError(BFYConst.GET_MOVIE_INFO_FAILED);
 	}
 
 	@Override
@@ -248,7 +258,48 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 
 	@Override
 	public void onMediaCenterInitFailed(int error) {
-		
+		isMediaCenterInited = false;
+		mState = STATE.ERROR;
+		if (mPlayErrorListener != null){
+			switch (error) {
+			case BFStream.UNKNOWN_ERROR:
+				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INIT_FAILED);
+				break;
+			case BFStream.INVALID_PARAM:
+				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_PARAM);
+				break;
+			case BFStream.INVALID_HANDLE:
+				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_HANDLE);
+				break;
+			case BFStream.INIT_ERROR:
+				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INIT_ERROR);
+				break;
+			case BFStream.PORT_BIND_FAILED:
+				mPlayErrorListener.onError(BFYConst.PORT_BIND_FAILED);
+				break;
+			case BFStream.INVALID_STREAM_ID:
+				mPlayErrorListener.onError(BFYConst.INVALID_STREAM_ID);
+				break;
+			case BFStream.GENERATE_URL_FAILED:
+				mPlayErrorListener.onError(BFYConst.GENERATE_URL_FAILED);
+				break;
+			case BFStream.INVALID_URL:
+				mPlayErrorListener.onError(BFYConst.INVALID_URL);
+				break;
+			case BFStream.NOT_ENOUGH_SPACE:
+				mPlayErrorListener.onError(BFYConst.NOT_ENOUGH_SPACE);
+				break;
+			case BFStream.FILE_IO_ERROR:
+				mPlayErrorListener.onError(BFYConst.FILE_IO_ERROR);
+				break;
+			case BFStream.ALLOC_MEMORY_FAILED:
+				mPlayErrorListener.onError(BFYConst.ALLOC_MEMORY_FAILED);
+				break;
+				
+			default:
+				break;
+			}
+		}
 	}
 
 	/**
@@ -375,8 +426,10 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 				case MSG_STREAM_CREATE: {
 					// 这个时候要保证p2p已经启动，创建stream
 					int ret = mBfStream.createStream(mDataSource, mToken, 0);
-					if (ret < 0)
+					if (ret < 0){
 						Log.d(TAG, "createStream error");
+						mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_PARAM);
+					}
 					break;
 				}
 				case MSG_STREAM_STOP: {
@@ -418,6 +471,34 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	
 	public interface PlayEventListener{
 		void onEvent(int eventCode);
+	}
+	
+	@Override
+	/**
+	 * 软解播放器出现异常，返回错误码
+	 */
+	public void onError(int errorCode) {
+		if (mDecodeMode != DecodeMode.SOFT){
+			Log.d(TAG, "onError, mode is not SOFT");
+			return;
+		}
+		
+		if (mPlayErrorListener != null)
+			mPlayErrorListener.onError(BFYConst.SOFT_DECODE_FAILED);
+	}
+	
+	@Override
+	/**
+	 * AUTO播放器出现异常，返回错误信息
+	 */
+	public void onError(String errorMsg) {
+		if (mDecodeMode != DecodeMode.AUTO){
+			Log.d(TAG, "onError, mode is not AUTO");
+			return;
+		}
+		
+		if (mPlayErrorListener != null)
+			mPlayErrorListener.onError(BFYConst.EXOPLAYER_DECODE_FAILED);
 	}
 
 }

@@ -36,6 +36,19 @@ public final class BFStream {
 	private static String mSettingDataPath = null;
 	private static int mNetState = NetState.NET_NOT_REACHABLE;
 	private static P2pState mP2pState = P2pState.NOT_INIT;
+	
+	public final static int NO_ERROR = 0;				// 无错误
+	public final static int UNKNOWN_ERROR = -1;			// 未知错误
+	public final static int INVALID_PARAM = -2;			// 无效的参数
+	public final static int INVALID_HANDLE = -3;		// 无效句柄
+	public final static int INIT_ERROR = -4;			// 初始化错误
+	public final static int PORT_BIND_FAILED = -5;		// 端口绑定失败
+	public final static int INVALID_STREAM_ID = -6;		// 无效的流ID
+	public final static int GENERATE_URL_FAILED = -8;	// 生成URL失败
+	public final static int INVALID_URL = -10;			// 无效的URL
+	public final static int NOT_ENOUGH_SPACE = -11;		// 存储空间不足
+	public final static int FILE_IO_ERROR = -12;		// 文件IO错误
+	public final static int ALLOC_MEMORY_FAILED = -13;	// 分配内存失败
 
 	public BFStream(String settingDataPath, int netState) {
 		Log.d(TAG, "new BFStream settingDataPath:" + settingDataPath + ",netState:" + netState);
@@ -93,6 +106,11 @@ public final class BFStream {
 		 * 流创建就绪
 		 */
 		public void onStreamReady();
+		
+		/**
+		 * 获取媒体信息失败
+		 */
+		public void onMediaInfoNotFound();
 	}
 
 	public BFStreamMessageListener getListener() {
@@ -150,6 +168,8 @@ public final class BFStream {
 				// update Media Information
 				mMediaInfo = mMediaCenter.GetMediaInfo(mMediaHandle);
 				if (mMediaInfo == null || mMediaInfo.mediaStreamCount <= 0) {
+					if (mStreamListener != null)
+						mStreamListener.onMediaInfoNotFound();
 					return;
 				}
 				MediaCenter.StreamInfo streamInfoList[] = new MediaCenter.StreamInfo[mMediaInfo.mediaStreamCount];

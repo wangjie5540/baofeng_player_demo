@@ -12,6 +12,7 @@ public abstract class MediaPlayerProxy {
 	protected String mPath = null;
 	protected boolean mPlayerInitilized = false;
 	protected StateChangedListener mStateChangedListener = null;
+	protected MediaPlayerErrorListener mMediaPlayerErrorListener = null;
 	//Todo:播放器状态
 	
 	public abstract void start();
@@ -39,5 +40,10 @@ public abstract class MediaPlayerProxy {
 	
 	public void unregistStateChangedListener(){
 		mStateChangedListener = null;
+	}
+	
+	public interface MediaPlayerErrorListener{
+		void onError(String errorMsg);
+		void onError(int errorCode);
 	}
 }

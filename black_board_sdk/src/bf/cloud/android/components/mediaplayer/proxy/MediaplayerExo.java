@@ -113,8 +113,8 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 
 	@Override
 	public void onError(Exception e) {
-		// TODO Auto-generated method stub
-		
+		if (mMediaPlayerErrorListener != null)
+			mMediaPlayerErrorListener.onError(e.getMessage());
 	}
 
 	@Override
