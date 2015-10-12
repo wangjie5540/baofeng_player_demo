@@ -4,17 +4,12 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <bf.cloud.black_board_ui.VideoFrameLayout
+    <bf.cloud.black_board_ui.BFMediaPlayerControllerVod
+        android:id="@+id/vod_media_controller"
         android:layout_width="match_parent"
         android:layout_height="300dp" >
-
-        <bf.cloud.android.playutils.VideoFrame
-            android:id="@+id/vod_frame"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-        </bf.cloud.android.playutils.VideoFrame>
-    </bf.cloud.black_board_ui.VideoFrameLayout>
-
+    </bf.cloud.black_board_ui.BFMediaPlayerControllerVod>
+    
     <Button
         android:id="@+id/start"
         android:layout_width="200dp"
