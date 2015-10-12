@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="vp_clarity">清晰度</string>
+    <string name="vp_brightness">屏幕亮度</string>
+    <string name="vp_volume">音量</string>
+    <string name="vp_continue_play">继续播放</string>
+</resources>

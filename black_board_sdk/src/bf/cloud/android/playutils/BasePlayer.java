@@ -385,8 +385,17 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	 * 
 	 * @param listener
 	 */
-	public void setPlayErrorListener(PlayErrorListener listener) {
+	public void registPlayErrorListener(PlayErrorListener listener) {
 		mPlayErrorListener = listener;
+	}
+	
+	/**
+	 * 取消播放错误监听器
+	 * 
+	 * @param listener
+	 */
+	public void unregistPlayErrorListener() {
+		mPlayErrorListener = null;
 	}
 
 	/**

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+
+    <style name="BFYun" />
+
+    <!-- 文字默认显示 -->
+    <style name="BFYun.TextAppearance">
+        <item name="android:textColor">@color/vp_text_default</item>
+    </style>
+
+    <!-- 文字风格统一，请在此基础上扩展新添加字体风格 -->
+    <!--文字风格:最大字号 -->
+    <style name="BFYun.TextAppearance.Biggest">
+        <item name="android:textSize">@dimen/vp_text_size_biggest</item>
+    </style>
+    <!--文字风格:更大字号 -->
+    <style name="BFYun.TextAppearance.Bigger">
+        <item name="android:textSize">@dimen/vp_text_size_bigger</item>
+    </style>
+    <!--文字风格:大字号 -->
+    <style name="BFYun.TextAppearance.Big">
+        <item name="android:textSize">@dimen/vp_text_size_big</item>
+    </style>
+    <!--文字风格:中字号 -->
+    <style name="BFYun.TextAppearance.Middle">
+        <item name="android:textSize">@dimen/vp_text_size_middle</item>
+    </style>
+    <!--文字风格:小字号 -->
+    <style name="BFYun.TextAppearance.Small">
+        <item name="android:textSize">@dimen/vp_text_size_small</item>
+    </style>
+    <!--文字风格:更小字号 -->
+    <style name="BFYun.TextAppearance.Smaller">
+        <item name="android:textSize">@dimen/vp_text_size_smaller</item>
+    </style>
+    <!--文字风格:最小字号 -->
+    <style name="BFYun.TextAppearance.Smallest">
+        <item name="android:textSize">@dimen/vp_text_size_smallest</item>
+    </style>
+    <!--文字风格:微小字号 -->
+    <style name="BFYun.TextAppearance.Tiny">
+        <item name="android:textSize">@dimen/vp_text_size_tiny</item>
+    </style>
+
+    <!--文字风格:最大字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Biggest.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+    
+    <!--文字风格:更大字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Bigger.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+    <!--文字风格:更大字号，白灰色字 -->
+    <style name="BFYun.TextAppearance.Bigger.WhiteGray">
+        <item name="android:textColor">@color/vp_color_text_whitegray</item>
+    </style>    
+
+    <!--文字风格:大字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Big.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+        <!--文字风格:大字号，白灰色字 -->
+    <style name="BFYun.TextAppearance.Big.WhiteGray">
+        <item name="android:textColor">@color/vp_color_text_whitegray</item>
+    </style>    
+    <!--文字风格:大字号，浅灰色字 -->
+    <style name="BFYun.TextAppearance.Big.LightGray">
+        <item name="android:textColor">@color/vp_color_text_lightgray</item>
+    </style>
+    
+    <!--文字风格:中字号，浅白色字 -->
+    <style name="BFYun.TextAppearance.Middle.LightWhite">
+        <item name="android:textColor">@color/vp_color_text_lightwhite</item>
+    </style>
+    
+    <!--文字风格:中字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Middle.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+        <!--文字风格:中字号，白灰色字 -->
+    <style name="BFYun.TextAppearance.Middle.WhiteGray">
+        <item name="android:textColor">@color/vp_color_text_whitegray</item>
+    </style>
+
+    <!--文字风格:小字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Small.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+    <!--文字风格:小字号，白灰色字 -->
+    <style name="BFYun.TextAppearance.Small.WhiteGray">
+        <item name="android:textColor">@color/vp_color_text_whitegray</item>
+    </style>
+    <!--文字风格:小字号，浅白色字 -->
+    <style name="BFYun.TextAppearance.Small.LightWhite">
+        <item name="android:textColor">@color/vp_color_text_lightwhite</item>
+    </style>
+
+    <!--文字风格:更小字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Smaller.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+    <!--文字风格:更小字号，浅白色字 -->
+    <style name="BFYun.TextAppearance.Smaller.LightWhite">
+        <item name="android:textColor">@color/vp_color_text_lightwhite</item>
+    </style>
+    <!--文字风格:更小字号，浅灰色字 -->
+    <style name="BFYun.TextAppearance.Smaller.LightGray">
+        <item name="android:textColor">@color/vp_color_text_lightgray</item>
+    </style>
+    <!--文字风格:最小字号，灰白色字 -->
+    <style name="BFYun.TextAppearance.Smallest.GrayWhite">
+        <item name="android:textColor">@color/vp_color_text_graywhite</item>
+    </style>
+    <!--文字风格:最小字号，浅白色字 -->
+    <style name="BFYun.TextAppearance.Smallest.LightWhite">
+        <item name="android:textColor">@color/vp_color_text_lightwhite</item>
+    </style>
+        <!--文字风格:微小字号，浅灰色字 -->
+    <style name="BFYun.TextAppearance.Tiny.LightGray">
+        <item name="android:textColor">@color/vp_color_text_lightgray</item>
+    </style>
+ 
+</resources>

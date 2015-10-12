@@ -28,7 +28,7 @@ public class VodDemo extends Activity{
 		mVideoFrameLayout = (BFMediaPlayerControllerVod)findViewById(R.id.vod_media_controller);
 		mVideoFrame  = (VideoFrame) mVideoFrameLayout.findViewById(R.id.video_frame);
 		mVodPlayer = new VodPlayer(mVideoFrame, "/sdcard/");
-		mVideoFrameLayout.setPlayer(mVodPlayer);
+		mVideoFrameLayout.attachPlayer(mVodPlayer);
 		btStart = (Button) findViewById(R.id.start);
 		btStart.setOnClickListener(new OnClickListener() {
 			
