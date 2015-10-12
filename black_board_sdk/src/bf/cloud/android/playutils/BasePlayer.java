@@ -12,6 +12,7 @@ import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.components.mediaplayer.proxy.BFVolumeManager;
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.MediaPlayerErrorListener;
+import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChangedListener;
 import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
@@ -22,7 +23,7 @@ import bf.cloud.android.utils.BFYNetworkUtil;
  * Created by wangtonggui
  */
 public abstract class BasePlayer implements BFStreamMessageListener,
-		BFP2PListener, MediaPlayerErrorListener {
+		BFP2PListener, MediaPlayerErrorListener, StateChangedListener{
 	private final String TAG = BasePlayer.class.getSimpleName();
 	
 	private Context mContext = null;
@@ -90,6 +91,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		mVideoFrame = vf;
 		mContext = mVideoFrame.getContext();
 		mVideoView = mVideoFrame.getVideoView();
+		mVideoFrame.registMediaPlayerStateChangedListener(this);
 		mBfStream = new BFStream("/sdcard");
 		mBfStream.registerStreamListener(this);
 		mBfStream.registerP2PListener(this);
@@ -510,6 +512,10 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		void onError(int errorCode);
 	}
 	
+	public static int EVENT_TYPE_MEDIAPLAYER_ENDED = 3000;
+	public static int EVENT_TYPE_MEDIAPLAYER_BUFFERING = 3001;
+	public static int EVENT_TYPE_MEDIAPLAYER_READY = 3002;
+	public static int EVENT_TYPE_MEDIAPLAYER_PREPARING = 3003;
 	public interface PlayEventListener{
 		void onEvent(int eventCode);
 	}
@@ -549,5 +555,33 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	
 	public void setForceStartFlag(boolean flag){
 		mForceStartFlag = flag;
+	}
+	
+	@Override
+	public void onStateBuffering() {
+		Log.d(TAG, "MediaPlyaerProxy onStateBuffering");
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_BUFFERING);
+	}
+	
+	@Override
+	public void onStateEnded() {
+		Log.d(TAG, "MediaPlyaerProxy onStateEnded");
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_ENDED);
+	}
+	
+	@Override
+	public void onStatePreparing() {
+		Log.d(TAG, "MediaPlyaerProxy onStatePreparing");
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_PREPARING);
+	}
+	
+	@Override
+	public void onStateReady() {
+		Log.d(TAG, "MediaPlyaerProxy onStateReady");
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_READY);
 	}
 }

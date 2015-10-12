@@ -3,6 +3,7 @@ package bf.cloud.android.playutils;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.components.mediaplayer.VideoViewExo;
+import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChangedListener;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
@@ -17,6 +18,7 @@ public class VideoFrame extends FrameLayout {
 	private VideoViewBase mVideoViewBase = null;
 	private FrameLayout mPlaceHolder = null;
 	private Context mContext = null;
+	private StateChangedListener mStateChangedListener = null;
 
 	public VideoFrame(Context context) {
 		super(context);
@@ -39,10 +41,14 @@ public class VideoFrame extends FrameLayout {
 		updateViews();
 	}
 
+	/**
+	 * 每次updateViews，videoView会重新创建
+	 */
 	public void updateViews() {
 		// make view
 		if (mDecodeMode == DecodeMode.AUTO) {
 			mVideoViewBase = new VideoViewExo(mContext);
+			mVideoViewBase.registMediaPlayerStateChangedListener(mStateChangedListener);
 		} else {
 			// mVideoViewBase = new videoview
 		}
@@ -84,6 +90,15 @@ public class VideoFrame extends FrameLayout {
 			mPlaceHolder.setVisibility(View.VISIBLE);
 		else
 			mPlaceHolder.setVisibility(View.INVISIBLE);
+	}
+	
+	public void registMediaPlayerStateChangedListener(StateChangedListener scl){
+		Log.d(TAG, "registMediaPlayerStateChangedListener scl:" + scl);
+		mStateChangedListener = scl;
+	}
+	
+	public void unregistMediaPlayerStateChangedListener(){
+		mStateChangedListener = null;
 	}
 
 }

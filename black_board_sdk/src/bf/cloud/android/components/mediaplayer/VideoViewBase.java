@@ -113,7 +113,6 @@ public abstract class VideoViewBase extends SurfaceView implements
 //        	mMediaPlayerProxy.release();
         	mMediaPlayerProxy.unregistStateChangedListener();
         	mMediaPlayerProxy = null;
-//            mPendingSubtitleTracks.clear();
             mCurrentState = STATE_IDLE;
             if (cleartargetstate) {
                 mTargetState  = STATE_IDLE;
@@ -256,6 +255,8 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	public void registMediaPlayerStateChangedListener(StateChangedListener scl){
 		mMediaPlayerStateChangedListener =  scl;
+		if (mMediaPlayerProxy != null)
+			mMediaPlayerProxy.registStateChangedListener(scl);
 	}
 
 	public void unregistMediaPlayerStateChangedListener(){
