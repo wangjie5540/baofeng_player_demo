@@ -57,6 +57,11 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private static final int MSG_P2P_UNINIT = 10005;
 
 	private static final int MSG_UI_ = 20000;
+	
+	public static int EVENT_TYPE_MEDIAPLAYER_ENDED = 3000;
+	public static int EVENT_TYPE_MEDIAPLAYER_BUFFERING = 3001;
+	public static int EVENT_TYPE_MEDIAPLAYER_READY = 3002;
+	public static int EVENT_TYPE_MEDIAPLAYER_PREPARING = 3003;
 
 	private enum STATE {
 		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(
@@ -524,10 +529,6 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		void onError(int errorCode);
 	}
 	
-	public static int EVENT_TYPE_MEDIAPLAYER_ENDED = 3000;
-	public static int EVENT_TYPE_MEDIAPLAYER_BUFFERING = 3001;
-	public static int EVENT_TYPE_MEDIAPLAYER_READY = 3002;
-	public static int EVENT_TYPE_MEDIAPLAYER_PREPARING = 3003;
 	public interface PlayEventListener{
 		void onEvent(int eventCode);
 	}
