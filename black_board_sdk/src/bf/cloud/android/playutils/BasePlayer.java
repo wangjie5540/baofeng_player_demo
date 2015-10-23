@@ -159,11 +159,20 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 				+ "/mState:" + mState);
 		synchronized (BasePlayer.class) {
 			int type = detectNetwork(mContext, mForceStartFlag);
-			if (type == NetState.NET_NOT_REACHABLE){
-				Log.d(TAG, "network is not usable");
+			Log.d(TAG, "network type:" + type);
+			if (type == BFYNetworkUtil.NETWORK_CONNECTION_NONE){
+				Log.d(TAG, "network is unusable/mPlayErrorListener:" + mPlayErrorListener);
 				if (mPlayErrorListener != null)
 					mPlayErrorListener.onError(BFYConst.NO_NETWORK);
 				return;
+			} else if (type == BFYNetworkUtil.NETWORK_CONNECTION_MOBILE){
+				if (mForceStartFlag){
+					mForceStartFlag = false;
+				} else{
+					if (mPlayErrorListener != null)
+						mPlayErrorListener.onError(BFYConst.MOBILE_NO_PLAY);
+					Log.d(TAG, "network is mobile, you must set setForceStartFlag(true)");
+				}
 			}
 		}
 		mVideoView = mVideoFrame.getVideoView();
@@ -194,11 +203,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		} else if (BFYNetworkUtil.isMobileEnabled(c)){
 			if (forceFlag)
 				BFStream.setNetState(NetState.NET_WWAN_REACHABLE);
-			else{
-				if (mPlayErrorListener != null)
-					mPlayErrorListener.onError(BFYConst.MOBILE_NO_PLAY);
-			}
-				
+			else
+				BFStream.setNetState(NetState.NET_NOT_REACHABLE);
 			return BFYNetworkUtil.NETWORK_CONNECTION_MOBILE;
 		}
 		return BFYNetworkUtil.NETWORK_CONNECTION_NONE;
@@ -488,7 +494,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 					int ret = mBfStream.createStream(mDataSource, mToken, 0);
 					if (ret < 0){
 						Log.d(TAG, "createStream error");
-						mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_PARAM);
+						if (mPlayErrorListener != null)
+							mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_PARAM);
 					}
 					break;
 				}
@@ -607,7 +614,18 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	abstract protected void reportPlayProcessStatInfo();
 	
 	protected boolean canReportStatInfo(){
-		return false;
+		int errorCode = BFYConst.NO_ERROR;
+    	
+    	boolean result =
+    			errorCode != BFYConst.NO_ERROR &&
+    			errorCode != BFYConst.NO_NETWORK &&
+    			errorCode != BFYConst.MOBILE_NO_PLAY &&
+    			errorCode != BFYConst.MEDIA_MOVIE_INFO_NOT_FOUND && 
+    			errorCode != BFYConst.MEDIA_MOVIE_INFO_LIVE_ENDED && 
+    			errorCode != BFYConst.P2P_LIVE_ENDED &&
+    			errorCode != BFYConst.P2P_LIVE_NOT_BEGIN;
+    	
+    	return result;
 	}
 	
 	protected void prepareBaseStatInfo(StatInfo statInfo) {

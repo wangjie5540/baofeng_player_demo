@@ -10,50 +10,59 @@ public class PlayErrorManager {
 	}
 
 	public String getErrorShowTips(PlayTaskType type) {
-		String tips = "";
-		if (mErrorCode >= BFYConst.PLAYER_ERROR_MIN
-				&& mErrorCode <= BFYConst.PLAYER_ERROR_MAX) {
+		String tips = "";		
+		if (mErrorCode >= BFYConst.PLAYER_ERROR_MIN && mErrorCode <= BFYConst.PLAYER_ERROR_MAX) {
 			tips = BFYConst.PLAYER_ERROR_SHOW_TIPS;
-		} else if (mErrorCode >= BFYConst.MEDIA_INFO_ERROR_MIN
-				&& mErrorCode <= BFYConst.MEDIA_INFO_ERROR_MAX) {
+		} else if (mErrorCode >= BFYConst.MEDIA_INFO_ERROR_MIN && mErrorCode <= BFYConst.MEDIA_INFO_ERROR_MAX) {
 			switch (mErrorCode) {
 			case BFYConst.MEDIA_MOVIE_INFO_NOT_FOUND: {
-				if (type == PlayTaskType.VOD) {
-					tips = BFYConst.MEDIA_INFO_ERROR_TIPS_VOD_2005;
-				} else if (type == PlayTaskType.LIVE) {
-					tips = BFYConst.MEDIA_INFO_ERROR_TIPS_LIVE_2005;
+					if (type == PlayTaskType.VOD) {
+						tips = BFYConst.MEDIA_INFO_ERROR_TIPS_VOD_2005;
+					} else if (type == PlayTaskType.LIVE) {
+						tips = BFYConst.MEDIA_INFO_ERROR_TIPS_LIVE_2005;
+					}
+					break;
+				}
+			case BFYConst.MEDIA_MOVIE_INFO_LIVE_ENDED: {
+				if (type == PlayTaskType.LIVE) {
+					tips = BFYConst.MEDIA_INFO_ERROR_TIPS_LIVE_2006;
 				}
 				break;
 			}
 			case BFYConst.MEDIA_MOVIE_INFO_FORBIDDEN: {
-				tips = BFYConst.MEDIA_INFO_ERROR_TIPS_2008;
-				break;
-			}
+					tips = BFYConst.MEDIA_INFO_ERROR_TIPS_2008;
+					break;
+				}
 			case BFYConst.MEDIA_MOVIE_INFO_UNAUTHORIZED: {
-				tips = BFYConst.MEDIA_INFO_ERROR_TIPS_2009;
-				break;
-			}
+					tips = BFYConst.MEDIA_INFO_ERROR_TIPS_2009;
+					break;
+				}
 			default: {
-				tips = BFYConst.MEDIA_INFO_ERROR_SHOW_TIPS;
-				break;
+					tips = BFYConst.MEDIA_INFO_ERROR_SHOW_TIPS;
+					break;
+				}
 			}
-			}
-		} else if (mErrorCode >= BFYConst.P2P_ERROR_MIN
-				&& mErrorCode <= BFYConst.P2P_ERROR_MAX) {
+		} else if (mErrorCode >= BFYConst.P2P_ERROR_MIN && mErrorCode <= BFYConst.P2P_ERROR_MAX) {
 			switch (mErrorCode) {
-			case BFYConst.P2P_NO_DATA_SOURCE: {
+			case BFYConst.P2P_LIVE_ENDED: {
+					if (type == PlayTaskType.LIVE) {
+						tips = BFYConst.P2P_ERROR_TIPS_LIVE_3009;
+					}
+					break;
+				}
+			case BFYConst.P2P_LIVE_NOT_BEGIN: {
 				if (type == PlayTaskType.LIVE) {
-					tips = BFYConst.P2P_ERROR_TIPS_LIVE_3006;
+					tips = BFYConst.P2P_ERROR_TIPS_LIVE_3010;
 				}
 				break;
 			}
 			default: {
-				tips = BFYConst.P2P_ERROR_SHOW_TIPS;
-				break;
-			}
+					tips = BFYConst.P2P_ERROR_SHOW_TIPS;;
+					break;
+				}
 			}
 		}
-
+		
 		return tips;
 	}
 

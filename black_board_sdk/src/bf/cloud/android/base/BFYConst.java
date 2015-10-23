@@ -33,19 +33,24 @@ public class BFYConst {
 	public static final int NO_NETWORK = 1014;      			 // 没有网络
 	public static final int MOBILE_NO_PLAY = 1015;      	     // 移动网络默认先停止播放
 	public static final int MEDIA_MOVIE_INFO_NOT_FOUND = 2005;	 // 查询媒体信息失败：找不到媒体信息
+	public static final int MEDIA_MOVIE_INFO_LIVE_ENDED = 2006;	 // 直播停止
 	public static final int MEDIA_MOVIE_INFO_FORBIDDEN = 2008;	 // 查询媒体信息失败：无权限
 	public static final int MEDIA_MOVIE_INFO_UNAUTHORIZED = 2009;// 查询媒体信息失败：未授权
 	public static final int P2P_NO_DATA_SOURCE = 3006;			 // 数据源异常
+	public static final int P2P_LIVE_ENDED = 3009;			 	 // 直播结束
+	public static final int P2P_LIVE_NOT_BEGIN = 3010;			 // 直播还没开始
 	
 	//error tips below
-	public static final String PLAYER_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
-	public static final String MEDIA_INFO_ERROR_SHOW_TIPS = "网络好慢啊，我都受不了了 :(";
-	public static final String P2P_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
-	public static final String MEDIA_INFO_ERROR_TIPS_VOD_2005 = "亲，你确定这个视频还在吗？";
-	public static final String MEDIA_INFO_ERROR_TIPS_LIVE_2005 = "直播还没有开始，再等一会吧！";
-	public static final String MEDIA_INFO_ERROR_TIPS_2008 = "没有权限看，赶紧去要一个授权吧！";
-	public static final String MEDIA_INFO_ERROR_TIPS_2009 = "授权失效了，重新要一个吧！";
-	public static final String P2P_ERROR_TIPS_LIVE_3006 = "直播已经结束了,再见:)";
+	public final static String PLAYER_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
+	public final static String MEDIA_INFO_ERROR_SHOW_TIPS = "网络好慢啊，我都受不了了 :(";
+	public final static String P2P_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
+	public final static String MEDIA_INFO_ERROR_TIPS_VOD_2005 = "亲，你确定这个视频还在吗？";
+	public final static String MEDIA_INFO_ERROR_TIPS_LIVE_2005 = "直播还没有开始:(";
+	public final static String MEDIA_INFO_ERROR_TIPS_LIVE_2006 = "直播已经结束了,再见:)";
+	public final static String MEDIA_INFO_ERROR_TIPS_2008 = "没有权限看，赶紧去要一个授权吧！";
+	public final static String MEDIA_INFO_ERROR_TIPS_2009 = "授权失效了，重新要一个吧！";
+	public final static String P2P_ERROR_TIPS_LIVE_3009 = "直播已经结束了,再见:)";
+	public final static String P2P_ERROR_TIPS_LIVE_3010 = "直播还没有开始:)";
 	
 	//error code below
 	public static final int PLAYER_ERROR_MIN = 1000;

@@ -44,12 +44,12 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 
 	@Override
 	public void onError(int errorCode) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "errorCode:" + errorCode);
 	}
 
 	@Override
 	public void onEvent(int eventCode) {
-		// TODO Auto-generated method stub
+		Log.d(TAG, "eventCode:" + eventCode);
 	}
 
 	@Override
