@@ -1,5 +1,8 @@
 package bf.cloud.android.playutils;
 
+import bf.cloud.android.modules.stat.StatInfo;
+import bf.cloud.android.modules.stat.StatReporter;
+
 public class VodPlayer extends BasePlayer{
 	
 	public VodPlayer(VideoFrame vf, String settingDataPath) {
@@ -39,5 +42,25 @@ public class VodPlayer extends BasePlayer{
 	@Override
 	public long getCurrentPosition() {
 		return super.getCurrentPosition();
+	}
+
+	@Override
+	protected void reportPlayExperienceStatInfo() {
+		if (!canReportStatInfo()) return;
+		StatInfo statInfo = mVideoView.getStatInfo();
+		if (statInfo == null && mVideoInfo == null)
+			return;
+		prepareBaseStatInfo(statInfo);
+		StatReporter.getInstance().report(statInfo.makeVodExpUrl());
+	}
+
+	@Override
+	protected void reportPlayProcessStatInfo() {
+		if (!canReportStatInfo()) return;
+		StatInfo statInfo = mVideoView.getStatInfo();
+		if (statInfo == null || mVideoInfo == null)
+			return;
+		prepareBaseStatInfo(statInfo);
+		StatReporter.getInstance().report(statInfo.makeVodProUrl());
 	}
 }

@@ -17,7 +17,9 @@ import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFP2PListener;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
 import bf.cloud.android.modules.p2p.MediaCenter.NetState;
+import bf.cloud.android.modules.stat.StatInfo;
 import bf.cloud.android.utils.BFYNetworkUtil;
+import bf.cloud.android.utils.BFYSysUtils;
 
 /**
  * Created by wangtonggui
@@ -27,7 +29,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private final String TAG = BasePlayer.class.getSimpleName();
 	
 	private Context mContext = null;
-	private VideoViewBase mVideoView = null;
+	protected VideoViewBase mVideoView = null;
+	protected BFYVideoInfo mVideoInfo = null;
 	protected String mToken = "";
 	// 这里的变化必须要对应一个变化mode的消息
 	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
@@ -562,6 +565,11 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		super.finalize();
 	}
 	
+	/**
+	 * 忽略网络类型，强制播放
+	 * @param true:无论什么网络类型都可开始播放
+	 * 		  false:在使用流量时，禁止播放，并上报事件
+	 */
 	public void setForceStartFlag(boolean flag){
 		mForceStartFlag = flag;
 	}
@@ -593,4 +601,18 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		if (mPlayEventListener != null)
 			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_READY);
 	}
+	
+	abstract protected void reportPlayExperienceStatInfo();
+	abstract protected void reportPlayProcessStatInfo();
+	
+	protected boolean canReportStatInfo(){
+		return false;
+	}
+	
+	protected void prepareBaseStatInfo(StatInfo statInfo) {
+		statInfo.gcid = BFYSysUtils.getFidFromVk(mVideoInfo.getUrl());
+		statInfo.userId = BFYSysUtils.getUidFromVk(mVideoInfo.getUrl());
+		statInfo.decodeMode = (mDecodeMode == DecodeMode.SOFT ? 0 : 1);
+//		statInfo.errorCode = mPlayErrorManager.getErrorCode();
+    }
 }

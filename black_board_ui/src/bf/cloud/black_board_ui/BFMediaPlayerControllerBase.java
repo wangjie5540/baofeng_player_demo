@@ -90,8 +90,11 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			Log.d(TAG, "mBasePlayer is null");
 			throw new NullPointerException("mBasePlayer is null");
 		}
+		//attach Listeners
 		mBasePlayer.registPlayEventListener(this);
 		mBasePlayer.registPlayErrorListener(this);
+		//attach functions
+		
 	}
 	
 	@Override

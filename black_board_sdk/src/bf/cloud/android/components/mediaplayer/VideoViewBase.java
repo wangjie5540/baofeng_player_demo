@@ -3,6 +3,7 @@ package bf.cloud.android.components.mediaplayer;
 
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy;
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChangedListener;
+import bf.cloud.android.modules.stat.StatInfo;
 import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
 import android.media.AudioManager;
@@ -50,6 +51,7 @@ public abstract class VideoViewBase extends SurfaceView implements
 	protected String mPath = "";
 	private Context mContext = null;
 	private boolean startWhenSurfaceReady = false;
+	private StatInfo mStatInfo = null;
     
 	public VideoViewBase(Context context) {
 		super(context);
@@ -261,5 +263,9 @@ public abstract class VideoViewBase extends SurfaceView implements
 
 	public void unregistMediaPlayerStateChangedListener(){
 		mMediaPlayerStateChangedListener = null;
+	}
+	
+	public StatInfo getStatInfo(){
+		return mStatInfo;
 	}
 }

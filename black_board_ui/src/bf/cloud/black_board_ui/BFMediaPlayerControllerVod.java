@@ -6,12 +6,18 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	private VodPlayer mVodPlayer = null;
 	private RelativeLayout mPlayCompleteFrame = null;
+	// 播放结束层的按钮
+	private View btPlayCompleteFrameStart = null;
+	//
+	private TextView tvPlayCompleteFrameMessage = null;
 
 	public BFMediaPlayerControllerVod(Context context) {
 		super(context);
@@ -31,8 +37,9 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 
 	@Override
 	public void attachPlayer(BasePlayer bp) {
-		mVodPlayer = (VodPlayer) bp;
 		super.attachPlayer(bp);
+		mVodPlayer = (VodPlayer) bp;
+
 	}
 
 	@Override
@@ -54,6 +61,27 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		// 播放结束层
 		mPlayCompleteFrame = (RelativeLayout) mLayoutInflater.inflate(
 				R.layout.vp_play_complete, this, false);
+		initPlayCompleteFrame();
 		addView(mPlayCompleteFrame, layoutParams);
+	}
+
+	private void initPlayCompleteFrame() {
+		btPlayCompleteFrameStart = mPlayCompleteFrame
+				.findViewById(R.id.play_button);
+		btPlayCompleteFrameStart.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (mVodPlayer != null) {
+					// 如果希望无论在什么网络下都播放视频，就设置这个标志
+					mVodPlayer.setForceStartFlag(true);
+					mVodPlayer.stop();
+					mVodPlayer.start();
+				}
+			}
+		});
+		tvPlayCompleteFrameMessage = (TextView) mPlayCompleteFrame
+				.findViewById(R.id.message_textview);
+		tvPlayCompleteFrameMessage.setText("");
 	}
 }
