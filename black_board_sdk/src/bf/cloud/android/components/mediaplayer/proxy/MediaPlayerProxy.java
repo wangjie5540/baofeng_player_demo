@@ -1,5 +1,6 @@
 package bf.cloud.android.components.mediaplayer.proxy;
 
+import android.graphics.SurfaceTexture;
 import android.view.SurfaceHolder;
 
 /**
@@ -23,7 +24,7 @@ public abstract class MediaPlayerProxy {
 	public abstract void setDataSource(String path);
 	public abstract void prepare();
 	public abstract void setCurrentState(int state);
-	public abstract void setDisplay(SurfaceHolder sh);
+	public abstract void setDisplay(SurfaceTexture st);
 	public abstract void clearDisplay();
 	public abstract void seekTo(int pos);
 	public abstract long getDuration();

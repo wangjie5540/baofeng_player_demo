@@ -42,7 +42,7 @@ public class VideoViewExo extends VideoViewBase{
 	@Override
 	protected int openVideo() {
     	Log.d(TAG, "VideoViewExo openVideo mPath:" + mPath);
-    	if (mPath == null || mPath.length() == 0 || mSurfaceHolder == null) {
+    	if (mPath == null || mPath.length() == 0 || mSurfaceTexture == null) {
             return -1;
         }
     	// we shouldn't clear the target state, because somebody might have
@@ -62,7 +62,7 @@ public class VideoViewExo extends VideoViewBase{
 		});
     	if (mMediaPlayerStateChangedListener != null)
     		mMediaPlayerProxy.registStateChangedListener(mMediaPlayerStateChangedListener);
-    	mMediaPlayerProxy.setDisplay(mSurfaceHolder);
+    	mMediaPlayerProxy.setDisplay(mSurfaceTexture);
     	mVideoFrame = (VideoFrame) getParent();
     	mVideoFrame.showPlaceHolder(true);
     	mMediaPlayerProxy.prepare();

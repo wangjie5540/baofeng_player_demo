@@ -2,6 +2,7 @@ package bf.cloud.android.components.mediaplayer.proxy;
 
 import com.google.android.exoplayer.ExoPlayer;
 
+import android.graphics.SurfaceTexture;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
@@ -136,9 +137,9 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	}
 
 	@Override
-	public void setDisplay(SurfaceHolder sh) {
+	public void setDisplay(SurfaceTexture st) {
 		Log.d(TAG, "setDisplay mPlayer:" + mPlayer);
-		mSurface  = sh.getSurface();
+		mSurface  = new Surface(st);
 		if (mPlayer != null){
 			mPlayer.setSurface(mSurface);
 		}

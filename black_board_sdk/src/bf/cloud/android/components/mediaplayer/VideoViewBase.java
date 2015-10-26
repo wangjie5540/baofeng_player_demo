@@ -6,18 +6,20 @@ import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChang
 import bf.cloud.android.modules.stat.StatInfo;
 import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
+import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
+import android.view.TextureView;
 
-public abstract class VideoViewBase extends SurfaceView implements
-		SurfaceHolder.Callback, MediaControllerBase.MediaPlayerControl{
+public abstract class VideoViewBase extends TextureView implements
+		TextureView.SurfaceTextureListener, MediaControllerBase.MediaPlayerControl{
 	protected final String TAG = VideoViewBase.class.getSimpleName();
 	// All the stuff we need for playing and showing a video
-    protected SurfaceHolder mSurfaceHolder = null;
+    protected SurfaceTexture mSurfaceTexture = null;
     protected MediaPlayerProxy mMediaPlayerProxy = null;
     protected StateChangedListener mMediaPlayerStateChangedListener = null;
     protected VideoFrame mVideoFrame = null;
@@ -72,7 +74,8 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	private void initVideoView() {
 		mVideoFrame = (VideoFrame) getParent();
-		getHolder().addCallback(this);
+//		getHolder().addCallback(this);
+		setSurfaceTextureListener(this);
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		requestFocus();
@@ -131,42 +134,42 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	
 	
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width,
-			int height) {
-		Log.d(TAG, "surfaceChanged mMediaPlayerProxy:" + mMediaPlayerProxy);
-		mSurfaceHolder = holder;
-		if (mMediaPlayerProxy != null){
-			mMediaPlayerProxy.setDisplay(mSurfaceHolder);
-		}
-//		mSurfaceWidth = width;
-//        mSurfaceHeight = height;
-//        boolean isValidState =  (mTargetState == STATE_PLAYING);
-//        boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
-//        if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
-//            if (mSeekWhenPrepared != 0) {
-//                seekTo(mSeekWhenPrepared);
-//            }
-//            start();
-//        }
-	}
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		Log.d(TAG, "surfaceCreated");
-		mSurfaceHolder = holder;
-		if (startWhenSurfaceReady){
-			start();
-			startWhenSurfaceReady = false;
-		}
-	}
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.d(TAG, "surfaceDestroyed");
-		// after we return from this we can't use the surface any more
-		if (mMediaPlayerProxy != null)
-        	mMediaPlayerProxy.clearDisplay();
-        mSurfaceHolder = null;
-	}
+//	@Override
+//	public void surfaceChanged(SurfaceHolder holder, int format, int width,
+//			int height) {
+//		Log.d(TAG, "surfaceChanged mMediaPlayerProxy:" + mMediaPlayerProxy);
+//		mSurfaceHolder = holder;
+//		if (mMediaPlayerProxy != null){
+//			mMediaPlayerProxy.setDisplay(mSurfaceHolder);
+//		}
+////		mSurfaceWidth = width;
+////        mSurfaceHeight = height;
+////        boolean isValidState =  (mTargetState == STATE_PLAYING);
+////        boolean hasValidSize = (mVideoWidth == width && mVideoHeight == height);
+////        if (mMediaPlayerProxy != null && isValidState && hasValidSize) {
+////            if (mSeekWhenPrepared != 0) {
+////                seekTo(mSeekWhenPrepared);
+////            }
+////            start();
+////        }
+//	}
+//	@Override
+//	public void surfaceCreated(SurfaceHolder holder) {
+//		Log.d(TAG, "surfaceCreated");
+//		mSurfaceHolder = holder;
+//		if (startWhenSurfaceReady){
+//			start();
+//			startWhenSurfaceReady = false;
+//		}
+//	}
+//	@Override
+//	public void surfaceDestroyed(SurfaceHolder holder) {
+//		Log.d(TAG, "surfaceDestroyed");
+//		// after we return from this we can't use the surface any more
+//		if (mMediaPlayerProxy != null)
+//        	mMediaPlayerProxy.clearDisplay();
+//        mSurfaceHolder = null;
+//	}
 	
 	
 	@Override
@@ -267,5 +270,31 @@ public abstract class VideoViewBase extends SurfaceView implements
 	
 	public StatInfo getStatInfo(){
 		return mStatInfo;
+	}
+	
+	//Listener callback below
+	@Override
+	public void onSurfaceTextureAvailable(SurfaceTexture surface, int width,
+			int height) {
+		Log.d(TAG, "onSurfaceTextureAvailable");
+		mSurfaceTexture = surface;
+	}
+	
+	@Override
+	public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
+		Log.d(TAG, "onSurfaceTextureDestroyed");
+		mSurfaceTexture = null;
+		return false;
+	}
+	
+	@Override
+	public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width,
+			int height) {
+		Log.d(TAG, "onSurfaceTextureSizeChanged width:" + width + "/height:" + height);
+		mSurfaceTexture = surface;
+	}
+	
+	@Override
+	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
 	}
 }
