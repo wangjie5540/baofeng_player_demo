@@ -8,11 +8,8 @@ import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.AudioManager;
-import android.os.Handler;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.TextureView;
 
 public abstract class VideoViewBase extends TextureView implements
@@ -53,6 +50,7 @@ public abstract class VideoViewBase extends TextureView implements
 	protected String mPath = "";
 	protected Context mContext = null;
 	private boolean startWhenSurfaceReady = false;
+	protected boolean mIsVr = false;
 	private StatInfo mStatInfo = null;
     
 	public VideoViewBase(Context context) {
@@ -298,5 +296,10 @@ public abstract class VideoViewBase extends TextureView implements
 	
 	@Override
 	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+	}
+	
+	@Override
+	public void setVrFlag(boolean flag) {
+		mIsVr = flag;
 	}
 }

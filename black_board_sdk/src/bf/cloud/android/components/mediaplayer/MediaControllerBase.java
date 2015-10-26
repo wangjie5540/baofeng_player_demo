@@ -14,6 +14,7 @@ public abstract class MediaControllerBase {
         boolean canPause();
         boolean canSeekBackward();
         boolean canSeekForward();
+        void	setVrFlag(boolean flag);
         /**
          * Get the audio session id for the player used by this VideoView. This can be used to
          * apply audio effects to the audio track of a video.

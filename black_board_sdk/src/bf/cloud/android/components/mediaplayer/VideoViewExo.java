@@ -8,11 +8,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.view.View;
 
 public class VideoViewExo extends VideoViewBase{
 	
-	private float mVideoAspectRatio = 0;
+	private float mVideoAspectRatio = -1;
 	private Handler mHandler = new Handler(new Handler.Callback() {
 		
 		@Override
@@ -50,6 +49,7 @@ public class VideoViewExo extends VideoViewBase{
     	release(false);
     	//now we can create the MediaPlayerProxy
     	mMediaPlayerProxy = new MediaplayerExo(mContext);
+    	mMediaPlayerProxy.setVrFlag(mIsVr);
     	mMediaPlayerProxy.setDataSource(mPath);
     	mMediaPlayerProxy.setSurfaceSize(mSurfaceWidth, mSurfaceHeight);
     	((MediaplayerExo)mMediaPlayerProxy).registSizeChangedListener(new SizeChangedListener() {
@@ -80,7 +80,7 @@ public class VideoViewExo extends VideoViewBase{
 		int width = getMeasuredWidth();
 		int height = getMeasuredHeight();
 		Log.d(TAG, "onMeasure width:" + width + "/height:" + height);
-		if (mVideoAspectRatio  != 0) {
+		if (mVideoAspectRatio  > 0 && !mIsVr) {
 			float viewAspectRatio = (float) width / height;
 			float aspectDeformation = mVideoAspectRatio / viewAspectRatio - 1;
 			if (aspectDeformation > MAX_ASPECT_RATIO_DEFORMATION_PERCENT) {

@@ -15,7 +15,7 @@ public abstract class MediaPlayerProxy {
 	protected boolean mPlayerInitilized = false;
 	protected StateChangedListener mStateChangedListener = null;
 	protected MediaPlayerErrorListener mMediaPlayerErrorListener = null;
-	protected boolean mIsVr = true;
+	protected boolean mIsVr = false;
 	protected int mSurfaceWidth = 0;
 	protected int mSurfaceHeight = 0;
 	protected Context mContext = null;
@@ -54,5 +54,9 @@ public abstract class MediaPlayerProxy {
 	public interface MediaPlayerErrorListener{
 		void onError(String errorMsg);
 		void onError(int errorCode);
+	}
+	
+	public void setVrFlag(boolean flag){
+		mIsVr = flag;
 	}
 }

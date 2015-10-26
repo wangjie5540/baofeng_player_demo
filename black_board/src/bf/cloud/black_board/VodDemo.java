@@ -43,6 +43,7 @@ public class VodDemo extends Activity{
 			public void onClick(View v) {
 				Log.d(TAG, "Start onClick");
 				mPlayer.stop();
+				mPlayer.setVrFlag(true);
 				mPlayer.setDataSource(mUrls);
 				mPlayer.start();
 			}

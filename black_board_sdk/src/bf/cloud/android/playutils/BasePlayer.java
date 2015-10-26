@@ -46,6 +46,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private PlayEventListener mPlayEventListener = null;
 	private boolean mLowLatencyFlag = false;
 	private boolean mForceStartFlag = false;
+	private boolean mIsVr = false;
 	private VideoDefinition mVideoDefinition = VideoDefinition.UNKNOWN;
 
 	private static final int MSG_STREAM_CREATE = 10000;
@@ -79,6 +80,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		public boolean handleMessage(Message msg) {
 			Log.d(TAG, "mUIHandler msg");
 			mState = STATE.PREPARED;
+			mVideoView.setVrFlag(mIsVr);
 			mVideoView.setDataSource(mBfStream.getStreamUrl());
 			mVideoView.start();
 			mState = STATE.PLAYING;
@@ -634,4 +636,8 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		statInfo.decodeMode = (mDecodeMode == DecodeMode.SOFT ? 0 : 1);
 //		statInfo.errorCode = mPlayErrorManager.getErrorCode();
     }
+	
+	public void setVrFlag(boolean flag){
+		mIsVr = flag;
+	}
 }
