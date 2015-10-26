@@ -25,7 +25,8 @@ public class VodDemo extends Activity{
 	private Button btGetMAZVolume = null;
 	private Button btGetCurrentPosition = null;
 	private Button btGetDuration = null;
-	private String mUrls = "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";
+//	private String mUrls = "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";
+	private String mUrls = "servicetype=1&uid=10279577&fid=C86AE21E1853B0339F6D15241EDF79E4";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
