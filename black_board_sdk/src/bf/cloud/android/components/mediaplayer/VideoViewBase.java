@@ -51,7 +51,7 @@ public abstract class VideoViewBase extends TextureView implements
     protected int mCurrentState = STATE_ERROR;
     protected int mTargetState = STATE_ERROR;
 	protected String mPath = "";
-	private Context mContext = null;
+	protected Context mContext = null;
 	private boolean startWhenSurfaceReady = false;
 	private StatInfo mStatInfo = null;
     
@@ -276,7 +276,9 @@ public abstract class VideoViewBase extends TextureView implements
 	@Override
 	public void onSurfaceTextureAvailable(SurfaceTexture surface, int width,
 			int height) {
-		Log.d(TAG, "onSurfaceTextureAvailable");
+		Log.d(TAG, "onSurfaceTextureAvailable width:" + width + "/height:" + height);
+		mSurfaceWidth = width;
+		mSurfaceHeight = height;
 		mSurfaceTexture = surface;
 	}
 	

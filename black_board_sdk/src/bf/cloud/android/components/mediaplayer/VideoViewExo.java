@@ -49,8 +49,9 @@ public class VideoViewExo extends VideoViewBase{
         // called start() previously
     	release(false);
     	//now we can create the MediaPlayerProxy
-    	mMediaPlayerProxy = new MediaplayerExo(mPath);
+    	mMediaPlayerProxy = new MediaplayerExo(mContext);
     	mMediaPlayerProxy.setDataSource(mPath);
+    	mMediaPlayerProxy.setSurfaceSize(mSurfaceWidth, mSurfaceHeight);
     	((MediaplayerExo)mMediaPlayerProxy).registSizeChangedListener(new SizeChangedListener() {
 			
 			@Override
@@ -65,7 +66,7 @@ public class VideoViewExo extends VideoViewBase{
     	mMediaPlayerProxy.setDisplay(mSurfaceTexture);
     	mVideoFrame = (VideoFrame) getParent();
     	mVideoFrame.showPlaceHolder(true);
-    	mMediaPlayerProxy.prepare();
+//    	mMediaPlayerProxy.prepare();
     	mCurrentState = STATE_PREPARED;
     	return 0;
 	}

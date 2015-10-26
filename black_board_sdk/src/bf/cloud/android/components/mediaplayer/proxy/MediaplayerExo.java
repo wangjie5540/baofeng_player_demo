@@ -2,33 +2,31 @@ package bf.cloud.android.components.mediaplayer.proxy;
 
 import com.google.android.exoplayer.ExoPlayer;
 
+import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.Log;
 import android.view.Surface;
 import android.view.SurfaceHolder;
+import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer;
 import bf.cloud.android.modules.player.videoviewexo.HlsRendererBuilder;
 import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuilder;
+import bf.cloud.black_board_sdk.R;
+import bf.cloud.vr.Points;
+import bf.cloud.vr.RawResourceReader;
+import bf.cloud.vr.VideoTextureSurfaceRenderer;
 
 public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.Listener{
 	private ExoVideoPlayer mPlayer = null;
 	private Surface mSurface = null;
 	private SizeChangedListener mSizeChangedListener = null;
+	private SurfaceTexture mSurfaceTexture = null;
 
-	public MediaplayerExo(String url) {
+	public MediaplayerExo(Context context) {
 		Log.d(TAG, "new MediaplayerExo");
+		mContext = context;
 	}
 	
-	private RendererBuilder getRendererBuilder() {
-		String userAgent = "BfCloudPlayer";
-		if (mPath == null){
-			Log.d(TAG, "mPath is null");
-			return null;
-		}
-		Log.d(TAG, "userAgent:" + userAgent + ",mPath:" + mPath);
-		return new HlsRendererBuilder(userAgent, mPath);
-	}
-
 	@Override
 	public void start() {
 		Log.d(TAG, "MediaplayerExo start");
@@ -69,11 +67,24 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	@Override
 	public void prepare() {
 		if (!mPlayerInitilized){
-			mPlayer = new ExoVideoPlayer(getRendererBuilder());
+			if (mIsVr){
+				Log.d(TAG, "wangtonggui prepare");
+				Points.ps = RawResourceReader.readPoints(mContext, R.raw.points);
+				Points.index = RawResourceReader.readIndeces(mContext, R.raw.index);
+				VideoTextureSurfaceRenderer videoRenderer = new VideoTextureSurfaceRenderer(mContext,
+						mSurfaceTexture, mSurfaceWidth,
+						mSurfaceHeight, "BfCloudPlayer", mPath);
+				mSurface = new Surface(videoRenderer.getSurfaceTexture());
+				mPlayer = new ExoVideoPlayer(videoRenderer);
+				mPlayer.setSurface(mSurface);
+			}else{
+				mSurface = new Surface(mSurfaceTexture);
+				mPlayer = new ExoVideoPlayer(new HlsRendererBuilder(BFYConst.USUER_AGENT, mPath));
+				mPlayer.setSurface(mSurface);
+			}
 			mPlayer.addListener(this);
 			mPlayer.prepare();
 			mPlayer.setPlayWhenReady(false);
-			mPlayer.setSurface(mSurface);
 			mPlayerInitilized  = true;
 		} else {
 			Log.d(TAG, "PlayerInitilized has been inited");
@@ -139,10 +150,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	@Override
 	public void setDisplay(SurfaceTexture st) {
 		Log.d(TAG, "setDisplay mPlayer:" + mPlayer);
-		mSurface  = new Surface(st);
-		if (mPlayer != null){
-			mPlayer.setSurface(mSurface);
-		}
+		mSurfaceTexture  = st;
 	}
 	
 	public interface SizeChangedListener{
@@ -177,6 +185,12 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	@Override
 	public long getCurrentPosition() {
 		return mPlayer.getCurrentPosition();
+	}
+
+	@Override
+	public void setSurfaceSize(int width, int height) {
+		mSurfaceWidth = width;
+		mSurfaceHeight = height;
 	}
 
 }
