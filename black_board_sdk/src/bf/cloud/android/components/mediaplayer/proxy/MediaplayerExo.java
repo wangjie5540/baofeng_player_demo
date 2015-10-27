@@ -21,6 +21,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	private Surface mSurface = null;
 	private SizeChangedListener mSizeChangedListener = null;
 	private SurfaceTexture mSurfaceTexture = null;
+	private VideoTextureSurfaceRenderer mVideoRenderer = null;
 
 	public MediaplayerExo(Context context) {
 		Log.d(TAG, "new MediaplayerExo");
@@ -71,11 +72,11 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 				Log.d(TAG, "wangtonggui prepare");
 				Points.ps = RawResourceReader.readPoints(mContext, R.raw.points);
 				Points.index = RawResourceReader.readIndeces(mContext, R.raw.index);
-				VideoTextureSurfaceRenderer videoRenderer = new VideoTextureSurfaceRenderer(mContext,
+				mVideoRenderer  = new VideoTextureSurfaceRenderer(mContext,
 						mSurfaceTexture, mSurfaceWidth,
 						mSurfaceHeight, "BfCloudPlayer", mPath);
-				mSurface = new Surface(videoRenderer.getSurfaceTexture());
-				mPlayer = new ExoVideoPlayer(videoRenderer);
+				mSurface = new Surface(mVideoRenderer.getSurfaceTexture());
+				mPlayer = new ExoVideoPlayer(mVideoRenderer);
 				mPlayer.setSurface(mSurface);
 			}else{
 				mSurface = new Surface(mSurfaceTexture);
@@ -191,6 +192,16 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	public void setSurfaceSize(int width, int height) {
 		mSurfaceWidth = width;
 		mSurfaceHeight = height;
+	}
+
+	@Override
+	public void setRotationXY(float srcX, float srcY, float newX, float newY) {
+		if (mIsVr && mVideoRenderer != null){
+			mVideoRenderer.setRotationX(mVideoRenderer.getRotationX()
+					- (newX - srcX) * 0.2f);
+			mVideoRenderer.setRotationY(mVideoRenderer.getRotationY()
+					- (newY - srcY) * 0.2f);
+		}
 	}
 
 }

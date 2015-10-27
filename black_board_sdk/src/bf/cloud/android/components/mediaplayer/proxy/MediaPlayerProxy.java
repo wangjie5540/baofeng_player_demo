@@ -35,6 +35,7 @@ public abstract class MediaPlayerProxy {
 	public abstract void seekTo(int pos);
 	public abstract long getDuration();
 	public abstract long getCurrentPosition();
+	public abstract void setRotationXY(float srcX, float srcY, float newX, float newY);
 	
 	public interface StateChangedListener{
 		void onStatePreparing();
