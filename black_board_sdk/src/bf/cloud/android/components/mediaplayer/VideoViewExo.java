@@ -91,8 +91,4 @@ public class VideoViewExo extends VideoViewBase{
 		}
 		setMeasuredDimension(width, height);
 	}
-	
-	private void setVideoWidthHeightRatio() {
-		requestLayout();
-	}
 }

@@ -77,8 +77,6 @@ public abstract class VideoViewBase extends TextureView implements
 	}
 
 	private void initVideoView() {
-		if (mIsVr)
-			setOnTouchListener(this);
 		mVideoFrame = (VideoFrame) getParent();
 		// getHolder().addCallback(this);
 		setSurfaceTextureListener(this);
@@ -311,6 +309,10 @@ public abstract class VideoViewBase extends TextureView implements
 	@Override
 	public void setVrFlag(boolean flag) {
 		mIsVr = flag;
+		if (mIsVr)
+			setOnTouchListener(this);
+		else
+			setOnTouchListener(null);
 	}
 
 	private boolean down = false;
@@ -319,6 +321,7 @@ public abstract class VideoViewBase extends TextureView implements
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
+		Log.d(TAG, "onTouch");
 		if (mIsVr) {
 			switch (event.getAction()) {
 			case MotionEvent.ACTION_DOWN:
