@@ -1,6 +1,5 @@
 package bf.cloud.black_board;
 
-import bf.cloud.android.modules.log.BFYLog;
 import bf.cloud.android.modules.p2p.BFStream;
 import bf.cloud.android.modules.p2p.BFStream.BFStreamMessageListener;
 import bf.cloud.android.modules.p2p.MediaCenter;
