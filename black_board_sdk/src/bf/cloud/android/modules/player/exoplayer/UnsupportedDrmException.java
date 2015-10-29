@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bf.cloud.android.modules.player.videoviewexo;
+package bf.cloud.android.modules.player.exoplayer;
 
 /**
  * Exception thrown when the required level of DRM is not supported.

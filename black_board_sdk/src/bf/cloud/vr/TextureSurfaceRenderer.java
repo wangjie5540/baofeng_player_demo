@@ -4,7 +4,7 @@ import android.graphics.SurfaceTexture;
 import android.opengl.EGL14;
 import android.opengl.GLUtils;
 import android.util.Log;
-import bf.cloud.android.modules.player.videoviewexo.HlsRendererBuilder;
+import bf.cloud.android.modules.player.exoplayer.HlsRendererBuilder;
 
 import javax.microedition.khronos.egl.EGL10;
 import javax.microedition.khronos.egl.EGLConfig;

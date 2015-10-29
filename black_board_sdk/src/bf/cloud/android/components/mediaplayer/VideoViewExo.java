@@ -66,7 +66,6 @@ public class VideoViewExo extends VideoViewBase{
     	mMediaPlayerProxy.setDisplay(mSurfaceTexture);
     	mVideoFrame = (VideoFrame) getParent();
     	mVideoFrame.showPlaceHolder(true);
-//    	mMediaPlayerProxy.prepare();
     	mCurrentState = STATE_PREPARED;
     	return 0;
 	}

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package bf.cloud.android.modules.player.videoviewexo;
+package bf.cloud.android.modules.player.exoplayer;
 
 import com.google.android.exoplayer.DefaultLoadControl;
 import com.google.android.exoplayer.LoadControl;
@@ -45,8 +45,8 @@ import com.google.android.exoplayer.upstream.UriDataSource;
 import com.google.android.exoplayer.util.ManifestFetcher;
 import com.google.android.exoplayer.util.Util;
 
-import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuilder;
-import bf.cloud.android.modules.player.videoviewexo.ExoVideoPlayer.RendererBuilderCallback;
+import bf.cloud.android.modules.player.exoplayer.ExoVideoPlayer.RendererBuilder;
+import bf.cloud.android.modules.player.exoplayer.ExoVideoPlayer.RendererBuilderCallback;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
