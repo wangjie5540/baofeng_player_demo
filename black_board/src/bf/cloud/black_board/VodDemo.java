@@ -1,5 +1,6 @@
 package bf.cloud.black_board;
 
+import bf.cloud.android.playutils.DecodeMode;
 import bf.cloud.android.playutils.VideoFrame;
 import bf.cloud.android.playutils.VodPlayer;
 import android.app.Activity;
@@ -17,6 +18,7 @@ public class VodDemo extends Activity {
 	private final String TAG = VodDemo.class.getSimpleName();
 	private VodPlayer mPlayer = null;
 	private VideoFrame mVideoFrame = null;
+	private Button btChangeDecodeMode = null;
 	private Button btStart = null;
 	private Button btStop = null;
 	private Button btPause = null;
@@ -45,6 +47,44 @@ public class VodDemo extends Activity {
 	private void init() {
 		mContext = this;
 		mVideoFrame = (VideoFrame) findViewById(R.id.video_frame);
+		btChangeDecodeMode = (Button)findViewById(R.id.change_decode_mode);
+		btChangeDecodeMode.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				String[] items = {"自动(ExoPlayer优先)", "软解(ffmpeg)"};
+				int checkedItem = -1;
+				Log.d(TAG, "mPlayer.getDecodeMode():" + mPlayer.getDecodeMode());
+				if (mPlayer.getDecodeMode() == DecodeMode.AUTO){
+					checkedItem = 0;
+				}else{
+					checkedItem = 1;
+				}
+				new AlertDialog.Builder(mContext)
+					.setSingleChoiceItems(items, checkedItem, null)
+					.setPositiveButton("确认", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+							mPlayer.stop();
+							int position = ((AlertDialog)dialog).getListView().getCheckedItemPosition();
+							if (position == 0){
+								mPlayer.setDecodeMode(DecodeMode.AUTO);
+							} else if (position == 1){
+								mPlayer.setDecodeMode(DecodeMode.SOFT);
+							}
+						}
+					})
+					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.dismiss();
+						}
+					}).show();
+			}
+		});
 		btStart = (Button) findViewById(R.id.start);
 		btStart.setOnClickListener(new OnClickListener() {
 

@@ -299,6 +299,8 @@ public abstract class VideoViewBase extends TextureView implements
 			int height) {
 		Log.d(TAG, "onSurfaceTextureSizeChanged width:" + width + "/height:"
 				+ height);
+		mSurfaceWidth = width;
+		mSurfaceHeight = height;
 		mSurfaceTexture = surface;
 	}
 

@@ -149,6 +149,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	public void setDecodeMode(DecodeMode decodeMode) {
 		if (decodeMode == null)
 			decodeMode = DecodeMode.AUTO;
+		mDecodeMode = decodeMode;
 		mVideoFrame.setDecodeMode(decodeMode);
 		mVideoView = mVideoFrame.getVideoView();
 	}

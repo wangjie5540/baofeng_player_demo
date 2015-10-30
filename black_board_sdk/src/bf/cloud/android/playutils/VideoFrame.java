@@ -49,7 +49,6 @@ public class VideoFrame extends FrameLayout {
 		// make view
 		if (mDecodeMode == DecodeMode.AUTO) {
 			mVideoViewBase = new VideoViewExo(mContext);
-			
 		} else {
 			mVideoViewBase = new VideoViewSw(mContext);
 		}

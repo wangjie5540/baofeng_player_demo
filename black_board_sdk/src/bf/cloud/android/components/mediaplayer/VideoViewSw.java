@@ -44,7 +44,7 @@ public class VideoViewSw extends VideoViewBase{
     		mMediaPlayerProxy.registStateChangedListener(mMediaPlayerStateChangedListener);
     	mMediaPlayerProxy.setDisplay(mSurfaceTexture);
     	mVideoFrame = (VideoFrame) getParent();
-//    	mVideoFrame.showPlaceHolder(true);
+    	mVideoFrame.showPlaceHolder(false);
     	mCurrentState = STATE_PREPARED;
 		return 0;
 	}

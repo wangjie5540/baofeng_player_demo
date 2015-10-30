@@ -18,6 +18,12 @@
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"
             android:orientation="vertical" >
+            
+            <Button
+                android:id="@+id/change_decode_mode"
+                android:layout_width="200dp"
+                android:layout_height="wrap_content"
+                android:text="设置解码模式" />
 
             <Button
                 android:id="@+id/start"
