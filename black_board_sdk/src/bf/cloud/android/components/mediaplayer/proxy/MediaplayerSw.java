@@ -193,7 +193,7 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 
 	@Override
 	public void resume() {
-		nativeResume();
+		nativePlayerStart();
 	}
 
 	@Override
@@ -216,8 +216,15 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 
 	@Override
 	public void setSurfaceSize(int width, int height) {
-		// TODO Auto-generated method stub
-
+		mSurfaceHeight = height;
+		mSurfaceWidth = width;
+		int sdlFormat = 0x15151002; // SDL_PIXELFORMAT_RGB565 by default
+		onNativeResize(mSurfaceWidth, mSurfaceHeight, sdlFormat);
+        if (!mIsSurfaceReady) {
+        	onNativeSurfaceChanged();
+        }
+		mIsSurfaceReady = true;
+        mIsPlayerSizeInited = true;
 	}
 
 	@Override
@@ -250,20 +257,17 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 
 	@Override
 	public void seekTo(int pos) {
-		// TODO Auto-generated method stub
-
+		nativePlayerSeekTo(pos);
 	}
 
 	@Override
 	public long getDuration() {
-		// TODO Auto-generated method stub
-		return 0;
+		return nativePlayerGetDuration();
 	}
 
 	@Override
 	public long getCurrentPosition() {
-		// TODO Auto-generated method stub
-		return 0;
+		return nativePlayerGetCurrentPosition();
 	}
 
 	@Override
@@ -279,6 +283,11 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 			sInstance.mHandler.obtainMessage(message, param, 0).sendToTarget();
 		}
 		return true;
+	}
+	
+	@Override
+	public void onSurfaceDestoryed() {
+		mIsSurfaceReady = false;
 	}
 	
 	// native function below

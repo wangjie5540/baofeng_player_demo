@@ -15,7 +15,7 @@ import android.widget.FrameLayout;
 
 public class VideoFrame extends FrameLayout {
 	private final String TAG = VideoFrame.class.getSimpleName();
-	private DecodeMode mDecodeMode = DecodeMode.SOFT;
+	private DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
 	private VideoViewBase mVideoViewBase = null;
 	private FrameLayout mPlaceHolder = null;
 	private Context mContext = null;

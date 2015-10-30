@@ -285,12 +285,17 @@ public abstract class VideoViewBase extends TextureView implements
 		mSurfaceWidth = width;
 		mSurfaceHeight = height;
 		mSurfaceTexture = surface;
+		if (mMediaPlayerProxy != null){
+			mMediaPlayerProxy.setSurfaceSize(mSurfaceWidth, mSurfaceHeight);
+		}
 	}
 
 	@Override
 	public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
 		Log.d(TAG, "onSurfaceTextureDestroyed");
 		mSurfaceTexture = null;
+		if (mMediaPlayerProxy != null)
+			mMediaPlayerProxy.onSurfaceDestoryed();
 		return false;
 	}
 
@@ -302,10 +307,14 @@ public abstract class VideoViewBase extends TextureView implements
 		mSurfaceWidth = width;
 		mSurfaceHeight = height;
 		mSurfaceTexture = surface;
+		if (mMediaPlayerProxy != null){
+			mMediaPlayerProxy.setSurfaceSize(mSurfaceWidth, mSurfaceHeight);
+		}
 	}
 
 	@Override
 	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
+		Log.d(TAG, "onSurfaceTextureUpdated");
 	}
 
 	@Override

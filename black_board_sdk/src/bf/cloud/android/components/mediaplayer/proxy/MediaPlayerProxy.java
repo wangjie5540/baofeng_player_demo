@@ -39,6 +39,8 @@ public abstract class MediaPlayerProxy {
 	public abstract void setDataSource(String path);
 
 	public abstract void setSurfaceSize(int width, int height);
+	
+	public abstract void onSurfaceDestoryed();
 
 	public abstract void prepare();
 

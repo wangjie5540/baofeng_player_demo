@@ -195,4 +195,10 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 		}
 	}
 
+	@Override
+	public void onSurfaceDestoryed() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }
