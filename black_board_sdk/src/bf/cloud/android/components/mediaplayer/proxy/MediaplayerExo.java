@@ -18,14 +18,12 @@ import bf.cloud.vr.VideoTextureSurfaceRenderer;
 
 public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.Listener{
 	private ExoVideoPlayer mPlayer = null;
-	private Surface mSurface = null;
 	private SizeChangedListener mSizeChangedListener = null;
-	private SurfaceTexture mSurfaceTexture = null;
 	private VideoTextureSurfaceRenderer mVideoRenderer = null;
 
 	public MediaplayerExo(Context context) {
+		super(context);
 		Log.d(TAG, "new MediaplayerExo");
-		mContext = context;
 	}
 	
 	@Override
@@ -69,7 +67,6 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 	public void prepare() {
 		if (!mPlayerInitilized){
 			if (mIsVr){
-				Log.d(TAG, "wangtonggui prepare");
 				Points.ps = RawResourceReader.readPoints(mContext, R.raw.points);
 				Points.index = RawResourceReader.readIndeces(mContext, R.raw.index);
 				mVideoRenderer  = new VideoTextureSurfaceRenderer(mContext,
@@ -148,12 +145,6 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 		
 	}
 
-	@Override
-	public void setDisplay(SurfaceTexture st) {
-		Log.d(TAG, "setDisplay mPlayer:" + mPlayer);
-		mSurfaceTexture  = st;
-	}
-	
 	public interface SizeChangedListener{
 		void onSizeChanged(float ratio);
 	}

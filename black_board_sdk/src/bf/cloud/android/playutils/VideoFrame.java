@@ -3,6 +3,7 @@ package bf.cloud.android.playutils;
 import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.components.mediaplayer.VideoViewExo;
+import bf.cloud.android.components.mediaplayer.VideoViewSw;
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChangedListener;
 import android.content.Context;
 import android.graphics.Color;
@@ -14,7 +15,7 @@ import android.widget.FrameLayout;
 
 public class VideoFrame extends FrameLayout {
 	private final String TAG = VideoFrame.class.getSimpleName();
-	private DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
+	private DecodeMode mDecodeMode = DecodeMode.SOFT;
 	private VideoViewBase mVideoViewBase = null;
 	private FrameLayout mPlaceHolder = null;
 	private Context mContext = null;
@@ -48,12 +49,12 @@ public class VideoFrame extends FrameLayout {
 		// make view
 		if (mDecodeMode == DecodeMode.AUTO) {
 			mVideoViewBase = new VideoViewExo(mContext);
-			mVideoViewBase.registMediaPlayerStateChangedListener(mStateChangedListener);
+			
 		} else {
-			// mVideoViewBase = new videoview
+			mVideoViewBase = new VideoViewSw(mContext);
 		}
 		// init view
-
+		mVideoViewBase.registMediaPlayerStateChangedListener(mStateChangedListener);
 		// add view
 		removeAllViews();
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(

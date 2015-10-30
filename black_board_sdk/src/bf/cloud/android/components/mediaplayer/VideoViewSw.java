@@ -1,5 +1,7 @@
 package bf.cloud.android.components.mediaplayer;
 
+import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerSw;
+import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -7,17 +9,14 @@ import android.util.Log;
 public class VideoViewSw extends VideoViewBase{
 	public VideoViewSw(Context context) {
 		super(context);
-		// TODO Auto-generated constructor stub
 	}
 	
 	public VideoViewSw(Context context, AttributeSet attrs) {
 		super(context, attrs);
-		// TODO Auto-generated constructor stub
 	}
 
 	public VideoViewSw(Context context, AttributeSet attrs, int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -27,6 +26,26 @@ public class VideoViewSw extends VideoViewBase{
             return -1;
         }
     	release(false);
+    	//now we can create the MediaPlayerProxy
+    	mMediaPlayerProxy = new MediaPlayerSw(mContext);
+    	mMediaPlayerProxy.setVrFlag(mIsVr);
+    	mMediaPlayerProxy.setDataSource(mPath);
+    	mMediaPlayerProxy.setSurfaceSize(mSurfaceWidth, mSurfaceHeight);
+//    	((MediaplayerExo)mMediaPlayerProxy).registSizeChangedListener(new SizeChangedListener() {
+//			
+//			@Override
+//			public void onSizeChanged(float ratio) {
+//				Log.d(TAG, "onSizeChanged ratio:" + ratio);
+//				mVideoAspectRatio = ratio;
+//				mHandler.sendEmptyMessage(0);
+//			}
+//		});
+    	if (mMediaPlayerStateChangedListener != null)
+    		mMediaPlayerProxy.registStateChangedListener(mMediaPlayerStateChangedListener);
+    	mMediaPlayerProxy.setDisplay(mSurfaceTexture);
+    	mVideoFrame = (VideoFrame) getParent();
+//    	mVideoFrame.showPlaceHolder(true);
+    	mCurrentState = STATE_PREPARED;
 		return 0;
 	}
 
