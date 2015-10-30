@@ -29,7 +29,7 @@ public class VodDemo extends Activity {
 	private Button btGetCurrentPosition = null;
 	private Button btGetDuration = null;
 	private Button btChangePlayerType = null;
-	private boolean mVrFlag = true;
+	private boolean mVrFlag = false;
 	private Context mContext = null;
 	// private String mUrls =
 	// "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";

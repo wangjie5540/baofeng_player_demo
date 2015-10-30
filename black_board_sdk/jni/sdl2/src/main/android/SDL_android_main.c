@@ -17,7 +17,7 @@
 extern void SDL_Android_Init(JNIEnv* env, jclass cls);
 
 /* Start up the SDL app */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeInit(JNIEnv* env, jclass cls, jobject obj)
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativeInit(JNIEnv* env, jclass cls, jobject obj)
 {
     /* This interface could expand with ABI negotiation, calbacks, etc. */
     SDL_Android_Init(env, cls);

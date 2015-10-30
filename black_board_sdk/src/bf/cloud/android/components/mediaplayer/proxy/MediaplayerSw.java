@@ -243,12 +243,6 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 	}
 
 	@Override
-	public void setDisplay(SurfaceTexture st) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public void clearDisplay() {
 		// TODO Auto-generated method stub
 
@@ -286,7 +280,7 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 		}
 		return true;
 	}
-
+	
 	// native function below
 	private static native boolean nativeInit();
 

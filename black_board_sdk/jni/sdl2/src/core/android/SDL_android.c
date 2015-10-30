@@ -41,7 +41,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #define LOG_TAG "SDL_android"
-/* #define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__) */
+//#define LOGI(...)  __android_log_print(ANDROID_LOG_INFO,LOG_TAG,__VA_ARGS__)
 /* #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__) */
 #define LOGI(...) do {} while (false)
 #define LOGE(...) do {} while (false)
@@ -117,6 +117,7 @@ void SDL_Android_Init(JNIEnv* mEnv, jclass cls)
     midGetNativeSurface =
 		(*mEnv)->GetStaticMethodID(mEnv, mActivityClass,
         "getNativeSurface","()Landroid/view/Surface;");
+    LOGI("midGetNativeSurface %d", midGetNativeSurface);
 
     midAudioInit = 
 		(*mEnv)->GetStaticMethodID(mEnv, mActivityClass,
@@ -144,7 +145,7 @@ void SDL_Android_Init(JNIEnv* mEnv, jclass cls)
 }
 
 /* Resize */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeResize(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeResize(
 	JNIEnv* env, jclass jcls,
 	jint width, jint height, jint format)
 {
@@ -154,7 +155,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeResize
 }
 
 // Paddown
-int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativePadDown(
+int Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativePadDown(
     JNIEnv* env, jclass jcls,
     jint device_id, jint keycode)
 {
@@ -162,7 +163,7 @@ int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativePadDown
 }
 
 // Padup
-int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativePadUp(
+int Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativePadUp(
     JNIEnv* env, jclass jcls,
     jint device_id, jint keycode)
 {
@@ -170,7 +171,7 @@ int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativePadUp(
 }
 
 /* Joy */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeJoy(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeJoy(
     JNIEnv* env, jclass jcls,
     jint device_id, jint axis, jfloat value)
 {
@@ -178,7 +179,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeJoy(
 }
 
 /* POV Hat */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeHat(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeHat(
     JNIEnv* env, jclass jcls,
     jint device_id, jint hat_id, jint x, jint y)
 {
@@ -186,7 +187,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeHat(
 }
 
 
-int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeAddJoystick(
+int Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativeAddJoystick(
     JNIEnv* env, jclass jcls,
     jint device_id, jstring device_name, jint is_accelerometer, 
     jint nbuttons, jint naxes, jint nhats, jint nballs)
@@ -201,7 +202,7 @@ int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeAddJoysti
     return retval;
 }
 
-int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeRemoveJoystick(
+int Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativeRemoveJoystick(
     JNIEnv* env, jclass jcls, jint device_id)
 {
     return Android_RemoveJoystick(device_id);
@@ -209,7 +210,7 @@ int Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeRemoveJoy
 
 
 /* Surface Created */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeSurfaceChanged(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeSurfaceChanged(
 	JNIEnv* env, jclass jcls)
 {
     SDL_WindowData *data;
@@ -239,7 +240,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeSurfac
 }
 
 /* Surface Destroyed */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeSurfaceDestroyed(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeSurfaceDestroyed(
 	JNIEnv* env, jclass jcls)
 {
     /* We have to clear the current context and destroy the egl surface here
@@ -267,7 +268,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeSurfac
 }
 
 /* Keydown */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeKeyDown(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeKeyDown(
 	JNIEnv* env, jclass jcls,
 	jint keycode)
 {
@@ -275,7 +276,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeKeyDow
 }
 
 /* Keyup */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeKeyUp(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeKeyUp(
 	JNIEnv* env, jclass jcls, 
 	jint keycode)
 {
@@ -283,7 +284,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeKeyUp(
 }
 
 /* Keyboard Focus Lost */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeKeyboardFocusLost(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeKeyboardFocusLost(
 	JNIEnv* env, jclass jcls)
 {
     /* Calling SDL_StopTextInput will take care of hiding the keyboard and cleaning up the DummyText widget */
@@ -292,7 +293,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeKeyboa
 
 
 /* Touch */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeTouch(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeTouch(
 	JNIEnv* env, jclass jcls,
 	jint touch_device_id_in, jint pointer_finger_id_in,
 	jint action, jfloat x, jfloat y, jfloat p)
@@ -301,7 +302,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeTouch(
 }
 
 /* Accelerometer */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeAccel(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_onNativeAccel(
 	JNIEnv* env, jclass jcls,
 	jfloat x, jfloat y, jfloat z)
 {
@@ -312,14 +313,14 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_onNativeAccel(
 }
 
 /* Low memory */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeLowMemory(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativeLowMemory(
 	JNIEnv* env, jclass cls)
 {
     SDL_SendAppEvent(SDL_APP_LOWMEMORY);
 }
 
 /* Quit */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeQuit(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativeQuit(
 	JNIEnv* env, jclass cls)
 {
     /* Discard previous events. The user should have handled state storage
@@ -335,7 +336,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeQuit(
 }
 
 /* Pause */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativePause(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativePause(
 	JNIEnv* env, jclass cls)
 {
     __android_log_print(ANDROID_LOG_VERBOSE, "SDL", "nativePause()");
@@ -352,7 +353,7 @@ void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativePause(
 }
 
 /* Resume */
-void Java_bf_cloud_android_modules_player_videoviewsd_VideoViewSw_nativeResume(
+void Java_bf_cloud_android_components_mediaplayer_proxy_MediaPlayerSw_nativeResume(
 	JNIEnv* env, jclass cls)
 {
     __android_log_print(ANDROID_LOG_VERBOSE, "SDL", "nativeResume()");
@@ -1093,6 +1094,7 @@ int Android_JNI_SendMessage(int message, int param)
     if (!env) {
         return -1;
     }
+    LOGI("mActivityClass = %d", mActivityClass);
     jmethodID mid = (*env)->GetStaticMethodID(env, mActivityClass, "sendMessage", "(II)Z");
     if (!mid) {
         return -1;
