@@ -1,5 +1,6 @@
 package bf.cloud.android.components.mediaplayer.proxy;
 
+import bf.cloud.vr.VideoTextureSurfaceRenderer;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.util.Log;
@@ -23,6 +24,7 @@ public abstract class MediaPlayerProxy {
 	protected Context mContext = null;
 	protected Surface mSurface = null;
 	protected SurfaceTexture mSurfaceTexture = null;
+	protected VideoTextureSurfaceRenderer mVideoRenderer = null;
 
 	// Todo:播放器状态
 

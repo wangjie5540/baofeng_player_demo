@@ -31,15 +31,6 @@ public class VideoViewSw extends VideoViewBase{
     	mMediaPlayerProxy.setVrFlag(mIsVr);
     	mMediaPlayerProxy.setDataSource(mPath);
     	mMediaPlayerProxy.setSurfaceSize(mSurfaceWidth, mSurfaceHeight);
-//    	((MediaplayerExo)mMediaPlayerProxy).registSizeChangedListener(new SizeChangedListener() {
-//			
-//			@Override
-//			public void onSizeChanged(float ratio) {
-//				Log.d(TAG, "onSizeChanged ratio:" + ratio);
-//				mVideoAspectRatio = ratio;
-//				mHandler.sendEmptyMessage(0);
-//			}
-//		});
     	if (mMediaPlayerStateChangedListener != null)
     		mMediaPlayerProxy.registStateChangedListener(mMediaPlayerStateChangedListener);
     	mMediaPlayerProxy.setDisplay(mSurfaceTexture);

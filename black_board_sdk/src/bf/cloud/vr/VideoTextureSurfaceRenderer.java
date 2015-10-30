@@ -232,7 +232,7 @@ public class VideoTextureSurfaceRenderer extends TextureSurfaceRenderer implemen
     {
         int error;
         while ((error = GLES20.glGetError()) != GLES20.GL_NO_ERROR) {
-            Log.e("SurfaceTest", op + ": glError " + GLUtils.getEGLErrorString(error));
+            Log.d(TAG, op + ": glError " + GLUtils.getEGLErrorString(error));
         }
     }
 

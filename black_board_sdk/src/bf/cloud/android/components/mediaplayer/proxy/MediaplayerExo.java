@@ -19,7 +19,6 @@ import bf.cloud.vr.VideoTextureSurfaceRenderer;
 public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.Listener{
 	private ExoVideoPlayer mPlayer = null;
 	private SizeChangedListener mSizeChangedListener = null;
-	private VideoTextureSurfaceRenderer mVideoRenderer = null;
 
 	public MediaplayerExo(Context context) {
 		super(context);
@@ -71,7 +70,7 @@ public class MediaplayerExo extends MediaPlayerProxy implements ExoVideoPlayer.L
 				Points.index = RawResourceReader.readIndeces(mContext, R.raw.index);
 				mVideoRenderer  = new VideoTextureSurfaceRenderer(mContext,
 						mSurfaceTexture, mSurfaceWidth,
-						mSurfaceHeight, "BfCloudPlayer", mPath);
+						mSurfaceHeight, BFYConst.USUER_AGENT, mPath);
 				mSurface = new Surface(mVideoRenderer.getSurfaceTexture());
 				mPlayer = new ExoVideoPlayer(mVideoRenderer);
 				mPlayer.setSurface(mSurface);

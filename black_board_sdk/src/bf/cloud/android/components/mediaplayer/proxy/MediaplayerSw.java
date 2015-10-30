@@ -1,5 +1,11 @@
 package bf.cloud.android.components.mediaplayer.proxy;
 
+import bf.cloud.android.base.BFYConst;
+import bf.cloud.android.modules.player.exoplayer.ExoVideoPlayer;
+import bf.cloud.black_board_sdk.R;
+import bf.cloud.vr.Points;
+import bf.cloud.vr.RawResourceReader;
+import bf.cloud.vr.VideoTextureSurfaceRenderer;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.media.AudioFormat;
@@ -80,7 +86,9 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 	
 	protected static Surface getNativeSurface() {
     	if (sInstance != null) {
-    		sInstance.mSurface = new Surface(sInstance.mSurfaceTexture);
+    		if (!sInstance.mIsVr){
+    			sInstance.mSurface = new Surface(sInstance.mSurfaceTexture);
+    		}
     		return sInstance.mSurface;
     	} else {
     		return null;
@@ -231,12 +239,17 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 	public void prepare() {
 		if (!mPlayerInitilized) {
 			if (mIsVr) {
-
-			} else {
-				nativePlayerSetSource(mPath);
-				nativeInit();
-				nativePlayerInit();
-			}
+				Points.ps = RawResourceReader.readPoints(mContext, R.raw.points);
+				Points.index = RawResourceReader.readIndeces(mContext, R.raw.index);
+				mVideoRenderer  = new VideoTextureSurfaceRenderer(mContext,
+						mSurfaceTexture, mSurfaceWidth,
+						mSurfaceHeight, BFYConst.USUER_AGENT, null);
+				mSurface = new Surface(mVideoRenderer.getSurfaceTexture());
+			} 
+			nativePlayerSetSource(mPath);
+			nativeInit();
+			nativePlayerInit();
+			
 			mPlayerInitilized = true;
 		} else {
 			Log.d(TAG, "PlayerInitilized has been inited");
