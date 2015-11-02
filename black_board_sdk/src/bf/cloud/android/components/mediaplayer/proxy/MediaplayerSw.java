@@ -114,7 +114,6 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
             
             mAudioTrack.play();
         }
-       
         return 0;
     }
 	
@@ -242,7 +241,7 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 				Points.ps = RawResourceReader.readPoints(mContext, R.raw.points);
 				Points.index = RawResourceReader.readIndeces(mContext, R.raw.index);
 				mVideoRenderer  = new VideoTextureSurfaceRenderer(mContext,
-						mSurfaceTexture, mSurfaceWidth,
+						sInstance.mSurfaceTexture, mSurfaceWidth,
 						mSurfaceHeight, BFYConst.USUER_AGENT, null);
 				mSurface = new Surface(mVideoRenderer.getSurfaceTexture());
 			} 

@@ -11,6 +11,7 @@ import android.media.AudioManager;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.View.OnTouchListener;
@@ -314,7 +315,7 @@ public abstract class VideoViewBase extends TextureView implements
 
 	@Override
 	public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-		Log.d(TAG, "onSurfaceTextureUpdated");
+//		Log.d(TAG, "onSurfaceTextureUpdated");
 	}
 
 	@Override
