@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<bf.cloud.android.playutils.VodPlayer xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/vod_player"
+    android:background="@color/vp_black"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+</bf.cloud.android.playutils.VodPlayer>

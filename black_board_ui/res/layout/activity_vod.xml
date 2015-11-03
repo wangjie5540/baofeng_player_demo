@@ -12,6 +12,7 @@
     
     <Button
         android:id="@+id/start"
+        android:onClick="onClick"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:text="start" />

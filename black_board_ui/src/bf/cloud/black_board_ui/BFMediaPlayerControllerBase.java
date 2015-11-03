@@ -23,58 +23,57 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected LayoutInflater mLayoutInflater = null;
 
 	private Context mContext = null;
-	private VideoFrame mVideoFrame = null;
 	private FrameLayout mPlaceHoler = null;
 	private FrameLayout mErrorFrame = null;
 	private FrameLayout mStatusController = null;
-	private BasePlayer mBasePlayer = null;
 
 	public BFMediaPlayerControllerBase(Context context) {
 		super(context);
 		mContext = context;
+		mLayoutInflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	public BFMediaPlayerControllerBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = context;
+		mLayoutInflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	public BFMediaPlayerControllerBase(Context context, AttributeSet attrs,
 			int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		mContext = context;
+		mLayoutInflater = (LayoutInflater) mContext
+				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
 	/**
 	 * ≥ı ºªØcommonÕº≤„
 	 */
 	protected void initViews() {
-		removeAllViews();
-		setBackgroundColor(Color.WHITE);
-		mLayoutInflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		layoutParams.gravity = Gravity.CENTER;
 
-		//  ”∆µ≤„
-		mVideoFrame = (VideoFrame) mLayoutInflater.inflate(
-				R.layout.vp_video_frame, this, false);
-		addView(mVideoFrame, layoutParams);
 		// ª∫≥Â≤„
 		mStatusController = (FrameLayout) mLayoutInflater.inflate(
 				R.layout.vp_status_controller, this, false);
+		mStatusController.setVisibility(View.INVISIBLE);
 		addView(mStatusController, layoutParams);
 		// ¥ÌŒÛÃ· æ≤„
 		mErrorFrame = (FrameLayout) mLayoutInflater.inflate(
 				R.layout.vp_error_frame, this, false);
+		mErrorFrame.setVisibility(View.INVISIBLE);
 		addView(mErrorFrame, layoutParams);
 		// ’⁄µ≤≤„
 		mPlaceHoler = (FrameLayout) mLayoutInflater.inflate(
 				R.layout.vp_place_holder, this, false);
+		mPlaceHoler.setVisibility(View.INVISIBLE);
 		addView(mPlaceHoler, layoutParams);
 		
-		test();
+//		test();
 	}
 
 	private void test() {
@@ -84,15 +83,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		// mVideoFrame.setVisibility(View.INVISIBLE);
 	}
 	
-	public void attachPlayer(BasePlayer bp){
-		mBasePlayer = bp;
-		if (mBasePlayer == null){
+	protected void attachPlayer(BasePlayer bp){
+		if (bp == null){
 			Log.d(TAG, "mBasePlayer is null");
 			throw new NullPointerException("mBasePlayer is null");
 		}
 		//attach Listeners
-		mBasePlayer.registPlayEventListener(this);
-		mBasePlayer.registPlayErrorListener(this);
+		bp.registPlayEventListener(this);
+		bp.registPlayErrorListener(this);
 		//attach functions
 		
 	}
