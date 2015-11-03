@@ -15,8 +15,8 @@ import android.widget.FrameLayout;
 
 public class VideoFrame extends FrameLayout {
 	private final String TAG = VideoFrame.class.getSimpleName();
-	private DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
-	private VideoViewBase mVideoViewBase = null;
+	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
+	protected VideoViewBase mVideoView = null;
 	private FrameLayout mPlaceHolder = null;
 	private Context mContext = null;
 	private StateChangedListener mStateChangedListener = null;
@@ -48,18 +48,18 @@ public class VideoFrame extends FrameLayout {
 	public void updateViews() {
 		// make view
 		if (mDecodeMode == DecodeMode.AUTO) {
-			mVideoViewBase = new VideoViewExo(mContext);
+			mVideoView = new VideoViewExo(mContext);
 		} else {
-			mVideoViewBase = new VideoViewSw(mContext);
+			mVideoView = new VideoViewSw(mContext);
 		}
 		// init view
-		mVideoViewBase.registMediaPlayerStateChangedListener(mStateChangedListener);
+		mVideoView.registMediaPlayerStateChangedListener(mStateChangedListener);
 		// add view
 		removeAllViews();
 		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		params.gravity = Gravity.CENTER;
-		addView(mVideoViewBase, params);
+		addView(mVideoView, params);
 		
 		mPlaceHolder = new FrameLayout(mContext);
 		params = new FrameLayout.LayoutParams(
@@ -70,13 +70,9 @@ public class VideoFrame extends FrameLayout {
 		invalidate();
 	}
 
-	public void setDecodeMode(DecodeMode mode) {
+	protected void setDecodeMode(DecodeMode mode) {
 		mDecodeMode = mode;
 		updateViews();
-	}
-	
-	public VideoViewBase getVideoView(){
-		return mVideoViewBase;
 	}
 	
 	public void showPlaceHolder(boolean flag){

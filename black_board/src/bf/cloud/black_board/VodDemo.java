@@ -1,7 +1,6 @@
 package bf.cloud.black_board;
 
 import bf.cloud.android.playutils.DecodeMode;
-import bf.cloud.android.playutils.VideoFrame;
 import bf.cloud.android.playutils.VodPlayer;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 public class VodDemo extends Activity {
 	private final String TAG = VodDemo.class.getSimpleName();
 	private VodPlayer mPlayer = null;
-	private VideoFrame mVideoFrame = null;
 	private Button btChangeDecodeMode = null;
 	private Button btStart = null;
 	private Button btStop = null;
@@ -46,7 +44,6 @@ public class VodDemo extends Activity {
 
 	private void init() {
 		mContext = this;
-		mVideoFrame = (VideoFrame) findViewById(R.id.video_frame);
 		btChangeDecodeMode = (Button)findViewById(R.id.change_decode_mode);
 		btChangeDecodeMode.setOnClickListener(new OnClickListener() {
 			
@@ -217,7 +214,7 @@ public class VodDemo extends Activity {
 					}).show();
 			}
 		});
-		mPlayer = new VodPlayer(mVideoFrame, "/sdcard/");
+		mPlayer = (VodPlayer) findViewById(R.id.vod_player);
 	}
 
 	@Override

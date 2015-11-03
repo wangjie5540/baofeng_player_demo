@@ -7,9 +7,9 @@ import android.os.HandlerThread;
 import android.os.Message;
 import android.os.Process;
 import android.support.annotation.Nullable;
+import android.util.AttributeSet;
 import android.util.Log;
 import bf.cloud.android.base.BFYConst;
-import bf.cloud.android.components.mediaplayer.VideoViewBase;
 import bf.cloud.android.components.mediaplayer.proxy.BFVolumeManager;
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.MediaPlayerErrorListener;
 import bf.cloud.android.components.mediaplayer.proxy.MediaPlayerProxy.StateChangedListener;
@@ -24,17 +24,14 @@ import bf.cloud.android.utils.BFYSysUtils;
 /**
  * Created by wangtonggui
  */
-public abstract class BasePlayer implements BFStreamMessageListener,
+public abstract class BasePlayer extends VideoFrame implements BFStreamMessageListener,
 		BFP2PListener, MediaPlayerErrorListener, StateChangedListener{
 	private final String TAG = BasePlayer.class.getSimpleName();
 	
 	private Context mContext = null;
-	protected VideoViewBase mVideoView = null;
 	protected BFYVideoInfo mVideoInfo = null;
 	protected String mToken = "";
 	// 这里的变化必须要对应一个变化mode的消息
-	protected DecodeMode mDecodeMode = BFYConst.DEFAULT_DECODE_MODE;
-	protected VideoFrame mVideoFrame = null;
 	private BFStream mBfStream = null;
 	private String mDataSource = null;
 	private PlayerHandlerThread mPlayerHandlerThread = null;
@@ -48,6 +45,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	private boolean mForceStartFlag = false;
 	private boolean mIsVr = false;
 	private VideoDefinition mVideoDefinition = VideoDefinition.UNKNOWN;
+	private String mSettingDataPath = BFYConst.LOG_PATH;
 
 	private static final int MSG_STREAM_CREATE = 10000;
 	private static final int MSG_STREAM_START = 10001;
@@ -88,21 +86,33 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		}
 	});
 
-	protected BasePlayer(VideoFrame vf, String settingDataPath) {
+	protected BasePlayer(Context c) {
+		super(c);
+		mContext = c;
+		init();
+	}
+	
+	protected BasePlayer(Context c, AttributeSet attrs){
+		super(c, attrs);
+		mContext = c;
+		init();
+	}
+	
+	protected BasePlayer(Context c, AttributeSet attrs, int defStyleAttr){
+		super(c, attrs, defStyleAttr);
+		mContext = c;
+		init();
+	}
+	
+	private void init(){
 		mPlayerHandlerThread = new PlayerHandlerThread(this.toString(),
 				Process.THREAD_PRIORITY_FOREGROUND);
 		mPlayerHandlerThread.start();
-		if (vf == null) {
-			throw new NullPointerException("VideoFrame is null");
-		}
-		if (settingDataPath == null || settingDataPath.length() == 0) {
+		if (mSettingDataPath == null || mSettingDataPath.length() == 0) {
 			throw new NullPointerException("settingDataPath is invailid");
 		}
-		mVideoFrame = vf;
-		mContext = mVideoFrame.getContext();
-		mVideoView = mVideoFrame.getVideoView();
-		mVideoFrame.registMediaPlayerStateChangedListener(this);
-		mBfStream = new BFStream("/sdcard");
+		registMediaPlayerStateChangedListener(this);
+		mBfStream = new BFStream(mSettingDataPath);
 		mBfStream.registerStreamListener(this);
 		mBfStream.registerP2PListener(this);
 		mBFVolumeManager = BFVolumeManager.getInstance(mContext);
@@ -136,11 +146,10 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	}
 
 	/**
-	 * 设置用于存储信息的本地目录(此接口已废弃)
+	 * 设置用于存储信息的本地目录
 	 */
-	@Deprecated
 	public void setDataPath(String dataPath) {
-
+		mSettingDataPath = dataPath;
 	}
 
 	/**
@@ -149,9 +158,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 	public void setDecodeMode(DecodeMode decodeMode) {
 		if (decodeMode == null)
 			decodeMode = DecodeMode.AUTO;
-		mDecodeMode = decodeMode;
-		mVideoFrame.setDecodeMode(decodeMode);
-		mVideoView = mVideoFrame.getVideoView();
+		super.setDecodeMode(decodeMode);
 	}
 
 	/**
@@ -178,7 +185,6 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 				}
 			}
 		}
-		mVideoView = mVideoFrame.getVideoView();
 		if (!isMediaCenterInited && mState == STATE.IDLE) {
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
 		} else if (isMediaCenterInited) {
@@ -220,7 +226,7 @@ public abstract class BasePlayer implements BFStreamMessageListener,
 		Log.d(TAG, "stop");
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
 		mVideoView.stop();
-		mVideoFrame.updateViews();
+		updateViews();
 		mState = STATE.IDLE;
 	}
 

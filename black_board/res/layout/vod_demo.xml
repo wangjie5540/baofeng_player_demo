@@ -4,8 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <bf.cloud.android.playutils.VideoFrame
-        android:id="@+id/video_frame"
+    <bf.cloud.android.playutils.VodPlayer
+        android:id="@+id/vod_player"
         android:layout_width="match_parent"
         android:layout_height="300dp" />
 

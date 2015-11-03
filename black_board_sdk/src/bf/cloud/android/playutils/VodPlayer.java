@@ -1,12 +1,22 @@
 package bf.cloud.android.playutils;
 
+import android.content.Context;
+import android.util.AttributeSet;
 import bf.cloud.android.modules.stat.StatInfo;
 import bf.cloud.android.modules.stat.StatReporter;
 
 public class VodPlayer extends BasePlayer{
 	
-	public VodPlayer(VideoFrame vf, String settingDataPath) {
-		super(vf, settingDataPath);
+	public VodPlayer(Context c) {
+		super(c);
+	}
+	
+	public VodPlayer(Context c, AttributeSet attrs){
+		super(c, attrs);
+	}
+	
+	public VodPlayer(Context c, AttributeSet attrs, int defStyleAttr) {
+		super(c, attrs, defStyleAttr);
 	}
 	
 	@Override

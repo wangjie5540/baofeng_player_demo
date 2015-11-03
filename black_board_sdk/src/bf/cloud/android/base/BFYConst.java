@@ -9,6 +9,8 @@ public class BFYConst {
     public static final String USUER_AGENT = "BfCloudPlayer";
     // 默认解码方式
     public static final DecodeMode DEFAULT_DECODE_MODE = DecodeMode.AUTO;
+    //日志存储目录(最好通过System类获取)
+    public static final String LOG_PATH = "/sdcard/";
     // 播放画面区域默认长宽比 (height / width) 
     public static final double DEFAULT_VIDEO_VIEW_ASPECT_RATIO = ((double)9 / 16);
     //p2p默认端口

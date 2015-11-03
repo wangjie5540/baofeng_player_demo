@@ -32,8 +32,8 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
 	private static boolean mIsPaused = false;
     private static boolean mIsSurfaceReady = false;
     private static boolean mIsPlayerSizeInited = false;
-    private static AudioTrack mAudioTrack;
-    private static Thread mEventLoopThread;
+    private static AudioTrack mAudioTrack = null;
+    private static Thread mEventLoopThread = null;
 	// messages
 	private final int MSG_STATE_CHANGED = 1;
 	private final int MSG_ERROR = 2;
