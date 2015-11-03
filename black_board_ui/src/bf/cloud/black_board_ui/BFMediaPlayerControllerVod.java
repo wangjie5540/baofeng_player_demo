@@ -1,5 +1,6 @@
 package bf.cloud.black_board_ui;
 
+import bf.cloud.android.playutils.PlayTaskType;
 import bf.cloud.android.playutils.VodPlayer;
 import android.content.Context;
 import android.graphics.Color;
@@ -13,9 +14,9 @@ import android.widget.TextView;
 public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	private VodPlayer mVodPlayer = null;
 	private RelativeLayout mPlayCompleteFrame = null;
-	// ²¥·Å½áÊø²ãµÄ°´Å¥
+	// æ’­æ”¾ç»“æŸå±‚çš„æŒ‰é’®
 	private View btPlayCompleteFrameStart = null;
-	// 
+	// æç¤ºè¯­
 	private TextView tvPlayCompleteFrameMessage = null;
 
 	public BFMediaPlayerControllerVod(Context context) {
@@ -40,13 +41,13 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	@Override
 	public void onError(int errorCode) {
 		super.onError(errorCode);
-		//×ÓÀà´¦Àí¸ö±ğ´íÎóÂë
+		//å­ç±»å¤„ç†ä¸ªåˆ«é”™è¯¯ç 
 	}
 
 	@Override
 	public void onEvent(int eventCode) {
 		super.onEvent(eventCode);
-		//×ÓÀà´¦Àí¸ö±ğÊÂ¼ş
+		//å­ç±»å¤„ç†ä¸ªåˆ«äº‹ä»¶
 	}
 
 	@Override
@@ -55,12 +56,12 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		layoutParams.gravity = Gravity.CENTER;
-		// ÊÓÆµ²ãÔÚ×îÏÂ²ã
+		// è§†é¢‘å±‚åœ¨æœ€ä¸‹å±‚
 		mVodPlayer = (VodPlayer) mLayoutInflater.inflate(
 				R.layout.vp_video_vod_player, this, false);
 		mVodPlayer.setBackgroundColor(Color.BLACK);
 		addView(mVodPlayer, layoutParams);
-		// ²¥·Å½áÊø²ã
+		// æ’­æ”¾ç»“æŸå±‚
 		mPlayCompleteFrame = (RelativeLayout) mLayoutInflater.inflate(
 				R.layout.vp_play_complete, this, false);
 		initPlayCompleteFrame();
@@ -76,7 +77,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			@Override
 			public void onClick(View v) {
 				if (mVodPlayer != null) {
-					// Èç¹ûÏ£ÍûÎŞÂÛÔÚÊ²Ã´ÍøÂçÏÂ¶¼²¥·ÅÊÓÆµ£¬¾ÍÉèÖÃÕâ¸ö±êÖ¾
+					// å¦‚æœå¸Œæœ›æ— è®ºåœ¨ä»€ä¹ˆç½‘ç»œä¸‹éƒ½æ’­æ”¾è§†é¢‘ï¼Œå°±è®¾ç½®è¿™ä¸ªæ ‡å¿—Ö¾
 //					mVodPlayer.setForceStartFlag(true);
 					mVodPlayer.stop();
 					mVodPlayer.start();
@@ -91,5 +92,17 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	
 	public VodPlayer getVodPlayer(){
 		return mVodPlayer;
+	}
+
+	@Override
+	protected void showErrorFrame(int errorCode) {
+		mPlayErrorManager.setErrorCode(errorCode);
+		TextView tipsTv = (TextView) mErrorFrame.findViewById(R.id.error_message_textview);
+		String tips = mPlayErrorManager.getErrorShowTips(PlayTaskType.VOD);
+		tipsTv.setText(tips);
+		TextView codeTv = (TextView) mErrorFrame.findViewById(R.id.error_code_textview);
+		String codeText = "é”™è¯¯ä»£ç ï¼š" + errorCode;
+		codeTv.setText(codeText);
+		mErrorFrame.setVisibility(View.VISIBLE);
 	}
 }

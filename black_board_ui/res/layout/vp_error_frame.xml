@@ -1,7 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent" >
-    
 
-</FrameLayout>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#080808">
+
+    <ImageView
+            android:id="@+id/error_backButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="15dip"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/vp_back"/>
+    
+    <ImageButton
+        android:id="@+id/error_play_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_gravity="center"
+        android:background="@drawable/vp_play_complete_selector" />
+
+    <TextView
+        android:id="@+id/error_message_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/error_play_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"        
+        android:textColor="@color/vp_color_text_tips"        
+        android:textSize="@dimen/vp_text_size_smallest" />
+    
+    <TextView
+        android:id="@+id/error_code_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/error_message_textview"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="8dp"        
+        android:textColor="@color/vp_color_text_tips"        
+        android:textSize="@dimen/vp_text_size_tiny" />
+    
+</RelativeLayout>

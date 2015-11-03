@@ -3,15 +3,16 @@ package bf.cloud.black_board_ui;
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.playutils.BasePlayer;
-import bf.cloud.android.playutils.VideoFrame;
 import android.content.Context;
-import android.graphics.Color;
+import android.os.Handler;
+import android.os.Message;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		PlayErrorListener, PlayEventListener {
@@ -22,88 +23,145 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected int mVideoType = VIDEO_TYPE_VOD;
 	protected LayoutInflater mLayoutInflater = null;
 
-	private Context mContext = null;
-	private FrameLayout mPlaceHoler = null;
-	private FrameLayout mErrorFrame = null;
-	private FrameLayout mStatusController = null;
+	protected Context mContext = null;
+	protected FrameLayout mPlaceHoler = null;
+	protected RelativeLayout mErrorFrame = null;
+	protected FrameLayout mStatusController = null;
+	private EventHandler mEventHandler = new EventHandler();
+	private ErrorHandler mErrorHandler = new ErrorHandler();
+	protected PlayErrorManager mPlayErrorManager = null;
 
 	public BFMediaPlayerControllerBase(Context context) {
 		super(context);
 		mContext = context;
-		mLayoutInflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		init();
 	}
 
 	public BFMediaPlayerControllerBase(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		mContext = context;
-		mLayoutInflater = (LayoutInflater) mContext
-				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		init();
 	}
 
 	public BFMediaPlayerControllerBase(Context context, AttributeSet attrs,
 			int defStyleAttr) {
 		super(context, attrs, defStyleAttr);
 		mContext = context;
+		init();
+	}
+	
+	private void init(){
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		mPlayErrorManager = new PlayErrorManager();
 	}
 
 	/**
-	 * ≥ı ºªØcommonÕº≤„
+	 * ÂàùÂßãÂåñcommonÂõæÂ±Ç
 	 */
 	protected void initViews() {
 		FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		layoutParams.gravity = Gravity.CENTER;
 
-		// ª∫≥Â≤„
+		// ÁºìÂÜ≤Â±Ç
 		mStatusController = (FrameLayout) mLayoutInflater.inflate(
 				R.layout.vp_status_controller, this, false);
 		mStatusController.setVisibility(View.INVISIBLE);
 		addView(mStatusController, layoutParams);
-		// ¥ÌŒÛÃ· æ≤„
-		mErrorFrame = (FrameLayout) mLayoutInflater.inflate(
-				R.layout.vp_error_frame, this, false);
-		mErrorFrame.setVisibility(View.INVISIBLE);
-		addView(mErrorFrame, layoutParams);
-		// ’⁄µ≤≤„
+		// ÈÅÆÊå°Â±Ç
 		mPlaceHoler = (FrameLayout) mLayoutInflater.inflate(
 				R.layout.vp_place_holder, this, false);
 		mPlaceHoler.setVisibility(View.INVISIBLE);
 		addView(mPlaceHoler, layoutParams);
 		
-//		test();
+		RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(
+				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+		// ÈîôËØØÊèêÁ§∫Â±Ç
+		mErrorFrame = (RelativeLayout) mLayoutInflater.inflate(
+				R.layout.vp_error_frame, this, false);
+		mErrorFrame.setVisibility(View.INVISIBLE);
+		addView(mErrorFrame, layoutParams1);
 	}
 
-	private void test() {
-		mPlaceHoler.setVisibility(View.INVISIBLE);
-		mErrorFrame.setVisibility(View.INVISIBLE);
-		// mStatusController.setVisibility(View.INVISIBLE);
-		// mVideoFrame.setVisibility(View.INVISIBLE);
-	}
-	
-	protected void attachPlayer(BasePlayer bp){
-		if (bp == null){
+	protected void attachPlayer(BasePlayer bp) {
+		if (bp == null) {
 			Log.d(TAG, "mBasePlayer is null");
 			throw new NullPointerException("mBasePlayer is null");
 		}
-		//attach Listeners
+		// attach Listeners
 		bp.registPlayEventListener(this);
 		bp.registPlayErrorListener(this);
-		//attach functions
-		
+		// attach functions
+
+	}
+
+	private class EventHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			showStatus(false);
+			int what = msg.what;
+			switch (what) {
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_ENDED:
+				
+				break;
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_BUFFERING:
+				showStatus(true);
+				break;
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_READY:
+
+				break;
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_PREPARING:
+
+				break;
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_START:
+				hideErrorFrame();
+				showPlaceHolder(false);
+				showStatus(false);
+				break;
+
+			default:
+				break;
+			}
+		}
 	}
 	
+	private class ErrorHandler extends Handler{
+		@Override
+		public void handleMessage(Message msg) {
+			showErrorFrame(msg.what);
+		}
+	}
+	
+	protected void showStatus(boolean flag){
+		if (flag)
+			mStatusController.setVisibility(View.VISIBLE);
+		else
+			mStatusController.setVisibility(View.INVISIBLE);
+	}
+	
+	protected void showPlaceHolder(boolean flag){
+		if (flag)
+			mPlaceHoler.setVisibility(View.VISIBLE);
+		else
+			mPlaceHoler.setVisibility(View.INVISIBLE);
+	}
+	
+	protected abstract void showErrorFrame(int errorCode);
+	
+	protected void hideErrorFrame(){
+		mErrorFrame.setVisibility(View.INVISIBLE);
+	}
+
 	@Override
 	public void onError(int errorCode) {
 		Log.d(TAG, "onError errorCode:" + errorCode);
-		
+		mErrorHandler.sendEmptyMessage(errorCode);
 	}
-	
+
 	@Override
 	public void onEvent(int eventCode) {
 		Log.d(TAG, "onEvent eventCode:" + eventCode);
-		
+		mEventHandler.sendEmptyMessage(eventCode);
 	}
 }

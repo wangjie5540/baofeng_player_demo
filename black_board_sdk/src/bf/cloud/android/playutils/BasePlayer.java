@@ -47,20 +47,62 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	private VideoDefinition mVideoDefinition = VideoDefinition.UNKNOWN;
 	private String mSettingDataPath = BFYConst.LOG_PATH;
 
-	private static final int MSG_STREAM_CREATE = 10000;
-	private static final int MSG_STREAM_START = 10001;
-	private static final int MSG_STREAM_STOP = 10002;
-	private static final int MSG_STREAM_DESTORY = 10003;
+	//error codes below
+    public static final int ERROR_NO_ERROR = 0;     
+	public static final int ERROR_MEDIA_CENTER_INIT_FAILED = 1000;     // 初始化media center失败
+	public static final int ERROR_MEDIA_CENTER_INVALID_PARAM = 1001;   // 无效参数
+	public static final int ERROR_MEDIA_CENTER_INVALID_HANDLE = 1002;  // 无效句柄
+	public static final int ERROR_MEDIA_CENTER_INIT_ERROR = 1003;      // 初始化错误
+	public static final int ERROR_PORT_BIND_FAILED = 1004;		     // 端口绑定失败
+	public static final int ERROR_INVALID_STREAM_ID = 1005;		     // 无效的流ID
+	public static final int ERROR_GENERATE_URL_FAILED = 1006;		     // 生成URL失败
+	public static final int ERROR_INVALID_URL = 1007;		     		 // 创建任务时解析URL失败
+	public static final int ERROR_NOT_ENOUGH_SPACE = 1008;		     // 创建任务时磁盘空间不足
+	public static final int ERROR_FILE_IO_ERROR = 1009;		    	 // 创建任务时文件IO错误
+	public static final int ERROR_ALLOC_MEMORY_FAILED = 1010;		     // 创建任务时内存分配错误
+	public static final int ERROR_GET_MOVIE_INFO_FAILED = 1011;        // 从media center获取媒体信息失败
+	public static final int ERROR_EXOPLAYER_DECODE_FAILED = 1012;      // 调用 ExoPlayer 播放时解码失败
+	public static final int ERROR_SOFT_DECODE_FAILED = 1013;           // 软解失败
+	public static final int ERROR_NO_NETWORK = 1014;      			 // 没有网络
+	public static final int ERROR_MOBILE_NO_PLAY = 1015;      	     // 移动网络默认先停止播放
+	public static final int ERROR_MEDIA_MOVIE_INFO_NOT_FOUND = 2005;	 // 查询媒体信息失败：找不到媒体信息
+	public static final int ERROR_MEDIA_MOVIE_INFO_LIVE_ENDED = 2006;	 // 直播停止
+	public static final int ERROR_MEDIA_MOVIE_INFO_FORBIDDEN = 2008;	 // 查询媒体信息失败：无权限
+	public static final int ERROR_MEDIA_MOVIE_INFO_UNAUTHORIZED = 2009;// 查询媒体信息失败：未授权
+	public static final int ERROR_P2P_NO_DATA_SOURCE = 3006;			 // 数据源异常
+	public static final int ERROR_P2P_LIVE_ENDED = 3009;			 	 // 直播结束
+	public static final int ERROR_P2P_LIVE_NOT_BEGIN = 3010;			 // 直播还没开始
+	
+	//error code below
+	public static final int ERROR_PLAYER_ERROR_MIN = 1000;
+	public static final int ERROR_PLAYER_ERROR_MAX = 1999;
+	public static final int ERROR_MEDIA_INFO_ERROR_MIN = 2000;
+	public static final int ERROR_MEDIA_INFO_ERROR_MAX = 2999;
+	public static final int ERROR_P2P_ERROR_MIN = 3000;
+	public static final int ERROR_P2P_ERROR_MAX = 3999;
+	
+	private static final int MSG_STREAM_CREATE = 5000;
+	private static final int MSG_STREAM_START = 5001;
+	private static final int MSG_STREAM_STOP = 5002;
+	private static final int MSG_STREAM_DESTORY = 5003;
 
 	private static final int MSG_P2P_INIT = 10004;
 	private static final int MSG_P2P_UNINIT = 10005;
 
 	private static final int MSG_UI_ = 20000;
 	
-	public static int EVENT_TYPE_MEDIAPLAYER_ENDED = 3000;
-	public static int EVENT_TYPE_MEDIAPLAYER_BUFFERING = 3001;
-	public static int EVENT_TYPE_MEDIAPLAYER_READY = 3002;
-	public static int EVENT_TYPE_MEDIAPLAYER_PREPARING = 3003;
+	public static final int EVENT_TYPE_MEDIAPLAYER_ENDED = 4000;
+	public static final int EVENT_TYPE_MEDIAPLAYER_BUFFERING = 4001;
+	public static final int EVENT_TYPE_MEDIAPLAYER_READY = 4002;
+	public static final int EVENT_TYPE_MEDIAPLAYER_PREPARING = 4003;
+	public static final int EVENT_TYPE_MEDIAPLAYER_START = 4004;
+	public static final int EVENT_TYPE_MEDIAPLAYER_STARTING = 4005;
+	public static final int EVENT_TYPE_MEDIAPLAYER_STARTED = 4006;
+	public static final int EVENT_TYPE_MEDIAPLAYER_STOP = 4007;
+	public static final int EVENT_TYPE_MEDIAPLAYER_SEEKTO = 4008;
+	public static final int EVENT_TYPE_MEDIAPLAYER_PAUSE = 4009;
+	public static final int EVENT_TYPE_MEDIAPLAYER_RESUME = 4010;
+	
 
 	private enum STATE {
 		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(
@@ -77,6 +119,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		@Override
 		public boolean handleMessage(Message msg) {
 			Log.d(TAG, "mUIHandler msg");
+			if (mPlayEventListener != null)
+				mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_STARTED);
 			mState = STATE.PREPARED;
 			mVideoView.setVrFlag(mIsVr);
 			mVideoView.setDataSource(mBfStream.getStreamUrl());
@@ -173,19 +217,21 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 			if (type == BFYNetworkUtil.NETWORK_CONNECTION_NONE){
 				Log.d(TAG, "network is unusable/mPlayErrorListener:" + mPlayErrorListener);
 				if (mPlayErrorListener != null)
-					mPlayErrorListener.onError(BFYConst.NO_NETWORK);
+					mPlayErrorListener.onError(ERROR_NO_NETWORK);
 				return;
 			} else if (type == BFYNetworkUtil.NETWORK_CONNECTION_MOBILE){
 				if (mForceStartFlag){
 					mForceStartFlag = false;
 				} else{
 					if (mPlayErrorListener != null)
-						mPlayErrorListener.onError(BFYConst.MOBILE_NO_PLAY);
+						mPlayErrorListener.onError(ERROR_MOBILE_NO_PLAY);
 					Log.d(TAG, "network is mobile, you must set setForceStartFlag(true)");
 					return;
 				}
 			}
 		}
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_START);
 		if (!isMediaCenterInited && mState == STATE.IDLE) {
 			mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_P2P_INIT);
 		} else if (isMediaCenterInited) {
@@ -195,6 +241,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 			mPlayerHandlerThread.playerHandler
 					.sendEmptyMessage(MSG_STREAM_CREATE);
 		}
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_STARTING);
 		mState = STATE.PREPARING;
 	}
 
@@ -228,6 +276,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
 		mVideoView.stop();
 		updateViews();
+		if (mPlayEventListener != null)
+			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_STOP);
 		mState = STATE.IDLE;
 	}
 
@@ -239,6 +289,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		if (mState == STATE.PLAYING) {
 			mVideoView.pause();
 			mState = STATE.PAUSED;
+			if (mPlayEventListener != null)
+				mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_PAUSE);
 		} else {
 			Log.d(TAG, "Player state is not PLAYING");
 		}
@@ -252,6 +304,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		if (mState == STATE.PAUSED) {
 			mVideoView.resume();
 			mState = STATE.PLAYING;
+			if (mPlayEventListener != null)
+				mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_RESUME);
 		} else {
 			Log.d(TAG, "Player state is not PAUSED");
 		}
@@ -264,6 +318,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		Log.d(TAG, "seekTo ms:" + ms);
 		if (mState == STATE.PAUSED || mState == STATE.PLAYING) {
 			mVideoView.seekTo(ms);
+			if (mPlayEventListener != null)
+				mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_SEEKTO);
 		} else {
 			Log.d(TAG, "Player state is not PAUSED or PLAYING");
 		}
@@ -311,7 +367,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	public void onMediaInfoNotFound() {
 		mState = STATE.ERROR;
 		if (mPlayErrorListener != null)
-			mPlayErrorListener.onError(BFYConst.GET_MOVIE_INFO_FAILED);
+			mPlayErrorListener.onError(ERROR_GET_MOVIE_INFO_FAILED);
 	}
 
 	@Override
@@ -328,37 +384,37 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		if (mPlayErrorListener != null){
 			switch (error) {
 			case BFStream.UNKNOWN_ERROR:
-				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INIT_FAILED);
+				mPlayErrorListener.onError(ERROR_MEDIA_CENTER_INIT_FAILED);
 				break;
 			case BFStream.INVALID_PARAM:
-				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_PARAM);
+				mPlayErrorListener.onError(ERROR_MEDIA_CENTER_INVALID_PARAM);
 				break;
 			case BFStream.INVALID_HANDLE:
-				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_HANDLE);
+				mPlayErrorListener.onError(ERROR_MEDIA_CENTER_INVALID_HANDLE);
 				break;
 			case BFStream.INIT_ERROR:
-				mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INIT_ERROR);
+				mPlayErrorListener.onError(ERROR_MEDIA_CENTER_INIT_ERROR);
 				break;
 			case BFStream.PORT_BIND_FAILED:
-				mPlayErrorListener.onError(BFYConst.PORT_BIND_FAILED);
+				mPlayErrorListener.onError(ERROR_PORT_BIND_FAILED);
 				break;
 			case BFStream.INVALID_STREAM_ID:
-				mPlayErrorListener.onError(BFYConst.INVALID_STREAM_ID);
+				mPlayErrorListener.onError(ERROR_INVALID_STREAM_ID);
 				break;
 			case BFStream.GENERATE_URL_FAILED:
-				mPlayErrorListener.onError(BFYConst.GENERATE_URL_FAILED);
+				mPlayErrorListener.onError(ERROR_GENERATE_URL_FAILED);
 				break;
 			case BFStream.INVALID_URL:
-				mPlayErrorListener.onError(BFYConst.INVALID_URL);
+				mPlayErrorListener.onError(ERROR_INVALID_URL);
 				break;
 			case BFStream.NOT_ENOUGH_SPACE:
-				mPlayErrorListener.onError(BFYConst.NOT_ENOUGH_SPACE);
+				mPlayErrorListener.onError(ERROR_NOT_ENOUGH_SPACE);
 				break;
 			case BFStream.FILE_IO_ERROR:
-				mPlayErrorListener.onError(BFYConst.FILE_IO_ERROR);
+				mPlayErrorListener.onError(ERROR_FILE_IO_ERROR);
 				break;
 			case BFStream.ALLOC_MEMORY_FAILED:
-				mPlayErrorListener.onError(BFYConst.ALLOC_MEMORY_FAILED);
+				mPlayErrorListener.onError(ERROR_ALLOC_MEMORY_FAILED);
 				break;
 				
 			default:
@@ -505,7 +561,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 					if (ret < 0){
 						Log.d(TAG, "createStream error");
 						if (mPlayErrorListener != null)
-							mPlayErrorListener.onError(BFYConst.MEDIA_CENTER_INVALID_PARAM);
+							mPlayErrorListener.onError(ERROR_MEDIA_CENTER_INVALID_PARAM);
 					}
 					break;
 				}
@@ -561,7 +617,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		}
 		
 		if (mPlayErrorListener != null)
-			mPlayErrorListener.onError(BFYConst.SOFT_DECODE_FAILED);
+			mPlayErrorListener.onError(ERROR_SOFT_DECODE_FAILED);
 	}
 	
 	@Override
@@ -575,7 +631,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		}
 		
 		if (mPlayErrorListener != null)
-			mPlayErrorListener.onError(BFYConst.EXOPLAYER_DECODE_FAILED);
+			mPlayErrorListener.onError(ERROR_EXOPLAYER_DECODE_FAILED);
 	}
 	
 	@Override
@@ -624,16 +680,16 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	abstract protected void reportPlayProcessStatInfo();
 	
 	protected boolean canReportStatInfo(){
-		int errorCode = BFYConst.NO_ERROR;
+		int errorCode = ERROR_NO_ERROR;
     	
     	boolean result =
-    			errorCode != BFYConst.NO_ERROR &&
-    			errorCode != BFYConst.NO_NETWORK &&
-    			errorCode != BFYConst.MOBILE_NO_PLAY &&
-    			errorCode != BFYConst.MEDIA_MOVIE_INFO_NOT_FOUND && 
-    			errorCode != BFYConst.MEDIA_MOVIE_INFO_LIVE_ENDED && 
-    			errorCode != BFYConst.P2P_LIVE_ENDED &&
-    			errorCode != BFYConst.P2P_LIVE_NOT_BEGIN;
+    			errorCode != ERROR_NO_ERROR &&
+    			errorCode != ERROR_NO_NETWORK &&
+    			errorCode != ERROR_MOBILE_NO_PLAY &&
+    			errorCode != ERROR_MEDIA_MOVIE_INFO_NOT_FOUND && 
+    			errorCode != ERROR_MEDIA_MOVIE_INFO_LIVE_ENDED && 
+    			errorCode != ERROR_P2P_LIVE_ENDED &&
+    			errorCode != ERROR_P2P_LIVE_NOT_BEGIN;
     	
     	return result;
 	}

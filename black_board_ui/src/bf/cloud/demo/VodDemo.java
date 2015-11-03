@@ -1,8 +1,5 @@
 package bf.cloud.demo;
 
-import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
-import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
-import bf.cloud.android.playutils.VideoFrame;
 import bf.cloud.android.playutils.VodPlayer;
 import bf.cloud.black_board_ui.R;
 import bf.cloud.black_board_ui.BFMediaPlayerControllerVod;
@@ -10,10 +7,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 
-public class VodDemo extends Activity implements PlayErrorListener, PlayEventListener{
+public class VodDemo extends Activity{
 	private final String TAG = VodDemo.class.getSimpleName();
 	
 	private VodPlayer mVodPlayer = null;
@@ -44,14 +39,22 @@ public class VodDemo extends Activity implements PlayErrorListener, PlayEventLis
 			break;
 		}
 	}
-
+	
 	@Override
-	public void onEvent(int eventCode) {
-		Log.d(TAG, "onEvent eventCode:" + eventCode);
+	protected void onPause() {
+		mVodPlayer.pause();
+		super.onPause();
 	}
-
+	
 	@Override
-	public void onError(int errorCode) {
-		Log.d(TAG, "onError errorCode:" + errorCode);
+	protected void onStart() {
+		mVodPlayer.resume();
+		super.onStart();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		mVodPlayer.stop();
+		super.onDestroy();
 	}
 }
