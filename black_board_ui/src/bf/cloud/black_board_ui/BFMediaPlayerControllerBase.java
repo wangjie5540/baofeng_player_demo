@@ -3,6 +3,7 @@ package bf.cloud.black_board_ui;
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.playutils.BasePlayer;
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
@@ -93,6 +95,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			@Override
 			public void onClick(View v) {
 				onClickPlayButton();
+			}
+		});
+		ImageView ibBack = (ImageView) mErrorFrame.findViewById(R.id.error_backButton);
+		ibBack.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				((Activity)mContext).finish();
 			}
 		});
 	}
