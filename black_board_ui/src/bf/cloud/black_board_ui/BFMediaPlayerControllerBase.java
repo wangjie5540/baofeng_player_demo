@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
@@ -30,6 +31,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected FrameLayout mPlaceHoler = null;
 	protected RelativeLayout mErrorFrame = null;
 	protected FrameLayout mStatusController = null;
+	private ProgressBar mProgressBarBuffering = null;
+	private ImageView mProgressBarIcon = null;
 	private EventHandler mEventHandler = new EventHandler();
 	private ErrorHandler mErrorHandler = new ErrorHandler();
 	protected PlayErrorManager mPlayErrorManager = null;
@@ -67,10 +70,11 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		layoutParams.gravity = Gravity.CENTER;
 
-		// 缓冲层
+		// 图标层
 		mStatusController = (FrameLayout) mLayoutInflater.inflate(
 				R.layout.vp_status_controller, this, false);
-		mStatusController.setVisibility(View.INVISIBLE);
+		mStatusController.setVisibility(View.VISIBLE);
+		initStatusFrame();
 		addView(mStatusController, layoutParams);
 		// 遮挡层
 		mPlaceHoler = (FrameLayout) mLayoutInflater.inflate(
@@ -86,6 +90,13 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mErrorFrame.setVisibility(View.INVISIBLE);
 		initErrorFrame();
 		addView(mErrorFrame, layoutParams1);
+	}
+
+	private void initStatusFrame() {
+		mProgressBarBuffering = (ProgressBar) mStatusController.findViewById(R.id.progressBar);
+		mProgressBarBuffering.setVisibility(View.INVISIBLE);
+		mProgressBarIcon = (ImageView) mStatusController.findViewById(R.id.icon);
+		mProgressBarIcon.setVisibility(View.INVISIBLE);
 	}
 
 	private void initErrorFrame() {
@@ -124,14 +135,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	private class EventHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
-			showStatus(false);
+			showBuffering(false);
 			int what = msg.what;
 			switch (what) {
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_ENDED:
 				
 				break;
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_BUFFERING:
-				showStatus(true);
+				showBuffering(true);
 				break;
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_READY:
 
@@ -142,8 +153,11 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_START:
 				hideErrorFrame();
 				showPlaceHolder(false);
-				showStatus(false);
+				showBuffering(false);
+				showIcon(true);
 				break;
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
+				showIcon(false);
 
 			default:
 				break;
@@ -158,13 +172,22 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		}
 	}
 	
-	protected void showStatus(boolean flag){
+	protected void showBuffering(boolean flag){
 		if (flag)
-			mStatusController.setVisibility(View.VISIBLE);
+			mProgressBarBuffering.setVisibility(View.VISIBLE);
 		else
-			mStatusController.setVisibility(View.INVISIBLE);
+			mProgressBarBuffering.setVisibility(View.INVISIBLE);
 	}
 	
+	public void showIcon(boolean flag) {
+		if (mProgressBarIcon == null)
+			return;
+		if (flag)
+			mProgressBarIcon.setVisibility(View.VISIBLE);
+		else
+			mProgressBarIcon.setVisibility(View.INVISIBLE);
+	}
+
 	protected void showPlaceHolder(boolean flag){
 		if (flag)
 			mPlaceHoler.setVisibility(View.VISIBLE);
