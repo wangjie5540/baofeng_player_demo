@@ -182,6 +182,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 					if (mPlayErrorListener != null)
 						mPlayErrorListener.onError(BFYConst.MOBILE_NO_PLAY);
 					Log.d(TAG, "network is mobile, you must set setForceStartFlag(true)");
+					return;
 				}
 			}
 		}

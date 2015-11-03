@@ -1,5 +1,7 @@
 package bf.cloud.black_board;
 
+import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
+import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.playutils.DecodeMode;
 import bf.cloud.android.playutils.VodPlayer;
 import android.app.Activity;
@@ -13,7 +15,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-public class VodDemo extends Activity {
+public class VodDemo extends Activity implements PlayErrorListener, PlayEventListener{
 	private final String TAG = VodDemo.class.getSimpleName();
 	private VodPlayer mPlayer = null;
 	private Button btChangeDecodeMode = null;
@@ -215,6 +217,8 @@ public class VodDemo extends Activity {
 			}
 		});
 		mPlayer = (VodPlayer) findViewById(R.id.vod_player);
+		mPlayer.registPlayErrorListener(this);
+		mPlayer.registPlayEventListener(this);
 	}
 
 	@Override
@@ -233,5 +237,15 @@ public class VodDemo extends Activity {
 	protected void onStart() {
 		mPlayer.resume();
 		super.onStart();
+	}
+
+	@Override
+	public void onEvent(int eventCode) {
+		Log.d(TAG, "onEvent eventCode:" + eventCode);
+	}
+
+	@Override
+	public void onError(int errorCode) {
+		Log.d(TAG, "errorCode eventCode:" + errorCode);
 	}
 }
