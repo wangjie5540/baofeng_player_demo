@@ -230,6 +230,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 				}
 			}
 		}
+		mForceStartFlag = false;
 		if (mPlayEventListener != null)
 			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_START);
 		if (!isMediaCenterInited && mState == STATE.IDLE) {

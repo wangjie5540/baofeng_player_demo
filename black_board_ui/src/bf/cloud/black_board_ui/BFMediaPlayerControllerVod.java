@@ -1,5 +1,6 @@
 package bf.cloud.black_board_ui;
 
+import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.playutils.PlayTaskType;
 import bf.cloud.android.playutils.VodPlayer;
 import android.content.Context;
@@ -46,6 +47,17 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 
 	@Override
 	public void onEvent(int eventCode) {
+		switch (eventCode) {
+		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_ENDED:
+			showPlayCompleteFrame(true);
+			break;
+		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_START:
+			showPlayCompleteFrame(false);
+			break;
+
+		default:
+			break;
+		}
 		super.onEvent(eventCode);
 		//子类处理个别事件
 	}
@@ -77,8 +89,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			@Override
 			public void onClick(View v) {
 				if (mVodPlayer != null) {
-					// 如果希望无论在什么网络下都播放视频，就设置这个标志־
-//					mVodPlayer.setForceStartFlag(true);
+					// 如果希望无论在什么网络下都播放视频，就设置这个标志
 					mVodPlayer.stop();
 					mVodPlayer.start();
 				}
@@ -104,5 +115,24 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		String codeText = "错误代码：" + errorCode;
 		codeTv.setText(codeText);
 		mErrorFrame.setVisibility(View.VISIBLE);
+	}
+
+	@Override
+	protected void onClickPlayButton() {
+		if (mVodPlayer != null){
+			mVodPlayer.stop();
+			mVodPlayer.setForceStartFlag(true);
+			mVodPlayer.start();
+		}
+	}
+	
+	private void showPlayCompleteFrame(boolean flag){
+		if (flag){
+			if (mPlayCompleteFrame != null)
+				mPlayCompleteFrame.setVisibility(View.VISIBLE);
+		} else {
+			if (mPlayCompleteFrame != null)
+				mPlayCompleteFrame.setVisibility(View.INVISIBLE);
+		}
 	}
 }

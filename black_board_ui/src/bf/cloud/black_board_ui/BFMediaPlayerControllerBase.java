@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.RelativeLayout;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
@@ -81,8 +82,22 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mErrorFrame = (RelativeLayout) mLayoutInflater.inflate(
 				R.layout.vp_error_frame, this, false);
 		mErrorFrame.setVisibility(View.INVISIBLE);
+		initErrorFrame();
 		addView(mErrorFrame, layoutParams1);
 	}
+
+	private void initErrorFrame() {
+		ImageButton ibPlay = (ImageButton) mErrorFrame.findViewById(R.id.error_play_button);
+		ibPlay.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				onClickPlayButton();
+			}
+		});
+	}
+
+	protected abstract void onClickPlayButton();
 
 	protected void attachPlayer(BasePlayer bp) {
 		if (bp == null) {
