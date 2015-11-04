@@ -222,6 +222,21 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		else
 			mProgressBarIcon.setVisibility(View.INVISIBLE);
 	}
+	
+	protected String stringForTime(long timeMs) {
+		long totalSeconds = timeMs / 1000;
+
+		long seconds = totalSeconds % 60;
+		long minutes = (totalSeconds / 60) % 60;
+		long hours = totalSeconds / 3600;
+
+        mFormatBuilder.setLength(0);
+        if (hours > 0) {
+            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
+        } else {
+            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+        }
+    }
 
 	protected void showPlaceHolder(boolean flag){
 		if (flag)

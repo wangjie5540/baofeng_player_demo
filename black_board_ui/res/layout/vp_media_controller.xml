@@ -73,17 +73,6 @@
             android:layout_height="match_parent" >
 
             <TextView
-                android:id="@+id/time_current"
-                style="@style/BFYun.TextAppearance.Tiny.LightGray"
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:gravity="center|right"
-                android:text="111"
-                android:paddingLeft="1dip"
-                android:paddingRight="1dip" />
-
-            <TextView
                 android:id="@+id/time_duration"
                 style="@style/BFYun.TextAppearance.Tiny.LightGray"
                 android:layout_width="40dp"
@@ -91,6 +80,17 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:gravity="center|left"
+                android:text="111"
+                android:paddingLeft="1dip"
+                android:paddingRight="1dip" />
+            
+            <TextView 
+                android:id="@+id/time_current"
+                style="@style/BFYun.TextAppearance.Tiny.LightGray"
+                android:layout_width="40dp"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:gravity="center|right"
                 android:text="111"
                 android:paddingLeft="1dip"
                 android:paddingRight="1dip" />
