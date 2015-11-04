@@ -6,8 +6,8 @@
 
     <bf.cloud.black_board_ui.BFMediaPlayerControllerVod
         android:id="@+id/vod_media_controller"
-        android:layout_width="match_parent"
-        android:layout_height="300dp" >
+        android:layout_width="1080px"
+        android:layout_height="720px" >
     </bf.cloud.black_board_ui.BFMediaPlayerControllerVod>
     
     <Button

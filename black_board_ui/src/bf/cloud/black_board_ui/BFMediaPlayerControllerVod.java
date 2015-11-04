@@ -1,16 +1,23 @@
 package bf.cloud.black_board_ui;
 
+import java.util.Formatter;
+import java.util.Locale;
+
 import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.playutils.PlayTaskType;
 import bf.cloud.android.playutils.VodPlayer;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 
 public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	private VodPlayer mVodPlayer = null;
@@ -78,7 +85,59 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 				R.layout.vp_play_complete, this, false);
 		initPlayCompleteFrame();
 		addView(mPlayCompleteFrame, layoutParams);
+		// 公共层
 		super.initViews();
+	}
+	
+	protected void initPlayerControllerFrame() {
+		// init head section
+		mControllerHead = (RelativeLayout) mPlayerController.findViewById(R.id.head);
+		mControllerBack = (ImageView) mPlayerController.findViewById(R.id.backButton);
+		mControllerVideoTitle = (TextView) mPlayerController.findViewById(R.id.videoTitle);
+		// init bottom section
+		mControllerBottom = (RelativeLayout) mPlayerController.findViewById(R.id.bottom);
+		mControllerCurentPlayTime = (TextView) mPlayerController.findViewById(R.id.time_current);
+		mControllerDuration = (TextView) mPlayerController.findViewById(R.id.time_duration);
+		mControllerProgressBar = (SeekBar) mPlayerController.findViewById(R.id.mediacontroller_progress);
+		if (mControllerProgressBar != null) {
+            if (mControllerProgressBar instanceof SeekBar) {
+                SeekBar seeker = (SeekBar) mControllerProgressBar;
+                seeker.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
+					
+					private boolean mDragging = false;
+
+					@Override
+					public void onStopTrackingTouch(SeekBar seekBar) {
+			            Log.d(TAG, "onStopTrackingTouch");
+			            long duration = mVodPlayer.getDuration();
+			            long newposition = (duration * seekBar.getProgress()) / 1000L;
+			            if (newposition >= duration) {
+			            	newposition = duration - 50;
+			            }
+			            mVodPlayer.seekTo((int) newposition);
+
+			            mDragging = false;
+					}
+					
+					@Override
+					public void onStartTrackingTouch(SeekBar seekBar) {
+						Log.d(TAG, "onStartTrackingTouch");
+			            mDragging  = true;
+			            
+					}
+					
+					@Override
+					public void onProgressChanged(SeekBar seekBar, int progress,
+							boolean fromUser) {
+						
+					}
+				});
+            }
+            mControllerProgressBar.setMax(1000);
+        }
+
+        mFormatBuilder  = new StringBuilder();
+        mFormatter  = new Formatter(mFormatBuilder, Locale.getDefault());
 	}
 
 	private void initPlayCompleteFrame() {

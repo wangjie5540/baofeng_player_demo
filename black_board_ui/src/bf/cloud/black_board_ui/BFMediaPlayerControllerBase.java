@@ -1,5 +1,8 @@
 package bf.cloud.black_board_ui;
 
+import java.util.Formatter;
+import java.util.Locale;
+
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.playutils.BasePlayer;
@@ -12,11 +15,15 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.TextView;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		PlayErrorListener, PlayEventListener {
@@ -36,7 +43,19 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	private EventHandler mEventHandler = new EventHandler();
 	private ErrorHandler mErrorHandler = new ErrorHandler();
 	protected PlayErrorManager mPlayErrorManager = null;
-
+	protected FrameLayout mPlayerController = null;
+	protected RelativeLayout mControllerHead = null;
+	protected RelativeLayout mControllerBottom = null;
+	protected ImageView mControllerBack = null;
+	protected TextView mControllerVideoTitle = null;
+	protected ImageButton mControllerPlayPause = null;
+	protected TextView mControllerCurentPlayTime = null;
+	protected TextView mControllerDuration = null;
+	protected SeekBar mControllerProgressBar = null;
+	protected Button mControllerDefinition = null;
+	protected StringBuilder mFormatBuilder = null;
+	protected Formatter mFormatter = null;
+	
 	public BFMediaPlayerControllerBase(Context context) {
 		super(context);
 		mContext = context;
@@ -90,6 +109,22 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mErrorFrame.setVisibility(View.INVISIBLE);
 		initErrorFrame();
 		addView(mErrorFrame, layoutParams1);
+		// 播放控制层
+		mPlayerController = (FrameLayout) mLayoutInflater.inflate(R.layout.vp_media_controller, this, false);
+		mPlayerController.setVisibility(View.VISIBLE);
+		initPlayerControllerFrame();
+		addView(mPlayerController, layoutParams);
+	}
+	
+	protected abstract void initPlayerControllerFrame();
+
+	
+	private void showControllerHead(boolean flag){
+		
+	}
+	
+	private void showControllerBottom(boolean flag){
+		
 	}
 
 	private void initStatusFrame() {

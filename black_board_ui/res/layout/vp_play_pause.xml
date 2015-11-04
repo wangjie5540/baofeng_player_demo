@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="horizontal">
+
+    <!-- 暂停、播放按钮 -->
+    <ImageButton
+        android:id="@+id/pausePlayButton"
+        android:layout_width="30dip"
+        android:layout_height="30dip"
+        android:layout_marginBottom="18dip"
+        android:layout_marginLeft="18dip"
+        android:layout_marginRight="18dip"
+        android:layout_marginTop="18dip"
+        android:background="@drawable/vp_play" />
+</LinearLayout>
