@@ -15,7 +15,7 @@
         <!-- 切换到竖屏按钮 -->
 
         <ImageView
-            android:id="@+id/backButton"
+            android:id="@+id/back_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -32,7 +32,7 @@
             android:layout_height="match_parent"
             android:layout_centerVertical="true"
             android:layout_marginLeft="15dip"
-            android:layout_toRightOf="@id/backButton"
+            android:layout_toRightOf="@id/back_button"
             android:ellipsize="end"
             android:gravity="center|left"
             android:singleLine="true" />

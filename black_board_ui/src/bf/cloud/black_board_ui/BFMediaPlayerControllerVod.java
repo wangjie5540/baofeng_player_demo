@@ -4,6 +4,7 @@ import java.util.Formatter;
 import java.util.Locale;
 
 import bf.cloud.android.playutils.BasePlayer;
+import bf.cloud.android.playutils.BasePlayer.STATE;
 import bf.cloud.android.playutils.PlayTaskType;
 import bf.cloud.android.playutils.VodPlayer;
 import android.content.Context;
@@ -15,6 +16,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -29,10 +31,10 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	// 提示语
 	private TextView tvPlayCompleteFrameMessage = null;
 	private boolean mDragging = false;
-	
+
 	private static final int MEG_UPDATE_PROGRESS = 1000;
 	private Handler mProgressHandler = new Handler(new Handler.Callback() {
-		
+
 		@Override
 		public boolean handleMessage(Message msg) {
 			if (mControllerProgressBar == null)
@@ -74,9 +76,19 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		switch (eventCode) {
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_ENDED:
 			showPlayCompleteFrame(true);
+			updateButtonUI();
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_START:
 			showPlayCompleteFrame(false);
+			break;
+		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
+			updateButtonUI();
+			break;
+		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_PAUSE:
+			updateButtonUI();
+			break;
+		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_RESUME:
+			updateButtonUI();
 			break;
 
 		default:
@@ -112,13 +124,15 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 				.findViewById(R.id.head);
 		mControllerHead.setVisibility(View.INVISIBLE);
 		mControllerBack = (ImageView) mPlayerController
-				.findViewById(R.id.backButton);
+				.findViewById(R.id.back_button);
 		mControllerVideoTitle = (TextView) mPlayerController
 				.findViewById(R.id.videoTitle);
 		// init bottom section
 		mControllerBottom = (RelativeLayout) mPlayerController
 				.findViewById(R.id.bottom);
 		mControllerBottom.setVisibility(View.INVISIBLE);
+		mControllerPlayPause = (ImageButton) mPlayerController
+				.findViewById(R.id.pause_play_button);
 		mControllerCurentPlayTime = (TextView) mPlayerController
 				.findViewById(R.id.time_current);
 		mControllerDuration = (TextView) mPlayerController
@@ -149,7 +163,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 						// }
 						mVodPlayer.seekTo((int) newposition);
 						mDragging = false;
-						mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
+						mControllerHandler
+								.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 					}
 
 					@Override
@@ -244,5 +259,16 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		if (mControllerDuration != null) {
 			mControllerDuration.setText(stringForTime(duration));
 		}
+	}
+	
+	private void updateButtonUI(){
+		if (mVodPlayer == null)
+			return;
+		STATE state = mVodPlayer.getState();
+		if (state == STATE.PLAYING)
+			mControllerPlayPause.setBackgroundResource(R.drawable.vp_pause);
+		else
+			mControllerPlayPause.setBackgroundResource(R.drawable.vp_play);
+			
 	}
 }

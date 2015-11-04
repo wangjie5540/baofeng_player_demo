@@ -104,7 +104,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	public static final int EVENT_TYPE_MEDIAPLAYER_RESUME = 4010;
 	
 
-	private enum STATE {
+	public enum STATE {
 		IDLE(0), PREPARING(1), PREPARED(2), PLAYING(3), PAUSED(4), COMPLETED(5), ERROR(
 				-1);
 		int state = 0;
@@ -119,13 +119,13 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		@Override
 		public boolean handleMessage(Message msg) {
 			Log.d(TAG, "mUIHandler msg");
-			if (mPlayEventListener != null)
-				mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_STARTED);
 			mState = STATE.PREPARED;
 			mVideoView.setVrFlag(mIsVr);
 			mVideoView.setDataSource(mBfStream.getStreamUrl());
 			mVideoView.start();
 			mState = STATE.PLAYING;
+			if (mPlayEventListener != null)
+				mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_STARTED);
 			return false;
 		}
 	});
@@ -659,6 +659,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	@Override
 	public void onStateEnded() {
 		Log.d(TAG, "MediaPlyaerProxy onStateEnded");
+		mState = STATE.COMPLETED;
 		if (mPlayEventListener != null)
 			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_ENDED);
 	}
@@ -704,5 +705,9 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	
 	public void setVrFlag(boolean flag){
 		mIsVr = flag;
+	}
+	
+	public STATE getState(){
+		return mState;
 	}
 }
