@@ -30,7 +30,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	private TextView tvPlayCompleteFrameMessage = null;
 	private boolean mDragging = false;
 	
-	private static int MEG_UPDATE_PROGRESS = 1000;
+	private static final int MEG_UPDATE_PROGRESS = 1000;
 	private Handler mProgressHandler = new Handler(new Handler.Callback() {
 		
 		@Override
@@ -110,6 +110,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		// init head section
 		mControllerHead = (RelativeLayout) mPlayerController
 				.findViewById(R.id.head);
+		mControllerHead.setVisibility(View.INVISIBLE);
 		mControllerBack = (ImageView) mPlayerController
 				.findViewById(R.id.backButton);
 		mControllerVideoTitle = (TextView) mPlayerController
@@ -117,6 +118,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		// init bottom section
 		mControllerBottom = (RelativeLayout) mPlayerController
 				.findViewById(R.id.bottom);
+		mControllerBottom.setVisibility(View.INVISIBLE);
 		mControllerCurentPlayTime = (TextView) mPlayerController
 				.findViewById(R.id.time_current);
 		mControllerDuration = (TextView) mPlayerController
@@ -147,12 +149,12 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 						// }
 						mVodPlayer.seekTo((int) newposition);
 						mDragging = false;
+						mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 					}
 
 					@Override
 					public void onProgressChanged(SeekBar seekBar,
 							int progress, boolean fromUser) {
-						Log.d(TAG, "onProgressChanged");
 					}
 				});
 			}

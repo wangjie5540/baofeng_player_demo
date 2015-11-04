@@ -1,7 +1,6 @@
 package bf.cloud.black_board_ui;
 
 import java.util.Formatter;
-import java.util.Locale;
 
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
@@ -22,11 +21,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
-import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
-		PlayErrorListener, PlayEventListener {
+		PlayErrorListener, PlayEventListener, View.OnClickListener {
 	protected final String TAG = BFMediaPlayerControllerBase.class
 			.getSimpleName();
 	public final static int VIDEO_TYPE_VOD = 0;
@@ -55,7 +53,38 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected Button mControllerDefinition = null;
 	protected StringBuilder mFormatBuilder = null;
 	protected Formatter mFormatter = null;
-	
+	protected boolean mIsFullScreen = false;
+
+	protected static final int MSG_SHOW_CONTROLLER = 2000;
+	protected static final int MSG_HIDE_CONTROLLER = 2001;
+	protected Handler mControllerHandler = new Handler(new Handler.Callback() {
+
+		@Override
+		public boolean handleMessage(Message msg) {
+			int what = msg.what;
+			mControllerHandler.removeMessages(MSG_SHOW_CONTROLLER);
+			mControllerHandler.removeMessages(MSG_HIDE_CONTROLLER);
+			switch (what) {
+			case MSG_SHOW_CONTROLLER:
+				// 5s后，自动隐藏
+				mControllerHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 5000);
+				if (mIsFullScreen)
+					showControllerHead(true);
+				showControllerBottom(true);
+				break;
+			case MSG_HIDE_CONTROLLER:
+				showControllerHead(false);
+				showControllerBottom(false);
+				break;
+
+			default:
+				Log.d(TAG, "invailid msg");
+				break;
+			}
+			return true;
+		}
+	});
+
 	public BFMediaPlayerControllerBase(Context context) {
 		super(context);
 		mContext = context;
@@ -74,8 +103,9 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mContext = context;
 		init();
 	}
-	
-	private void init(){
+
+	private void init() {
+		setOnClickListener(this);
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mPlayErrorManager = new PlayErrorManager();
@@ -100,7 +130,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				R.layout.vp_place_holder, this, false);
 		mPlaceHoler.setVisibility(View.INVISIBLE);
 		addView(mPlaceHoler, layoutParams);
-		
+
 		RelativeLayout.LayoutParams layoutParams1 = new RelativeLayout.LayoutParams(
 				LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
 		// 错误提示层
@@ -110,45 +140,59 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		initErrorFrame();
 		addView(mErrorFrame, layoutParams1);
 		// 播放控制层
-		mPlayerController = (FrameLayout) mLayoutInflater.inflate(R.layout.vp_media_controller, this, false);
+		mPlayerController = (FrameLayout) mLayoutInflater.inflate(
+				R.layout.vp_media_controller, this, false);
 		mPlayerController.setVisibility(View.VISIBLE);
 		initPlayerControllerFrame();
 		addView(mPlayerController, layoutParams);
 	}
-	
+
 	protected abstract void initPlayerControllerFrame();
 
-	
-	private void showControllerHead(boolean flag){
-		
+	private void showControllerHead(boolean flag) {
+		if (mControllerHead == null)
+			return;
+		if (flag)
+			mControllerHead.setVisibility(View.VISIBLE);
+		else
+			mControllerHead.setVisibility(View.INVISIBLE);
 	}
-	
-	private void showControllerBottom(boolean flag){
-		
+
+	private void showControllerBottom(boolean flag) {
+		if (mControllerBottom == null)
+			return;
+		if (flag)
+			mControllerBottom.setVisibility(View.VISIBLE);
+		else
+			mControllerBottom.setVisibility(View.INVISIBLE);
 	}
 
 	private void initStatusFrame() {
-		mProgressBarBuffering = (ProgressBar) mStatusController.findViewById(R.id.progressBar);
+		mProgressBarBuffering = (ProgressBar) mStatusController
+				.findViewById(R.id.progressBar);
 		mProgressBarBuffering.setVisibility(View.INVISIBLE);
-		mProgressBarIcon = (ImageView) mStatusController.findViewById(R.id.icon);
+		mProgressBarIcon = (ImageView) mStatusController
+				.findViewById(R.id.icon);
 		mProgressBarIcon.setVisibility(View.INVISIBLE);
 	}
 
 	private void initErrorFrame() {
-		ImageButton ibPlay = (ImageButton) mErrorFrame.findViewById(R.id.error_play_button);
+		ImageButton ibPlay = (ImageButton) mErrorFrame
+				.findViewById(R.id.error_play_button);
 		ibPlay.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				onClickPlayButton();
 			}
 		});
-		ImageView ibBack = (ImageView) mErrorFrame.findViewById(R.id.error_backButton);
+		ImageView ibBack = (ImageView) mErrorFrame
+				.findViewById(R.id.error_backButton);
 		ibBack.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				((Activity)mContext).finish();
+				((Activity) mContext).finish();
 			}
 		});
 	}
@@ -174,7 +218,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			int what = msg.what;
 			switch (what) {
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_ENDED:
-				
+
 				break;
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_BUFFERING:
 				showBuffering(true);
@@ -193,27 +237,28 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				break;
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
 				showIcon(false);
+				mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 
 			default:
 				break;
 			}
 		}
 	}
-	
-	private class ErrorHandler extends Handler{
+
+	private class ErrorHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
 			showErrorFrame(msg.what);
 		}
 	}
-	
-	protected void showBuffering(boolean flag){
+
+	protected void showBuffering(boolean flag) {
 		if (flag)
 			mProgressBarBuffering.setVisibility(View.VISIBLE);
 		else
 			mProgressBarBuffering.setVisibility(View.INVISIBLE);
 	}
-	
+
 	public void showIcon(boolean flag) {
 		if (mProgressBarIcon == null)
 			return;
@@ -222,7 +267,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		else
 			mProgressBarIcon.setVisibility(View.INVISIBLE);
 	}
-	
+
 	protected String stringForTime(long timeMs) {
 		long totalSeconds = timeMs / 1000;
 
@@ -230,24 +275,25 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		long minutes = (totalSeconds / 60) % 60;
 		long hours = totalSeconds / 3600;
 
-        mFormatBuilder.setLength(0);
-        if (hours > 0) {
-            return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds).toString();
-        } else {
-            return mFormatter.format("%02d:%02d", minutes, seconds).toString();
-        }
-    }
+		mFormatBuilder.setLength(0);
+		if (hours > 0) {
+			return mFormatter.format("%d:%02d:%02d", hours, minutes, seconds)
+					.toString();
+		} else {
+			return mFormatter.format("%02d:%02d", minutes, seconds).toString();
+		}
+	}
 
-	protected void showPlaceHolder(boolean flag){
+	protected void showPlaceHolder(boolean flag) {
 		if (flag)
 			mPlaceHoler.setVisibility(View.VISIBLE);
 		else
 			mPlaceHoler.setVisibility(View.INVISIBLE);
 	}
-	
+
 	protected abstract void showErrorFrame(int errorCode);
-	
-	protected void hideErrorFrame(){
+
+	protected void hideErrorFrame() {
 		mErrorFrame.setVisibility(View.INVISIBLE);
 	}
 
@@ -261,5 +307,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	public void onEvent(int eventCode) {
 		Log.d(TAG, "onEvent eventCode:" + eventCode);
 		mEventHandler.sendEmptyMessage(eventCode);
+	}
+
+	@Override
+	public void onClick(View v) {
+		mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 	}
 }

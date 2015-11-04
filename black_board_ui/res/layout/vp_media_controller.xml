@@ -80,7 +80,6 @@
                 android:layout_centerVertical="true"
                 android:layout_alignParentRight="true"
                 android:gravity="center|left"
-                android:text="111"
                 android:paddingLeft="1dip"
                 android:paddingRight="1dip" />
             
@@ -91,7 +90,6 @@
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:gravity="center|right"
-                android:text="111"
                 android:paddingLeft="1dip"
                 android:paddingRight="1dip" />
 
