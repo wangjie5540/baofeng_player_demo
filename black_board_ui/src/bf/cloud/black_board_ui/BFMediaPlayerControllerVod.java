@@ -133,6 +133,19 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		mControllerBottom.setVisibility(View.INVISIBLE);
 		mControllerPlayPause = (ImageButton) mPlayerController
 				.findViewById(R.id.pause_play_button);
+		mControllerPlayPause.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				if (mVodPlayer == null)
+					return;
+				STATE playerState = mVodPlayer.getState();
+				if (playerState == STATE.PLAYING)
+					mVodPlayer.pause();
+				else
+					mVodPlayer.resume();
+			}
+		});
 		mControllerCurentPlayTime = (TextView) mPlayerController
 				.findViewById(R.id.time_current);
 		mControllerDuration = (TextView) mPlayerController
@@ -149,7 +162,6 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 					public void onStartTrackingTouch(SeekBar seekBar) {
 						Log.d(TAG, "onStartTrackingTouch");
 						mDragging = true;
-
 					}
 
 					@Override
@@ -260,8 +272,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			mControllerDuration.setText(stringForTime(duration));
 		}
 	}
-	
-	private void updateButtonUI(){
+
+	private void updateButtonUI() {
 		if (mVodPlayer == null)
 			return;
 		STATE state = mVodPlayer.getState();
@@ -269,6 +281,38 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			mControllerPlayPause.setBackgroundResource(R.drawable.vp_pause);
 		else
 			mControllerPlayPause.setBackgroundResource(R.drawable.vp_play);
-			
+
+	}
+
+	@Override
+	protected void doMoveLeft() {
+		if (moveDirection == MOVE_NONE || moveDistanceX < 0
+				|| mVodPlayer == null) {
+			Log.d(TAG, "invailid params during dealing doMoveLeft");
+			return;
+		}
+		STATE state = mVodPlayer.getState();
+		if (state == STATE.PLAYING || state == STATE.PAUSED){
+			int division = 4;
+			int newPosition = (int) (mVodPlayer.getCurrentPosition() - moveDistanceX
+					* mVodPlayer.getDuration() / (mScreenWidth * 4));
+			mVodPlayer.seekTo(newPosition);
+		}
+	}
+
+	@Override
+	protected void doMoveRight() {
+		if (moveDirection == MOVE_NONE || moveDistanceX < 0
+				|| mVodPlayer == null) {
+			Log.d(TAG, "invailid params during dealing doMoveLeft");
+			return;
+		}
+		STATE state = mVodPlayer.getState();
+		if (state == STATE.PLAYING || state == STATE.PAUSED){
+			int division = 4;
+			int newPosition = (int) (mVodPlayer.getCurrentPosition() + moveDistanceX
+					* mVodPlayer.getDuration() / (mScreenWidth * 4));
+			mVodPlayer.seekTo(newPosition);
+		}
 	}
 }

@@ -2,18 +2,25 @@ package bf.cloud.black_board_ui;
 
 import java.util.Formatter;
 
+import com.google.android.exoplayer.util.Util;
+
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.playutils.BasePlayer;
+import bf.cloud.android.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.text.method.MovementMethod;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.View;
+import android.view.MotionEvent;
+import android.view.WindowManager;
+import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
@@ -22,9 +29,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.view.View;
 
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
-		PlayErrorListener, PlayEventListener, View.OnClickListener {
+		PlayErrorListener, PlayEventListener, View.OnClickListener,
+		View.OnTouchListener {
 	protected final String TAG = BFMediaPlayerControllerBase.class
 			.getSimpleName();
 	public final static int VIDEO_TYPE_VOD = 0;
@@ -54,6 +63,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected StringBuilder mFormatBuilder = null;
 	protected Formatter mFormatter = null;
 	protected boolean mIsFullScreen = false;
+	protected int mScreenWidth = -1;
+	protected int mScreenHeight = -1;
 
 	protected static final int MSG_SHOW_CONTROLLER = 2000;
 	protected static final int MSG_HIDE_CONTROLLER = 2001;
@@ -67,7 +78,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			switch (what) {
 			case MSG_SHOW_CONTROLLER:
 				// 5s后，自动隐藏
-				mControllerHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER, 5000);
+				mControllerHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER,
+						5000);
 				if (mIsFullScreen)
 					showControllerHead(true);
 				showControllerBottom(true);
@@ -104,11 +116,40 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		init();
 	}
 
+	protected abstract void showErrorFrame(int errorCode);
+
+	protected abstract void onClickPlayButton();
+
+	protected abstract void initPlayerControllerFrame();
+
+	protected abstract void doMoveLeft();
+
+	protected abstract void doMoveRight();
+
 	private void init() {
 		setOnClickListener(this);
+		setOnTouchListener(this);
+		getAllSize();
+
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mPlayErrorManager = new PlayErrorManager();
+	}
+
+	private void getAllSize() {
+		if (mContext == null) {
+			throw new NullPointerException("you should get the Context first");
+		}
+		WindowManager windowManager = (WindowManager) mContext
+				.getSystemService(Context.WINDOW_SERVICE);
+		DisplayMetrics metrics = new DisplayMetrics();
+		windowManager.getDefaultDisplay().getMetrics(metrics);
+		mScreenHeight = metrics.heightPixels;
+		mScreenWidth = metrics.widthPixels;
+		mCenterX = mScreenWidth / 2;
+		Log.d(TAG, "mScreenWidth:" + mScreenWidth + "/mScreenHeight:" + mScreenHeight);
+		mMinX = Utils.dip2px(mContext, mMinMovementDipX);
+		mMinY = Utils.dip2px(mContext, mMinMovementDipY);
 	}
 
 	/**
@@ -146,8 +187,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		initPlayerControllerFrame();
 		addView(mPlayerController, layoutParams);
 	}
-
-	protected abstract void initPlayerControllerFrame();
 
 	private void showControllerHead(boolean flag) {
 		if (mControllerHead == null)
@@ -196,8 +235,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			}
 		});
 	}
-
-	protected abstract void onClickPlayButton();
 
 	protected void attachPlayer(BasePlayer bp) {
 		if (bp == null) {
@@ -291,8 +328,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			mPlaceHoler.setVisibility(View.INVISIBLE);
 	}
 
-	protected abstract void showErrorFrame(int errorCode);
-
 	protected void hideErrorFrame() {
 		mErrorFrame.setVisibility(View.INVISIBLE);
 	}
@@ -311,6 +346,129 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 
 	@Override
 	public void onClick(View v) {
+		Log.d(TAG, "onClick");
 		mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
+	}
+
+	private int mCenterX;
+	private final int mMinMovementDipX = 20;
+	private final int mMinMovementDipY = 20;
+	private float mMinY;
+	private float mMinX;
+	protected static final int MOVE_NONE = -1;
+	protected static final int MOVE_LEFT = 1;
+	protected static final int MOVE_RIGHT = 2;
+	protected static final int MOVE_UP = 3;
+	protected static final int MOVE_DOWN = 4;
+
+	protected float preMoveX = -1.0f;
+	protected float preMoveY = -1.0f;
+	protected MotionEvent motionEvent = null;
+
+	protected int moveDirection = MOVE_NONE;
+	protected float moveDistanceX = 0.0f;
+	protected float moveDistanceY = 0.0f;
+
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		int action = event.getAction();
+		switch (action) {
+		case MotionEvent.ACTION_DOWN:
+			Log.d(TAG, "MotionEvent.ACTION_DOWN");
+			moveDirection = MOVE_NONE;
+			preMoveX = event.getRawX();
+			preMoveY = event.getRawY();
+			break;
+		case MotionEvent.ACTION_MOVE: {// 左侧滑动更改亮度,右侧滑动调节音量,其它符合要求的滑动调节播放进度
+			Log.d(TAG, "MotionEvent.ACTION_MOVE");
+			float afterMoveX = event.getRawX();
+			float afterMoveY = event.getRawY();
+			moveDistanceX = Math.abs(preMoveX - afterMoveX);
+			moveDistanceY = Math.abs(preMoveY - afterMoveY);
+			// Log.d(TAG, "e1(" + preMoveX + "," + preMoveY + "),e2(" + e2x +
+			// "," + e2y
+			// + ")" + ",e1e2x=" + e1e2x + ",e1e2y=" + e1e2y + ",mPovitX="
+			// + mPovitX + ",mMinX=" + mMinX + ",mMinY=" + mMinY);
+			// 音量、亮度x坐标是否在允许范围内;
+
+			// 移动距离太小,就忽略这个消息
+			if (moveDistanceX < mMinX && moveDistanceY < mMinY) {
+				return false;
+			}
+
+			if (moveDistanceX > mMinX && moveDistanceY < mMinY) {// 横向滑动
+				moveDirection = preMoveX > afterMoveX ? MOVE_LEFT : MOVE_RIGHT;
+				return false;
+			}
+
+			// if (preMoveX < mPovitX && e2x < mPovitX) {
+			// if (e1e2x < mMinX) {// 左侧亮度
+			// showProgressLayer(false, false);
+			// // 音量立即消失
+			// disappearVolumeLayer();
+			// if (null != mBrightnessLayer) {
+			// mBrightnessLayer.onScroll(event, mDisplayHeight);
+			// }
+			// return true;
+			// }
+			// }
+			// if (preMoveX > mPovitX && e2x > mPovitX) {
+			// if (e1e2x < mMinX && e1e2y > mMinY) {// 右侧音量
+			// showProgressLayer(false, false);
+			// // 亮度立即消失
+			// disappearBrightnessLayer();
+			// if (null != mVolumeLayer) {
+			// mVolumeLayer.onScroll(event, mDisplayHeight);
+			// }
+			// return true;
+			// }
+			// }
+		}
+
+			break;
+		case MotionEvent.ACTION_UP:
+			onMoveEventActionUp();
+			break;
+
+		default:
+			break;
+		}
+		return false;
+	}
+
+	private void onMoveEventActionUp() {
+		Log.d(TAG, "onMoveEventActionUp moveDirection:" + moveDirection);
+		switch (moveDirection) {
+		case MOVE_LEFT:
+			doMoveLeft();
+			break;
+		case MOVE_RIGHT:
+			doMoveRight();
+			break;
+		case MOVE_UP:
+			doMoveUp();
+			break;
+		case MOVE_DOWN:
+			doMoveDown();
+			break;
+
+		default:
+			break;
+		}
+		moveDirection = MOVE_NONE;
+	}
+
+	protected void doMoveUp() {
+
+	}
+
+	protected void doMoveDown() {
+
+	}
+
+	@Override
+	public boolean performClick() {
+		Log.d(TAG, "performClick");
+		return super.performClick();
 	}
 }
