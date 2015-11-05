@@ -175,7 +175,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 						// }
 						mVodPlayer.seekTo((int) newposition);
 						mDragging = false;
-						mControllerHandler
+						mMessageHandler
 								.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 					}
 
@@ -293,9 +293,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		}
 		STATE state = mVodPlayer.getState();
 		if (state == STATE.PLAYING || state == STATE.PAUSED){
-			int division = 4;
 			int newPosition = (int) (mVodPlayer.getCurrentPosition() - moveDistanceX
-					* mVodPlayer.getDuration() / (mScreenWidth * 4));
+					* mVodPlayer.getDuration() / (mScreenWidth * DIVISION));
 			mVodPlayer.seekTo(newPosition);
 		}
 	}
@@ -309,9 +308,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		}
 		STATE state = mVodPlayer.getState();
 		if (state == STATE.PLAYING || state == STATE.PAUSED){
-			int division = 4;
 			int newPosition = (int) (mVodPlayer.getCurrentPosition() + moveDistanceX
-					* mVodPlayer.getDuration() / (mScreenWidth * 4));
+					* mVodPlayer.getDuration() / (mScreenWidth * DIVISION));
 			mVodPlayer.seekTo(newPosition);
 		}
 	}

@@ -16,4 +16,8 @@ public class BFYConst {
     //p2p默认端口
     public static final int DEFAULT_P2P_PORT = 8080;
     public static final String P2PSERVER = "http://127.0.0.1";
+    //最大亮度
+    public static final float MAX_BRIGHTNESS = 255f;
+    //最小亮度
+    public static final float MIN_BRIGHTNESS = 25f;
 }

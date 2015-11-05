@@ -1,23 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center">
+    android:gravity="center" >
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="30dip"
         android:layout_height="30dip"
-        android:indeterminate="true"
         android:layout_gravity="center"
+        android:indeterminate="true"
         android:indeterminateDrawable="@drawable/vp_status_loading" />
-    
+
     <ImageView
         android:id="@+id/icon"
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:src="@drawable/vp_logo" />
+
+    <LinearLayout
+        android:id="@+id/brightness_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            style="@style/BFYun.TextAppearance.Middle.WhiteGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vp_brightness" />
+
+        <TextView
+            android:id="@+id/brightness_percent"
+            style="@style/BFYun.TextAppearance.Middle.WhiteGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/volume_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal" >
+
+        <TextView
+            style="@style/BFYun.TextAppearance.Middle.WhiteGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/vp_volume" />
+
+        <TextView
+            android:id="@+id/volume_percent"
+            style="@style/BFYun.TextAppearance.Middle.WhiteGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
 </FrameLayout>

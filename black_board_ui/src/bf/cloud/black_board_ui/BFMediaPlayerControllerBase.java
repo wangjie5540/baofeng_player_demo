@@ -2,8 +2,7 @@ package bf.cloud.black_board_ui;
 
 import java.util.Formatter;
 
-import com.google.android.exoplayer.util.Util;
-
+import bf.cloud.android.base.BFYConst;
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.playutils.BasePlayer;
@@ -12,7 +11,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
-import android.text.method.MovementMethod;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -20,11 +18,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.WindowManager;
-import android.view.accessibility.AccessibilityManager.TouchExplorationStateChangeListener;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -38,7 +36,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			.getSimpleName();
 	public final static int VIDEO_TYPE_VOD = 0;
 	public final static int VIDEO_TYPE_LIVE = 1;
+	protected final static int DIVISION = 4;
 	protected int mVideoType = VIDEO_TYPE_VOD;
+	private final static int DELAY_TIME_LONG = 5000; // ms
+	private final static int DELAY_TIME_SHORT = 3000; // ms
 	protected LayoutInflater mLayoutInflater = null;
 
 	protected Context mContext = null;
@@ -47,6 +48,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected FrameLayout mStatusController = null;
 	private ProgressBar mProgressBarBuffering = null;
 	private ImageView mProgressBarIcon = null;
+	private LinearLayout mBrightnessLayer = null;
+	private TextView mBrightnessPercent = null;
+	private LinearLayout mVolumeLayer = null;
+	private TextView mVolumePercent = null;
 	private EventHandler mEventHandler = new EventHandler();
 	private ErrorHandler mErrorHandler = new ErrorHandler();
 	protected PlayErrorManager mPlayErrorManager = null;
@@ -65,30 +70,63 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected boolean mIsFullScreen = false;
 	protected int mScreenWidth = -1;
 	protected int mScreenHeight = -1;
+	private BasePlayer mPlayer = null;
 
 	protected static final int MSG_SHOW_CONTROLLER = 2000;
 	protected static final int MSG_HIDE_CONTROLLER = 2001;
-	protected Handler mControllerHandler = new Handler(new Handler.Callback() {
+	protected static final int MSG_SHOW_BRIGHTNESS = 2002;
+	protected static final int MSG_HIDE_BRIGHTNESS = 2003;
+	protected static final int MSG_SHOW_VOLUME = 2004;
+	protected static final int MSG_HIDE_VOLUME = 2005;
+
+	protected Handler mMessageHandler = new Handler(new Handler.Callback() {
 
 		@Override
 		public boolean handleMessage(Message msg) {
 			int what = msg.what;
-			mControllerHandler.removeMessages(MSG_SHOW_CONTROLLER);
-			mControllerHandler.removeMessages(MSG_HIDE_CONTROLLER);
 			switch (what) {
 			case MSG_SHOW_CONTROLLER:
+				mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
+				mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
 				// 5s后，自动隐藏
-				mControllerHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER,
-						5000);
+				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER,
+						DELAY_TIME_LONG);
 				if (mIsFullScreen)
 					showControllerHead(true);
 				showControllerBottom(true);
 				break;
 			case MSG_HIDE_CONTROLLER:
+				mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
+				mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
 				showControllerHead(false);
 				showControllerBottom(false);
 				break;
-
+			case MSG_SHOW_BRIGHTNESS:
+				mMessageHandler.removeMessages(MSG_HIDE_BRIGHTNESS);
+				mMessageHandler.removeMessages(MSG_SHOW_BRIGHTNESS);
+				showVolumeLayer(false);
+				showBrightnessLayer(true);
+				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_BRIGHTNESS,
+						DELAY_TIME_SHORT);
+				break;
+			case MSG_HIDE_BRIGHTNESS:
+				mMessageHandler.removeMessages(MSG_HIDE_BRIGHTNESS);
+				mMessageHandler.removeMessages(MSG_SHOW_BRIGHTNESS);
+				showBrightnessLayer(false);
+				break;
+			case MSG_SHOW_VOLUME:
+				mMessageHandler.removeMessages(MSG_SHOW_VOLUME);
+				mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
+				showBrightnessLayer(false);
+				showVolumeLayer(true);
+				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_VOLUME,
+						DELAY_TIME_SHORT);
+				break;
+			case MSG_HIDE_VOLUME:
+				mMessageHandler.removeMessages(MSG_SHOW_VOLUME);
+				mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
+				showVolumeLayer(false);
+				break;
 			default:
 				Log.d(TAG, "invailid msg");
 				break;
@@ -147,7 +185,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mScreenHeight = metrics.heightPixels;
 		mScreenWidth = metrics.widthPixels;
 		mCenterX = mScreenWidth / 2;
-		Log.d(TAG, "mScreenWidth:" + mScreenWidth + "/mScreenHeight:" + mScreenHeight);
+		Log.d(TAG, "mScreenWidth:" + mScreenWidth + "/mScreenHeight:"
+				+ mScreenHeight);
 		mMinX = Utils.dip2px(mContext, mMinMovementDipX);
 		mMinY = Utils.dip2px(mContext, mMinMovementDipY);
 	}
@@ -213,6 +252,17 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mProgressBarIcon = (ImageView) mStatusController
 				.findViewById(R.id.icon);
 		mProgressBarIcon.setVisibility(View.INVISIBLE);
+		mBrightnessLayer = (LinearLayout) mStatusController
+				.findViewById(R.id.brightness_layout);
+		mBrightnessPercent = (TextView) mStatusController
+				.findViewById(R.id.brightness_percent);
+		mBrightnessPercent.setText("");
+		showBrightnessLayer(false);
+		mVolumeLayer = (LinearLayout) mStatusController
+				.findViewById(R.id.volume_layout);
+		mVolumePercent = (TextView) mStatusController
+				.findViewById(R.id.volume_percent);
+		showVolumeLayer(false);
 	}
 
 	private void initErrorFrame() {
@@ -241,6 +291,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			Log.d(TAG, "mBasePlayer is null");
 			throw new NullPointerException("mBasePlayer is null");
 		}
+		mPlayer = bp;
 		// attach Listeners
 		bp.registPlayEventListener(this);
 		bp.registPlayErrorListener(this);
@@ -274,7 +325,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				break;
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
 				showIcon(false);
-				mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
+				mMessageHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 
 			default:
 				break;
@@ -296,13 +347,45 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			mProgressBarBuffering.setVisibility(View.INVISIBLE);
 	}
 
-	public void showIcon(boolean flag) {
+	private void showIcon(boolean flag) {
 		if (mProgressBarIcon == null)
 			return;
 		if (flag)
 			mProgressBarIcon.setVisibility(View.VISIBLE);
 		else
 			mProgressBarIcon.setVisibility(View.INVISIBLE);
+	}
+
+	private void showBrightnessLayer(boolean flag) {
+		if (mBrightnessLayer == null)
+			return;
+		if (flag)
+			mBrightnessLayer.setVisibility(View.VISIBLE);
+		else
+			mBrightnessLayer.setVisibility(View.INVISIBLE);
+	}
+
+	private void showVolumeLayer(boolean flag) {
+		if (mVolumeLayer == null)
+			return;
+		if (flag)
+			mVolumeLayer.setVisibility(View.VISIBLE);
+		else
+			mVolumeLayer.setVisibility(View.INVISIBLE);
+	}
+
+	private void setBrightPercent(int percent) {
+		if (mBrightnessPercent == null)
+			return;
+		mBrightnessPercent.setText(percent + "%");
+		mMessageHandler.sendEmptyMessage(MSG_SHOW_BRIGHTNESS);
+	}
+
+	private void setVolumePercent(int percent) {
+		if (mVolumePercent == null)
+			return;
+		mVolumePercent.setText(percent + "%");
+		mMessageHandler.sendEmptyMessage(MSG_SHOW_VOLUME);
 	}
 
 	protected String stringForTime(long timeMs) {
@@ -347,7 +430,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	@Override
 	public void onClick(View v) {
 		Log.d(TAG, "onClick");
-		mControllerHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
+		mMessageHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 	}
 
 	private int mCenterX;
@@ -368,6 +451,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected int moveDirection = MOVE_NONE;
 	protected float moveDistanceX = 0.0f;
 	protected float moveDistanceY = 0.0f;
+	protected MotionEvent mLastMotionEvent = null;
 
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
@@ -385,44 +469,26 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			float afterMoveY = event.getRawY();
 			moveDistanceX = Math.abs(preMoveX - afterMoveX);
 			moveDistanceY = Math.abs(preMoveY - afterMoveY);
-			// Log.d(TAG, "e1(" + preMoveX + "," + preMoveY + "),e2(" + e2x +
-			// "," + e2y
-			// + ")" + ",e1e2x=" + e1e2x + ",e1e2y=" + e1e2y + ",mPovitX="
-			// + mPovitX + ",mMinX=" + mMinX + ",mMinY=" + mMinY);
-			// 音量、亮度x坐标是否在允许范围内;
 
-			// 移动距离太小,就忽略这个消息
-			if (moveDistanceX < mMinX && moveDistanceY < mMinY) {
+			if (moveDistanceX < mMinX && moveDistanceY < mMinY) {// 移动距离太小,就忽略这个消息
 				return false;
-			}
-
-			if (moveDistanceX > mMinX && moveDistanceY < mMinY) {// 横向滑动
+			} else if (moveDistanceX >= mMinX && moveDistanceY >= mMinY) {// 横向和纵向如果都超过预置距离,则整体忽略
+				moveDirection = MOVE_NONE;
+				return false;
+			} else if (moveDistanceX > mMinX && moveDistanceY < mMinY) {// 横向滑动
 				moveDirection = preMoveX > afterMoveX ? MOVE_LEFT : MOVE_RIGHT;
 				return false;
+			} else if (moveDistanceX < mMinX && moveDistanceY > mMinY) {// 纵向滑动
+				moveDirection = preMoveY > afterMoveY ? MOVE_UP : MOVE_DOWN;
 			}
 
-			// if (preMoveX < mPovitX && e2x < mPovitX) {
-			// if (e1e2x < mMinX) {// 左侧亮度
-			// showProgressLayer(false, false);
-			// // 音量立即消失
-			// disappearVolumeLayer();
-			// if (null != mBrightnessLayer) {
-			// mBrightnessLayer.onScroll(event, mDisplayHeight);
-			// }
-			// return true;
-			// }
-			// }
-			// if (preMoveX > mPovitX && e2x > mPovitX) {
-			// if (e1e2x < mMinX && e1e2y > mMinY) {// 右侧音量
-			// showProgressLayer(false, false);
-			// // 亮度立即消失
-			// disappearBrightnessLayer();
-			// if (null != mVolumeLayer) {
-			// mVolumeLayer.onScroll(event, mDisplayHeight);
-			// }
-			// return true;
-			// }
-			// }
+			if (preMoveX < mCenterX) {// 靠左,调节屏幕亮度
+				onPortraitMove(event, TYPE_BRIGHTNESS);
+			} else if (preMoveX > mCenterX) { // 靠右,调节音量
+				onPortraitMove(event, TYPE_VOLUME);
+			} else { // 在中间,忽略
+				return false;
+			}
 		}
 
 			break;
@@ -436,20 +502,69 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		return false;
 	}
 
+	private void onPortraitMove(MotionEvent event, int type) {
+		if (mContext == null || mPlayer == null)
+			return;
+		if (mLastMotionEvent == null) {
+			mLastMotionEvent = MotionEvent.obtain(event);
+			return;
+		}
+
+		if (type == TYPE_BRIGHTNESS) {
+			float offset = event.getRawY() - mLastMotionEvent.getRawY();
+			int value = Utils.getBrightness((Activity) mContext);
+			Log.d(TAG, "onPortraitMove,current brightness=" + value);
+			if (offset < 0) {
+				value += Math
+						.abs((int) (offset
+								* (BFYConst.MAX_BRIGHTNESS - BFYConst.MIN_BRIGHTNESS) / mScreenHeight));
+			} else if (offset > 0) {
+				value -= Math
+						.abs((int) (offset
+								* (BFYConst.MAX_BRIGHTNESS - BFYConst.MIN_BRIGHTNESS) / mScreenHeight));
+			}
+			if (value < BFYConst.MIN_BRIGHTNESS) {
+				value = (int) BFYConst.MIN_BRIGHTNESS;
+			} else if (value > BFYConst.MAX_BRIGHTNESS) {
+				value = (int) BFYConst.MAX_BRIGHTNESS;
+			}
+			Utils.effectBrightness((Activity) mContext, value);
+			int percent = (int) (value * 100 / BFYConst.MAX_BRIGHTNESS);
+			setBrightPercent(percent);
+		} else if (type == TYPE_VOLUME) {
+			float offset = event.getRawY() - mLastMotionEvent.getRawY();
+			if (ignoreIt(Math.abs(offset), mScreenHeight)) {
+				return;
+			}
+			if (offset < 0) {
+				mPlayer.incVolume();
+			} else if (offset > 0) {
+				mPlayer.decVolume();
+			}
+			
+			int percent = mPlayer.getCurrentVolume() * 100 / mPlayer.getMaxVolume();
+	        setVolumePercent(percent);
+		}
+		
+		mLastMotionEvent.recycle();
+		mLastMotionEvent = MotionEvent.obtain(event);
+	}
+	
+	private boolean ignoreIt(float distance, int wholeDistance) {
+    	if (distance < wholeDistance / 10)
+    		return true;
+		return false;
+	}
+
 	private void onMoveEventActionUp() {
 		Log.d(TAG, "onMoveEventActionUp moveDirection:" + moveDirection);
+		mLastMotionEvent = null;
 		switch (moveDirection) {
 		case MOVE_LEFT:
 			doMoveLeft();
 			break;
 		case MOVE_RIGHT:
 			doMoveRight();
-			break;
-		case MOVE_UP:
-			doMoveUp();
-			break;
-		case MOVE_DOWN:
-			doMoveDown();
 			break;
 
 		default:
@@ -458,12 +573,16 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		moveDirection = MOVE_NONE;
 	}
 
-	protected void doMoveUp() {
+	protected final static int TYPE_VOLUME = 0;
+	protected final static int TYPE_BRIGHTNESS = 1;
+	protected int mType = TYPE_VOLUME;
 
+	protected void doMoveUp(int type) {
+		// 声音与亮度操作已实时完成,可以在此处理抬起的消息
 	}
 
-	protected void doMoveDown() {
-
+	protected void doMoveDown(int type) {
+		// 声音与亮度操作已实时完成,可以在此处理抬起的消息
 	}
 
 	@Override
