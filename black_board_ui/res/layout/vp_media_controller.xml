@@ -54,52 +54,61 @@
             android:layout_height="30dip"
             android:layout_marginBottom="18dp"
             android:layout_marginLeft="5dp"
-            android:layout_marginRight="10dp"
             android:layout_marginTop="18dp"
             android:background="@drawable/vp_play" />
+
         <Button
             android:id="@+id/full_screen"
             android:layout_width="@dimen/vp_player_fullscreen_width"
             android:layout_height="@dimen/vp_player_fullscreen_width"
             android:layout_alignParentRight="true"
+            android:background="@drawable/vp_fullscreen"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:background="@drawable/vp_fullscreen" />
+            android:layout_marginRight="15dp" />
+
+        <TextView
+            android:id="@+id/definition"
+            style="@style/BFYun.TextAppearance.Big.WhiteGray"
+            android:layout_width="@dimen/vp_player_definite_width"
+            android:layout_height="match_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center"
+            android:text="清晰度"
+            android:visibility="gone" />
+
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_toRightOf="@id/pause_play_button"
-            android:layout_toLeftOf="@id/full_screen"
-            android:layout_height="match_parent" >
+            android:layout_height="match_parent"
+            android:layout_marginRight="@dimen/vp_player_definite_width"
+            android:layout_toRightOf="@id/pause_play_button" >
 
             <TextView
-                android:id="@+id/time_duration"
-                style="@style/BFYun.TextAppearance.Tiny.LightGray"
-                android:layout_width="40dp"
-                android:layout_height="match_parent"
-                android:layout_centerVertical="true"
-                android:layout_alignParentRight="true"
-                android:gravity="center|left"
-                android:paddingLeft="1dip"
-                android:paddingRight="1dip" />
-            
-            <TextView 
                 android:id="@+id/time_current"
                 style="@style/BFYun.TextAppearance.Tiny.LightGray"
-                android:layout_width="40dp"
+                android:layout_width="@dimen/vp_player_time"
                 android:layout_height="match_parent"
                 android:layout_alignParentLeft="true"
                 android:gravity="center|right"
                 android:paddingLeft="1dip"
                 android:paddingRight="1dip" />
+            <TextView
+                android:id="@+id/time_duration"
+                style="@style/BFYun.TextAppearance.Tiny.LightGray"
+                android:layout_width="@dimen/vp_player_time"
+                android:layout_height="match_parent"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:gravity="center|left"
+                android:paddingLeft="1dip"
+                android:paddingRight="1dip" />
 
             <SeekBar
                 android:id="@+id/mediacontroller_progress"
-                android:layout_toRightOf="@id/time_current"
-                android:layout_toLeftOf="@id/time_duration"
                 android:layout_width="match_parent"
-                android:layout_centerVertical="true"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@id/time_duration"
+                android:layout_toRightOf="@id/time_current"
                 android:maxHeight="4dip"
                 android:paddingLeft="17dip"
                 android:paddingRight="17dip"

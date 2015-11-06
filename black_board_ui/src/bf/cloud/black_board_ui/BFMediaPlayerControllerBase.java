@@ -2,11 +2,6 @@ package bf.cloud.black_board_ui;
 
 import java.util.Formatter;
 
-import bf.cloud.android.base.BFYConst;
-import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
-import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
-import bf.cloud.android.playutils.BasePlayer;
-import bf.cloud.android.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
@@ -20,7 +15,7 @@ import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.OrientationEventListener;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -32,7 +27,11 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
-import android.view.View;
+import bf.cloud.android.base.BFYConst;
+import bf.cloud.android.playutils.BasePlayer;
+import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
+import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
+import bf.cloud.android.utils.Utils;
 
 /**
  * @author wang Note: You should change your project to UTF8
@@ -72,11 +71,12 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected TextView mControllerCurentPlayTime = null;
 	protected TextView mControllerDuration = null;
 	protected SeekBar mControllerProgressBar = null;
-	protected Button mControllerDefinition = null;
 	protected StringBuilder mFormatBuilder = null;
 	protected Formatter mFormatter = null;
 	// 切换屏幕
 	protected Button mControllerChangeScreen = null;
+	// 清晰度图标
+	protected TextView mControllerDefinition = null;
 	// 全屏标志
 	protected boolean mIsFullScreen = false;
 	// 自适应屏幕
@@ -233,9 +233,11 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				+ mScreenHeight);
 		mMinX = Utils.dip2px(mContext, mMinMovementDipX);
 		mMinY = Utils.dip2px(mContext, mMinMovementDipY);
-		
-		int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
-		int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+
+		int w = View.MeasureSpec.makeMeasureSpec(0,
+				View.MeasureSpec.UNSPECIFIED);
+		int h = View.MeasureSpec.makeMeasureSpec(0,
+				View.MeasureSpec.UNSPECIFIED);
 		measure(w, h);
 		mVideoFrameOrigenalWidth = getWidth();
 		mVideoFrameOrigenalHeight = getHeight();
@@ -349,12 +351,16 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		// attach functions
 
 	}
-	
-	private void restoreOrigenalVideoFrameSize(){
-		if (mVideoFrameOrigenalWidth <= 0 || mVideoFrameOrigenalHeight <= 0){
+
+	private void restoreOrigenalVideoFrameSize() {
+		if (mVideoFrameOrigenalWidth <= 0 || mVideoFrameOrigenalHeight <= 0) {
 			mVideoFrameOrigenalWidth = getWidth();
 			mVideoFrameOrigenalHeight = getHeight();
 		}
+	}
+
+	protected void showDefinitionPanel() {
+
 	}
 
 	/**
@@ -364,14 +370,17 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		if (null == mContext)
 			return;
 		restoreOrigenalVideoFrameSize();
-		Activity act = (Activity) mContext;
-		act.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-
 		ViewGroup.LayoutParams params = getLayoutParams();
 		params.height = mVideoFrameOrigenalHeight;
 		params.width = mVideoFrameOrigenalWidth;
+		Activity act = (Activity) mContext;
+		act.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 		mIsFullScreen = false;
+		// 显示全屏图标
+		mControllerChangeScreen.setVisibility(View.VISIBLE);
+		// 隐藏清晰度图标
+		mControllerDefinition.setVisibility(View.INVISIBLE);
 		mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 		Log.d(TAG, "portrait end");
 	}
@@ -384,6 +393,9 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		if (null == mContext)
 			return;
 		restoreOrigenalVideoFrameSize();
+		ViewGroup.LayoutParams params = getLayoutParams();
+		params.height = mScreenWidth;
+		params.width = mScreenHeight;
 		int newOrientation;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			newOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
@@ -394,9 +406,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		act.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		act.setRequestedOrientation(newOrientation);
-		ViewGroup.LayoutParams params = getLayoutParams();
-		params.height = mScreenWidth;
-		params.width = mScreenHeight;
+		// 隐藏全屏图标
+		mControllerChangeScreen.setVisibility(View.GONE);
+		// 显示清晰度图标
+		mControllerDefinition.setVisibility(View.VISIBLE);
 		mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 		Log.d(TAG, "landscape end");
 		mIsFullScreen = true;
@@ -447,7 +460,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		if (flag)
 			mProgressBarBuffering.setVisibility(View.VISIBLE);
 		else
-			mProgressBarBuffering.setVisibility(View.INVISIBLE);
+			mProgressBarBuffering.setVisibility(View.GONE);
 	}
 
 	private void showIcon(boolean flag) {
@@ -688,12 +701,12 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		}
 		moveDirection = MOVE_NONE;
 	}
-	
-	protected void backToPortrait(){
+
+	protected void backToPortrait() {
 		if (mIsFullScreen)
 			changeToPortrait();
 		else
-			((Activity)mContext).finish();
+			((Activity) mContext).finish();
 	}
 
 	protected final static int TYPE_VOLUME = 0;
@@ -705,14 +718,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		Log.d(TAG, "performClick");
 		return super.performClick();
 	}
-	
+
 	@Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        Log.d(TAG, "onKeyDown,keyCode=" + keyCode);
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
-            backToPortrait();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
-    }
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		Log.d(TAG, "onKeyDown,keyCode=" + keyCode);
+		if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+			backToPortrait();
+			return true;
+		}
+		return super.onKeyDown(keyCode, event);
+	}
 }

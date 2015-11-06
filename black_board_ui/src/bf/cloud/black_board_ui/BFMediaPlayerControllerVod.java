@@ -86,7 +86,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
 			mControllerProgressBar.setProgress(0);
 			if (mVodPlayer != null)
-			mControllerVideoTitle.setText(mVodPlayer.getVideoName());
+				mControllerVideoTitle.setText(mVodPlayer.getVideoName());
 			updateButtonUI();
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_PAUSE:
@@ -131,7 +131,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		mControllerBack = (ImageView) mPlayerController
 				.findViewById(R.id.back_button);
 		mControllerBack.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				backToPortrait();
@@ -158,13 +158,23 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 					mVodPlayer.resume();
 			}
 		});
-		mControllerChangeScreen = (Button) mPlayerController.findViewById(R.id.full_screen);
+		mControllerChangeScreen = (Button) mPlayerController
+				.findViewById(R.id.full_screen);
 		mControllerChangeScreen.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				changeToLandscape();
 				mIsFullScreen = true;
+			}
+		});
+		mControllerDefinition = (TextView) mPlayerController
+				.findViewById(R.id.definition);
+		mControllerDefinition.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showDefinitionPanel();
 			}
 		});
 		mControllerCurentPlayTime = (TextView) mPlayerController
@@ -196,8 +206,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 						// }
 						mVodPlayer.seekTo((int) newposition);
 						mDragging = false;
-						mMessageHandler
-								.sendEmptyMessage(MSG_SHOW_CONTROLLER);
+						mMessageHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
 					}
 
 					@Override
@@ -313,7 +322,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			return;
 		}
 		STATE state = mVodPlayer.getState();
-		if (state == STATE.PLAYING || state == STATE.PAUSED){
+		if (state == STATE.PLAYING || state == STATE.PAUSED) {
 			int newPosition = (int) (mVodPlayer.getCurrentPosition() - moveDistanceX
 					* mVodPlayer.getDuration() / (mScreenWidth * DIVISION));
 			mVodPlayer.seekTo(newPosition);
@@ -328,7 +337,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			return;
 		}
 		STATE state = mVodPlayer.getState();
-		if (state == STATE.PLAYING || state == STATE.PAUSED){
+		if (state == STATE.PLAYING || state == STATE.PAUSED) {
 			int newPosition = (int) (mVodPlayer.getCurrentPosition() + moveDistanceX
 					* mVodPlayer.getDuration() / (mScreenWidth * DIVISION));
 			mVodPlayer.seekTo(newPosition);
