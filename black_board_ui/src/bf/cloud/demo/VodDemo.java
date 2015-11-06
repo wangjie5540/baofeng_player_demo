@@ -4,6 +4,7 @@ import bf.cloud.android.playutils.VodPlayer;
 import bf.cloud.black_board_ui.R;
 import bf.cloud.black_board_ui.BFMediaPlayerControllerVod;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -42,6 +43,7 @@ public class VodDemo extends Activity{
 	
 	@Override
 	protected void onPause() {
+		Log.d(TAG, "onPause");
 		mVodPlayer.pause();
 		super.onPause();
 	}
@@ -56,5 +58,11 @@ public class VodDemo extends Activity{
 	protected void onDestroy() {
 		mVodPlayer.stop();
 		super.onDestroy();
+	}
+	
+	@Override
+	public void onConfigurationChanged(Configuration newConfig) {
+		Log.d(TAG, "onConfigurationChanged");
+		super.onConfigurationChanged(newConfig);
 	}
 }

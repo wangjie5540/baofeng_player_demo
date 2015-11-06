@@ -3,6 +3,7 @@ package bf.cloud.demo;
 import bf.cloud.black_board_ui.R;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;

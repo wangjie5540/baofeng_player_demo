@@ -9,6 +9,8 @@ import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.utils.Utils;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.ActivityInfo;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -17,6 +19,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.OrientationEventListener;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -29,6 +32,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.view.View;
 
+/**
+ * @author wang Note: You should change your project to UTF8
+ */
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		PlayErrorListener, PlayEventListener, View.OnClickListener,
 		View.OnTouchListener {
@@ -67,7 +73,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected Button mControllerDefinition = null;
 	protected StringBuilder mFormatBuilder = null;
 	protected Formatter mFormatter = null;
+	// 切换屏幕
+	protected Button mControllerChangeScreen = null;
+	// 全屏标志
 	protected boolean mIsFullScreen = false;
+	// 自适应屏幕
+	private boolean mIsAutoScreen = true;
+	// 屏幕旋转观察者
+	protected PlayerOrientationMessageListener mPlayerOrientationMessageListener = null;
 	protected int mScreenWidth = -1;
 	protected int mScreenHeight = -1;
 	private BasePlayer mPlayer = null;
@@ -78,12 +91,17 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected static final int MSG_HIDE_BRIGHTNESS = 2003;
 	protected static final int MSG_SHOW_VOLUME = 2004;
 	protected static final int MSG_HIDE_VOLUME = 2005;
+	protected static final int MSG_CHANGE_SCREEN_PORTRAIT = 2006;
+	protected static final int MSG_CHANGE_SCREEN_LANDSCAPE = 2007;
+	public static final int MSG_ADJUST_ORIENTATION = 5;
 
 	protected Handler mMessageHandler = new Handler(new Handler.Callback() {
 
 		@Override
 		public boolean handleMessage(Message msg) {
 			int what = msg.what;
+			int arg1 = msg.arg1;
+			int arg2 = msg.arg2;
 			switch (what) {
 			case MSG_SHOW_CONTROLLER:
 				mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
@@ -127,6 +145,18 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
 				showVolumeLayer(false);
 				break;
+			case MSG_ADJUST_ORIENTATION:
+				mMessageHandler.removeMessages(MSG_ADJUST_ORIENTATION);
+				int currentOrientation = mPlayerOrientationMessageListener
+						.getCurrentOrigentation();
+
+				if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_LEFT
+						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_RIGHT)
+					changeToLandscape();
+				else if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_BOTTOM
+						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
+					changeToPortrait();
+				break;
 			default:
 				Log.d(TAG, "invailid msg");
 				break;
@@ -167,6 +197,9 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	private void init() {
 		setOnClickListener(this);
 		setOnTouchListener(this);
+		mPlayerOrientationMessageListener = new PlayerOrientationMessageListener(
+				mContext, this);
+		mPlayerOrientationMessageListener.start();
 		getAllSize();
 
 		mLayoutInflater = (LayoutInflater) mContext
@@ -299,6 +332,41 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 
 	}
 
+	/**
+	 * 竖屏
+	 */
+	public void changeToPortrait() {
+		Log.d(TAG, "portrait");
+		if (null == mContext)
+			return;
+		Activity act = (Activity) mContext;
+		act.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+
+		Log.d(TAG, "portrait end");
+	}
+
+	/**
+	 * 横屏
+	 */
+	public void changeToLandscape() {
+		Log.d(TAG, "landscape");
+		if (null == mContext)
+			return;
+		int newOrientation;
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
+			newOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
+		} else {
+			newOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE;
+		}
+		Activity act = (Activity) mContext;
+		act.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+				WindowManager.LayoutParams.FLAG_FULLSCREEN);
+		act.setRequestedOrientation(newOrientation);
+
+		Log.d(TAG, "landscape end");
+	}
+
 	private class EventHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -402,6 +470,18 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		} else {
 			return mFormatter.format("%02d:%02d", minutes, seconds).toString();
 		}
+	}
+
+	public void sendMessage(int msgType) {
+		mMessageHandler.sendEmptyMessage(msgType);
+	}
+
+	public void sendMessageDelayed(Message msg, int ms) {
+		mMessageHandler.sendMessageDelayed(msg, ms);
+	}
+
+	public void removeMessage(int msgType) {
+		mMessageHandler.removeMessages(msgType);
 	}
 
 	protected void showPlaceHolder(boolean flag) {
@@ -541,18 +621,19 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			} else if (offset > 0) {
 				mPlayer.decVolume();
 			}
-			
-			int percent = mPlayer.getCurrentVolume() * 100 / mPlayer.getMaxVolume();
-	        setVolumePercent(percent);
+
+			int percent = mPlayer.getCurrentVolume() * 100
+					/ mPlayer.getMaxVolume();
+			setVolumePercent(percent);
 		}
-		
+
 		mLastMotionEvent.recycle();
 		mLastMotionEvent = MotionEvent.obtain(event);
 	}
-	
+
 	private boolean ignoreIt(float distance, int wholeDistance) {
-    	if (distance < wholeDistance / 10)
-    		return true;
+		if (distance < wholeDistance / 10)
+			return true;
 		return false;
 	}
 
@@ -576,14 +657,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected final static int TYPE_VOLUME = 0;
 	protected final static int TYPE_BRIGHTNESS = 1;
 	protected int mType = TYPE_VOLUME;
-
-	protected void doMoveUp(int type) {
-		// 声音与亮度操作已实时完成,可以在此处理抬起的消息
-	}
-
-	protected void doMoveDown(int type) {
-		// 声音与亮度操作已实时完成,可以在此处理抬起的消息
-	}
 
 	@Override
 	public boolean performClick() {

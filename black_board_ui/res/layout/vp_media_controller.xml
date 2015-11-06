@@ -58,7 +58,7 @@
             android:layout_marginTop="18dp"
             android:background="@drawable/vp_play" />
         <Button
-            android:id="@+id/fullScreen"
+            android:id="@+id/full_screen"
             android:layout_width="@dimen/vp_player_fullscreen_width"
             android:layout_height="@dimen/vp_player_fullscreen_width"
             android:layout_alignParentRight="true"
@@ -69,7 +69,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_toRightOf="@id/pause_play_button"
-            android:layout_toLeftOf="@id/fullScreen"
+            android:layout_toLeftOf="@id/full_screen"
             android:layout_height="match_parent" >
 
             <TextView

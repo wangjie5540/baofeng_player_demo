@@ -15,6 +15,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -144,6 +145,15 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 					mVodPlayer.pause();
 				else
 					mVodPlayer.resume();
+			}
+		});
+		mControllerChangeScreen = (Button) mPlayerController.findViewById(R.id.full_screen);
+		mControllerChangeScreen.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				changeToLandscape();
+				mIsFullScreen = true;
 			}
 		});
 		mControllerCurentPlayTime = (TextView) mPlayerController
