@@ -17,6 +17,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
@@ -163,7 +164,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				else if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_BOTTOM
 						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
 					changeToPortrait();
-				mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 				break;
 			default:
 				Log.d(TAG, "invailid msg");
@@ -213,6 +213,9 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mLayoutInflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mPlayErrorManager = new PlayErrorManager();
+		setFocusable(true);
+		setFocusableInTouchMode(true);
+		requestFocus();
 	}
 
 	private void getAllSize() {
@@ -369,6 +372,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		params.height = mVideoFrameOrigenalHeight;
 		params.width = mVideoFrameOrigenalWidth;
 		mIsFullScreen = false;
+		mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 		Log.d(TAG, "portrait end");
 	}
 
@@ -393,6 +397,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		ViewGroup.LayoutParams params = getLayoutParams();
 		params.height = mScreenWidth;
 		params.width = mScreenHeight;
+		mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 		Log.d(TAG, "landscape end");
 		mIsFullScreen = true;
 	}
@@ -683,6 +688,13 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		}
 		moveDirection = MOVE_NONE;
 	}
+	
+	private void backToPortrait(){
+		if (mIsFullScreen)
+			changeToPortrait();
+		else
+			((Activity)mContext).finish();
+	}
 
 	protected final static int TYPE_VOLUME = 0;
 	protected final static int TYPE_BRIGHTNESS = 1;
@@ -693,4 +705,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		Log.d(TAG, "performClick");
 		return super.performClick();
 	}
+	
+	@Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        Log.d(TAG, "onKeyDown,keyCode=" + keyCode);
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            backToPortrait();
+            return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

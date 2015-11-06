@@ -81,9 +81,9 @@ public abstract class VideoViewBase extends TextureView implements
 		mVideoFrame = (VideoFrame) getParent();
 		// getHolder().addCallback(this);
 		setSurfaceTextureListener(this);
-		setFocusable(true);
-		setFocusableInTouchMode(true);
-		requestFocus();
+//		setFocusable(true);
+//		setFocusableInTouchMode(true);
+//		requestFocus();
 		mCurrentState = STATE_IDLE;
 		mTargetState = STATE_IDLE;
 	}
