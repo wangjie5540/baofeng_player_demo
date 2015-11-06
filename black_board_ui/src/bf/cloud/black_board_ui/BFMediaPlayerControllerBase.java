@@ -20,6 +20,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.OrientationEventListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -83,6 +84,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected PlayerOrientationMessageListener mPlayerOrientationMessageListener = null;
 	protected int mScreenWidth = -1;
 	protected int mScreenHeight = -1;
+	protected int mDisplayWidth = -1;
+	protected int mDisplayHeight = -1;
+	protected int mVideoFrameOrigenalWidth = -1;
+	protected int mVideoFrameOrigenalHeight = -1;
 	private BasePlayer mPlayer = null;
 
 	protected static final int MSG_SHOW_CONTROLLER = 2000;
@@ -111,6 +116,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 						DELAY_TIME_LONG);
 				if (mIsFullScreen)
 					showControllerHead(true);
+				else
+					showControllerHead(false);
 				showControllerBottom(true);
 				break;
 			case MSG_HIDE_CONTROLLER:
@@ -156,6 +163,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				else if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_BOTTOM
 						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
 					changeToPortrait();
+				mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 				break;
 			default:
 				Log.d(TAG, "invailid msg");
@@ -222,6 +230,13 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				+ mScreenHeight);
 		mMinX = Utils.dip2px(mContext, mMinMovementDipX);
 		mMinY = Utils.dip2px(mContext, mMinMovementDipY);
+		
+		int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+		measure(w, h);
+		mVideoFrameOrigenalWidth = getWidth();
+		mVideoFrameOrigenalHeight = getHeight();
+		Log.d(TAG, "mVideoFrameOrigenalWidth:" + mVideoFrameOrigenalWidth);
 	}
 
 	/**
@@ -331,18 +346,29 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		// attach functions
 
 	}
+	
+	private void restoreOrigenalVideoFrameSize(){
+		if (mVideoFrameOrigenalWidth <= 0 || mVideoFrameOrigenalHeight <= 0){
+			mVideoFrameOrigenalWidth = getWidth();
+			mVideoFrameOrigenalHeight = getHeight();
+		}
+	}
 
 	/**
 	 * 竖屏
 	 */
 	public void changeToPortrait() {
-		Log.d(TAG, "portrait");
 		if (null == mContext)
 			return;
+		restoreOrigenalVideoFrameSize();
 		Activity act = (Activity) mContext;
 		act.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		act.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
+		ViewGroup.LayoutParams params = getLayoutParams();
+		params.height = mVideoFrameOrigenalHeight;
+		params.width = mVideoFrameOrigenalWidth;
+		mIsFullScreen = false;
 		Log.d(TAG, "portrait end");
 	}
 
@@ -353,6 +379,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		Log.d(TAG, "landscape");
 		if (null == mContext)
 			return;
+		restoreOrigenalVideoFrameSize();
 		int newOrientation;
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 			newOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE;
@@ -363,8 +390,11 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		act.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
 				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		act.setRequestedOrientation(newOrientation);
-
+		ViewGroup.LayoutParams params = getLayoutParams();
+		params.height = mScreenWidth;
+		params.width = mScreenHeight;
 		Log.d(TAG, "landscape end");
+		mIsFullScreen = true;
 	}
 
 	private class EventHandler extends Handler {
