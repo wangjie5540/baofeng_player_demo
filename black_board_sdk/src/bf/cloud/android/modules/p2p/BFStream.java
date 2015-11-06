@@ -198,6 +198,12 @@ public final class BFStream {
 			}
 		}
 	}
+	
+	public String getVideoName(){
+		if (mMediaInfo != null)
+			return mMediaInfo.mediaName;
+		return "";
+	}
 
 	private int getDefaultStreamId() {
 		int result = MediaCenter.INVALID_STREAM_ID;

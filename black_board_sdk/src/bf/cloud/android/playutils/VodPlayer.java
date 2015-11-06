@@ -1,6 +1,7 @@
 package bf.cloud.android.playutils;
 
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import bf.cloud.android.modules.stat.StatInfo;
 import bf.cloud.android.modules.stat.StatReporter;
@@ -72,5 +73,10 @@ public class VodPlayer extends BasePlayer{
 			return;
 		prepareBaseStatInfo(statInfo);
 		StatReporter.getInstance().report(statInfo.makeVodProUrl());
+	}
+	
+	@Override
+	public String getVideoName() {
+		return super.getVideoName();
 	}
 }

@@ -85,6 +85,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
 			mControllerProgressBar.setProgress(0);
+			if (mVodPlayer != null)
+			mControllerVideoTitle.setText(mVodPlayer.getVideoName());
 			updateButtonUI();
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_PAUSE:
@@ -128,6 +130,13 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		mControllerHead.setVisibility(View.INVISIBLE);
 		mControllerBack = (ImageView) mPlayerController
 				.findViewById(R.id.back_button);
+		mControllerBack.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				backToPortrait();
+			}
+		});
 		mControllerVideoTitle = (TextView) mPlayerController
 				.findViewById(R.id.videoTitle);
 		// init bottom section

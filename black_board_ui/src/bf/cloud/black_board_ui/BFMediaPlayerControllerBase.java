@@ -689,7 +689,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		moveDirection = MOVE_NONE;
 	}
 	
-	private void backToPortrait(){
+	protected void backToPortrait(){
 		if (mIsFullScreen)
 			changeToPortrait();
 		else

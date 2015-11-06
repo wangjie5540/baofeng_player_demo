@@ -361,6 +361,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	@Override
 	public void onStreamReady() {
 		Log.d(TAG, "onStreamReady");
+		if (mBfStream != null)
+			mVideoName = mBfStream.getVideoName();
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_START);
 	}
 	
@@ -456,7 +458,6 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	 * 
 	 * @return String VideoName
 	 */
-	@Nullable
 	protected String getVideoName() {
 		return mVideoName;
 	}
