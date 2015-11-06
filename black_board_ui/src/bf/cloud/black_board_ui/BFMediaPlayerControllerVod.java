@@ -83,6 +83,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			showPlayCompleteFrame(false);
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
+			mControllerProgressBar.setProgress(0);
 			updateButtonUI();
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_PAUSE:
