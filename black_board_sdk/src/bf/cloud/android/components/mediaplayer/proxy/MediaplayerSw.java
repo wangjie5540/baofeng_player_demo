@@ -118,6 +118,8 @@ public final class MediaPlayerSw extends MediaPlayerProxy {
     }
 	
 	protected static void audioWriteShortBuffer(short[] buffer) {
+		if (mAudioTrack == null)
+			return;
         for (int i = 0; i < buffer.length; ) {
             int result = mAudioTrack.write(buffer, i, buffer.length - i);
             if (result > 0) {

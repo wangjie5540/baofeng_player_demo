@@ -1,10 +1,13 @@
 package bf.cloud.black_board_ui;
 
+import java.util.ArrayList;
 import java.util.Formatter;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
@@ -23,6 +26,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
@@ -360,7 +364,12 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	}
 
 	protected void showDefinitionPanel() {
-
+		Log.d(TAG, "showDefinitionPanel");
+		ArrayList<String> bbb = new ArrayList<String>();
+		bbb.add("aaaaaaaa");
+		bbb.add("bbbbbbbb");
+		DefinitionPanel aaa = new DefinitionPanel(mContext, bbb);
+		aaa.showAsPullUp(mControllerDefinition);
 	}
 
 	/**
