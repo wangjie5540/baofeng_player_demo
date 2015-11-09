@@ -49,6 +49,7 @@ public class DefinitionPanel extends PopupWindow {
 			throw new NullPointerException("context is null");
 		mContext = context;
 		mDefinitions = definitions;
+		mDefinitionCount = mDefinitions.size();
 		init();
 	}
 
@@ -91,7 +92,7 @@ public class DefinitionPanel extends PopupWindow {
 		mDefinitionHeight = (int) mContext.getResources().getDimension(
 				R.dimen.vp_player_definite_height);
 		setWidth(mDefinitionWidth);
-		setHeight(mDefinitionHeight);
+		setHeight(LayoutParams.WRAP_CONTENT);
 		LayoutInflater inflater = (LayoutInflater) mContext
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mRoot  = inflater.inflate(R.layout.vp_definition_panel, null);
