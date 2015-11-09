@@ -36,6 +36,7 @@ import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.utils.Utils;
+import bf.cloud.black_board_ui.DefinitionPanel.OnDefinitionClickListener;
 
 /**
  * @author wang Note: You should change your project to UTF8
@@ -49,7 +50,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	public final static int VIDEO_TYPE_LIVE = 1;
 	protected final static int DIVISION = 4;
 	protected int mVideoType = VIDEO_TYPE_VOD;
-	private final static int DELAY_TIME_LONG = 5000; // ms
+	private final static int DELAY_TIME_LONG = 10000; // ms
+	private final static int DELAY_TIME_STANDARD = 5000; // ms
 	private final static int DELAY_TIME_SHORT = 3000; // ms
 	protected LayoutInflater mLayoutInflater = null;
 
@@ -103,7 +105,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected static final int MSG_HIDE_VOLUME = 2005;
 	protected static final int MSG_CHANGE_SCREEN_PORTRAIT = 2006;
 	protected static final int MSG_CHANGE_SCREEN_LANDSCAPE = 2007;
+	protected static final int MSG_HIDE_DEFINITION_PANEL = 2008;
+	protected static final int MSG_SHOW_DEFINITION_PANEL = 2009;
 	public static final int MSG_ADJUST_ORIENTATION = 5;
+	private DefinitionPanel mDefinitionPanel = null;
 
 	protected Handler mMessageHandler = new Handler(new Handler.Callback() {
 
@@ -118,12 +123,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 				mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
 				// 5s后，自动隐藏
 				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER,
-						DELAY_TIME_LONG);
-				if (mIsFullScreen)
-					showControllerHead(true);
-				else
-					showControllerHead(false);
-				showControllerBottom(true);
+						DELAY_TIME_STANDARD);
+				showController();
 				break;
 			case MSG_HIDE_CONTROLLER:
 				mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
@@ -169,6 +170,18 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
 					changeToPortrait();
 				break;
+			case MSG_HIDE_DEFINITION_PANEL:
+				mMessageHandler.removeMessages(MSG_HIDE_DEFINITION_PANEL);
+				mMessageHandler.removeMessages(MSG_SHOW_DEFINITION_PANEL);
+				mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
+				mDefinitionPanel.dismiss();
+				break;
+			case MSG_SHOW_DEFINITION_PANEL:
+				mMessageHandler.removeMessages(MSG_HIDE_DEFINITION_PANEL);
+				mMessageHandler.removeMessages(MSG_SHOW_DEFINITION_PANEL);
+				showController();
+				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_DEFINITION_PANEL, DELAY_TIME_LONG);
+				break;
 			default:
 				Log.d(TAG, "invailid msg");
 				break;
@@ -181,6 +194,14 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		super(context);
 		mContext = context;
 		init();
+	}
+
+	private void showController() {
+		if (mIsFullScreen)
+			showControllerHead(true);
+		else
+			showControllerHead(false);
+		showControllerBottom(true);
 	}
 
 	public BFMediaPlayerControllerBase(Context context, AttributeSet attrs) {
@@ -368,8 +389,18 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		ArrayList<String> bbb = new ArrayList<String>();
 		bbb.add("aaaaaaaa");
 		bbb.add("bbbbbbbb");
-		DefinitionPanel aaa = new DefinitionPanel(mContext, bbb);
-		aaa.showAsPullUp(mControllerDefinition);
+		if (mDefinitionPanel == null){
+			mDefinitionPanel = new DefinitionPanel(mContext, bbb);
+			mDefinitionPanel.registOnClickListener(new OnDefinitionClickListener() {
+				
+				@Override
+				public void onItemClick() {
+					mDefinitionPanel.dismiss();
+					mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
+				}
+			});
+		}
+		mDefinitionPanel.showAsPullUp(mControllerDefinition);
 	}
 
 	/**

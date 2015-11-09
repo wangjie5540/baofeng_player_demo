@@ -1,6 +1,7 @@
 package bf.cloud.black_board_ui;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,81 +17,65 @@ import java.util.Map;
 /**
  * 
  * @author wang
- *
+ * 
  */
 public class DefinitionAdapter extends BaseAdapter {
 	private Context mContext = null;
-    private LayoutInflater mInflater = null;
-    private List<Map<String, Object>> mData = null;
-    public static Map<Integer, Boolean> isSelected = null;
-    private int mSelectedIndex;
-    private ArrayList<String> mDefinitions = null;
-    
-    public DefinitionAdapter(Context context, ArrayList<String> definitions) {
-    	mContext = context;
-    	mDefinitions = definitions;
-        mInflater = LayoutInflater.from(context);
-        init();
-    }
+	private LayoutInflater mInflater = null;
+	private List<String> mData = null;
+	public Map<Integer, Boolean> isSelected = null;
+	private int mSelectedIndex = -1;
+	private ArrayList<String> mDefinitions = null;
 
-    //初始化
-    private void init() {
-        mData = new ArrayList<Map<String, Object>>();
-        for (int i = mDefinitions.size() - 1; i >= 0; i --) {
-            Map<String, Object> map = new HashMap<String, Object>();
-            map.put("definition", mDefinitions.get(i));
-            mData.add(map);
-        }
-        //记录每个listitem的状态，初始状态全部为false。
-        isSelected = new HashMap<Integer, Boolean>();
-        for (int i = 0; i < mData.size(); i ++) {
-            isSelected.put(i, false);
-        }
-    }
+	public DefinitionAdapter(Context context, ArrayList<String> definitions) {
+		mContext = context;
+		mData = definitions;
+		mInflater = LayoutInflater.from(context);
+		init();
+	}
 
-    public void setSelectedIndex(int index) {
-    	mSelectedIndex = getCount() - index - 1;
-    	isSelected.put(mSelectedIndex, true);
-    }
-    
-    @Override
-    public int getCount() {
-        return mData.size();
-    }
+	// 初始化
+	private void init() {
+		
+	}
 
-    @Override
-    public Object getItem(int position) {
-        return mData.get(position);
-    }
+	public void setSelectedIndex(int index) {
+		mSelectedIndex = index;
+	}
 
-    @Override
-    public long getItemId(int position) {
-        return position;
-    }
+	@Override
+	public int getCount() {
+		return mData.size();
+	}
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        ViewHolder holder;
-        if (convertView == null) {
-            convertView = mInflater.inflate(BFYResUtil.getLayoutId(mContext, "vp_definition_item"), null);
-            holder = new ViewHolder();
-            holder.groupItem = (TextView) convertView.findViewById(BFYResUtil.getId(mContext, "definition"));
-            convertView.setTag(holder);
-        } else {
-            holder = (ViewHolder) convertView.getTag();
-        }
+	@Override
+	public Object getItem(int position) {
+		return mData.get(position);
+	}
 
-        if (isSelected.get(position)) {
-        	holder.groupItem.setTextColor(mContext.getResources().getColor(BFYResUtil.getColorId(mContext, "vp_color_text_gray")));
-        } else {
-        	holder.groupItem.setTextColor(mContext.getResources().getColor(BFYResUtil.getColorId(mContext, "vp_color_text_lightwhite")));
-        }
-        holder.groupItem.setText(mData.get(position).get("definition").toString());
+	@Override
+	public long getItemId(int position) {
+		return position;
+	}
 
-        return convertView;
-    }
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
+		TextView tv = null;
+		if (convertView == null) {
+			convertView = mInflater.inflate(R.layout.vp_definition_item, null);
+		}
+		tv = (TextView) convertView.findViewById(R.id.definition);
+		tv.setText(mData.get(position));
+		if (position == mSelectedIndex){
+			tv.setTextColor(mContext.getResources().getColor(R.color.vp_color_text_lightwhite));
+		}else{
+			tv.setTextColor(mContext.getResources().getColor(R.color.vp_color_text_gray));
+		}
 
-    public final class ViewHolder {
-        TextView groupItem;
-    }
+		return convertView;
+	}
+
+	public final class ViewHolder {
+		TextView groupItem;
+	}
 }

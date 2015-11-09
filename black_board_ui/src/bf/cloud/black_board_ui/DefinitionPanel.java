@@ -14,10 +14,6 @@ import android.widget.PopupWindow;
 
 import java.util.ArrayList;
 
-import bf.cloud.android.modules.log.BFYLog;
-import bf.cloud.android.utils.BFYResUtil;
-import bf.cloud.android.utils.Utils;
-
 /**
  * 清晰度面板
  * 
@@ -30,7 +26,7 @@ public class DefinitionPanel extends PopupWindow {
 	private View mRoot = null;
 	private ListView mDeflist = null;
 	// private ArrayList<String> itemList;
-	private OnDefClickListener mListener;
+	private OnDefinitionClickListener mListener = null;
 	private int mDefinitionCount = 1;
 	private int mDefinitionWidth = -1;
 	private int mDefinitionHeight = -1;
@@ -100,88 +96,28 @@ public class DefinitionPanel extends PopupWindow {
 		mAdapter  = new DefinitionAdapter(mContext, mDefinitions);
         mDeflist.setAdapter(mAdapter);
         mDeflist.setItemsCanFocus(false);
+        mDeflist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View view, int position,
+					long id) {
+				Log.d(TAG, "position:" + position);
+				mAdapter.setSelectedIndex(position);
+				mDeflist.invalidate();
+				if (mListener != null)
+					mListener.onItemClick();
+			}
+		});
 		setContentView(mRoot);
 		setFocusable(true);
 		setBackgroundDrawable(new BitmapDrawable(mContext.getResources(), (Bitmap) null));
 	}
-
-	// 获取清晰度，初始化列表
-	public void initPanel(ArrayList<String> definitions) {
-		// mDefinitionCount = definitions.size();
-		// if (0 == mDefinitionCount) {
-		// return;
-		// }
-		//
-		// mDeflist = (ListView)
-		// getContentView().findViewById(BFYResUtil.getId(getContentView().getContext(),
-		// "definition_list"));
-		// mAdapter = new DefinitionAdapter(getContentView().getContext(),
-		// definitions);
-		// mDeflist.setAdapter(mAdapter);
-		// mDeflist.setItemsCanFocus(false);
-		// mDefinitionHeight = mAdapter.getItemHeight();
-		//
-		// mDeflist.setOnItemClickListener(new
-		// AdapterView.OnItemClickListener(){
-		// @Override
-		// public void onItemClick(AdapterView<?> parent, View view,
-		// int position, long id) {
-		// DefinitionAdapter.ViewHolder vHolder = (DefinitionAdapter.ViewHolder)
-		// view.getTag();
-		// boolean changed = true;
-		// //先将上一次选中的状态恢复为未选中、可点击
-		// for (int i = 0; i < DefinitionAdapter.isSelected.size(); i++) {
-		// if (DefinitionAdapter.isSelected.get(i) == true) {
-		// if (i == position) {
-		// changed = false;
-		// break;
-		// } else {
-		// DefinitionAdapter.isSelected.put(i, false);
-		// mDeflist.getChildAt(i).setEnabled(true);
-		// //设置字体颜色为未选中状态时的颜色
-		// //((TextView)vHolder.groupItem).setTextColor(context.getResources().getColor(BFYResUtil.getColorId(context,
-		// "vp_color_text_lightwhite")));
-		// changed = true;
-		// break;
-		// }
-		// }
-		// }
-		//
-		// if (changed) {
-		// //设置新选中的状态为当前、不可点击
-		// DefinitionAdapter.isSelected.put(position, true);
-		// mDeflist.getChildAt(position).setEnabled(false);
-		// //设置字体颜色为选中状态时的颜色
-		// //((TextView)vHolder.groupItem).setTextColor(context.getResources().getColor(BFYResUtil.getColorId(context,
-		// "vp_color_text_gray")));
-		// //隐藏清晰度面板、设置当前清晰度为新选中
-		// //dismiss();
-		// }
-		//
-		// //隐藏清晰度面板、设置当前清晰度为新选中
-		// dismiss();
-		//
-		// if (null != mListener) {
-		// mListener.onItemClick(position,
-		// vHolder.groupItem.getText().toString());
-		// //mListener.onItemClick(position,
-		// DefinitionAdapter.getItem(position).get("definition").toString());
-		// }
-		// }
-		// });
+	
+	public interface OnDefinitionClickListener{
+		void onItemClick();
 	}
-
-	public void setCurrentDefIndex(int index) {
-		// mCurrentDefIndex = index;
-		// mAdapter.setSelectedIndex(index);
-	}
-
-	// 设置item点击监听器
-	public void setOnDefClickListener(OnDefClickListener listener) {
-		// this.mListener = listener;
-	}
-
-	public interface OnDefClickListener {
-		// public void onItemClick(int index, String name);
+	
+	public void registOnClickListener(OnDefinitionClickListener listener){
+		mListener = listener;
 	}
 }
