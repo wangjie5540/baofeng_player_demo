@@ -29,6 +29,7 @@ public final class BFStream {
 	private StateCallBackHandler mCallBackHandler = null;
 	private BFStreamMessageListener mStreamListener = null;
 	private static CopyOnWriteArrayList<BFP2PListener> mP2PListeners = new CopyOnWriteArrayList<BFP2PListener>();
+	private String mDefinition = null;
 	private int mStreamWaitToPlay = MediaCenter.INVALID_STREAM_ID;
 	private int mPort = BFYConst.DEFAULT_P2P_PORT;
 	private int mStreamMode = MediaCenter.StreamMode.STREAM_HLS_MODE;
@@ -390,6 +391,16 @@ public final class BFStream {
 		}
 
 	}
+	
+	public ArrayList<String> getAllDefinitions(){
+		ArrayList<String> definitions = new ArrayList<String>();
+		if (mStreamInfoList == null || mStreamInfoList.size() == 0)
+			return null;
+		for (MediaCenter.StreamInfo info : mStreamInfoList){
+			definitions.add(info.streamName);
+		}
+		return definitions;
+	}
 
 	private static class P2pHandlerThread extends HandlerThread {
 		private final static int INIT_MEDIA_CENTER = 1;
@@ -455,8 +466,28 @@ public final class BFStream {
 		}
 	}
 	
-	public void changeDefinition(VideoDefinition definition){
-		mStreamWaitToPlay = getStreamIdByDefinition(definition);
+	public void changeDefinition(String definition){
+		mDefinition = definition;
+		int streamId = getStreamIdByName(definition);
+		if (streamId < 0){
+			return;
+		}
+		mStreamWaitToPlay = streamId;
+	}
+	
+	private int getStreamIdByName(String name){
+		int streamId = -1;
+		if (mStreamInfoList == null || mStreamInfoList.size() == 0){
+			Log.d(TAG, "You have not got the StreamInfo");
+			return -1;
+		}
+		for (MediaCenter.StreamInfo info : mStreamInfoList){
+			if (info.streamName.equalsIgnoreCase(name)){
+				streamId = info.streamId;
+				break;
+			}
+		}
+		return streamId;
 	}
 
 	private int getStreamIdByDefinition(VideoDefinition definition) {

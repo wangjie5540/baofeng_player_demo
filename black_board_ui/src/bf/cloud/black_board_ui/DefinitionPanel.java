@@ -105,7 +105,7 @@ public class DefinitionPanel extends PopupWindow {
 				mAdapter.setSelectedIndex(position);
 				mDeflist.invalidate();
 				if (mListener != null)
-					mListener.onItemClick();
+					mListener.onItemClick(position);
 			}
 		});
 		setContentView(mRoot);
@@ -114,7 +114,7 @@ public class DefinitionPanel extends PopupWindow {
 	}
 	
 	public interface OnDefinitionClickListener{
-		void onItemClick();
+		void onItemClick(int position);
 	}
 	
 	public void registOnClickListener(OnDefinitionClickListener listener){

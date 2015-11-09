@@ -1,5 +1,8 @@
 package bf.cloud.android.playutils;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.content.Context;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -44,7 +47,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	private boolean mLowLatencyFlag = false;
 	private boolean mForceStartFlag = false;
 	private boolean mIsVr = false;
-	private VideoDefinition mVideoDefinition = VideoDefinition.UNKNOWN;
+	private String mCurrentVideoDefinition = null;
 	private String mSettingDataPath = BFYConst.LOG_PATH;
 
 	//error codes below
@@ -497,17 +500,26 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	/**
 	 * 设置视频播放清晰度
 	 */
-	protected void setDefinition(VideoDefinition definition) {
-		mVideoDefinition = definition;
-		if (mBfStream != null)
-			mBfStream.changeDefinition(mVideoDefinition);
+	protected void setDefinition(String definition) {
+		mCurrentVideoDefinition = definition;
+		if (mBfStream != null){
+			mBfStream.changeDefinition(mCurrentVideoDefinition);
+			stop();
+			start();
+		}
 	}
 	
 	/**
 	 * 取得当前视频清晰度
 	 */
-	protected VideoDefinition getCurrentDefinition() {
-		return mVideoDefinition;
+	protected String getCurrentDefinition() {
+		return mCurrentVideoDefinition;
+	}
+	
+	protected ArrayList<String> getAllDefinitions(){
+		if (mBfStream == null)
+			return null;
+		return mBfStream.getAllDefinitions();			
 	}
 	
 	/**

@@ -1,12 +1,15 @@
 package bf.cloud.black_board_ui;
 
+import java.util.ArrayList;
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
 
 import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.playutils.BasePlayer.STATE;
 import bf.cloud.android.playutils.PlayTaskType;
 import bf.cloud.android.playutils.VodPlayer;
+import bf.cloud.black_board_ui.DefinitionPanel.OnDefinitionClickListener;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Handler;
@@ -33,8 +36,14 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	// 提示语
 	private TextView tvPlayCompleteFrameMessage = null;
 	private boolean mDragging = false;
-
+	private static final int MSG_HIDE_DEFINITION_PANEL = 2008;
+	private static final int MSG_SHOW_DEFINITION_PANEL = 2009;
 	private static final int MEG_UPDATE_PROGRESS = 1000;
+	protected final static int DELAY_TIME_LONG = 10000; // ms
+	private DefinitionPanel mDefinitionPanel = null;
+	private ArrayList<String> mDefinitions = null;
+	// 清晰度图标
+	private TextView mControllerDefinition = null;
 	private Handler mProgressHandler = new Handler(new Handler.Callback() {
 
 		@Override
@@ -84,6 +93,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			showPlayCompleteFrame(false);
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
+			mDefinitions = mVodPlayer.getAllDefinitions();
 			mControllerProgressBar.setProgress(0);
 			if (mVodPlayer != null)
 				mControllerVideoTitle.setText(mVodPlayer.getVideoName());
@@ -171,10 +181,10 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		mControllerDefinition = (TextView) mPlayerController
 				.findViewById(R.id.definition);
 		mControllerDefinition.setOnClickListener(new OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				showDefinitionPanel();
+				showDefinitionPanel(true);
 			}
 		});
 		mControllerCurentPlayTime = (TextView) mPlayerController
@@ -220,6 +230,25 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 
 		mFormatBuilder = new StringBuilder();
 		mFormatter = new Formatter(mFormatBuilder, Locale.getDefault());
+	}
+
+	private void showDefinitionPanel(boolean flag) {
+		Log.d(TAG, "showDefinitionPanel");
+		if (mDefinitionPanel == null) {
+			mDefinitionPanel = new DefinitionPanel(mContext, mDefinitions);
+			mDefinitionPanel
+					.registOnClickListener(new OnDefinitionClickListener() {
+
+						@Override
+						public void onItemClick(int position) {
+							mDefinitionPanel.dismiss();
+							mMessageHandler
+									.sendEmptyMessage(MSG_HIDE_CONTROLLER);
+						}
+					});
+		}
+		mDefinitionPanel.showAsPullUp(mControllerDefinition);
+		mMessageHandler.sendEmptyMessage(MSG_SHOW_DEFINITION_PANEL);
 	}
 
 	private void initPlayCompleteFrame() {
@@ -342,5 +371,46 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 					* mVodPlayer.getDuration() / (mScreenWidth * DIVISION));
 			mVodPlayer.seekTo(newPosition);
 		}
+	}
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		int what = msg.what;
+		switch (what) {
+		case MSG_HIDE_DEFINITION_PANEL:
+			mMessageHandler.removeMessages(MSG_HIDE_DEFINITION_PANEL);
+			mMessageHandler.removeMessages(MSG_SHOW_DEFINITION_PANEL);
+			mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
+			mDefinitionPanel.dismiss();
+			return true;
+		case MSG_SHOW_DEFINITION_PANEL:
+			mMessageHandler.removeMessages(MSG_HIDE_DEFINITION_PANEL);
+			mMessageHandler.removeMessages(MSG_SHOW_DEFINITION_PANEL);
+			mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
+			mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
+			showController();
+			mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_DEFINITION_PANEL,
+					DELAY_TIME_LONG);
+			return true;
+		}
+		return super.handleMessage(msg);
+	}
+	
+	@Override
+	public void changeToPortrait() {
+		if (mContext == null)
+			return;
+		// 隐藏清晰度图标
+		mControllerDefinition.setVisibility(View.INVISIBLE);
+		super.changeToPortrait();
+	}
+	
+	@Override
+	public void changeToLandscape() {
+		if (mContext == null)
+			return;
+		// 显示清晰度图标
+		mControllerDefinition.setVisibility(View.VISIBLE);
+		super.changeToLandscape();
 	}
 }

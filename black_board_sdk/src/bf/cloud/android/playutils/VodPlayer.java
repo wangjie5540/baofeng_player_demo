@@ -1,5 +1,7 @@
 package bf.cloud.android.playutils;
 
+import java.util.ArrayList;
+
 import android.content.Context;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
@@ -36,12 +38,12 @@ public class VodPlayer extends BasePlayer{
 	}
 	
 	@Override
-	public void setDefinition(VideoDefinition definition) {
+	public void setDefinition(String definition) {
 		super.setDefinition(definition);
 	}
 	
 	@Override
-	public VideoDefinition getCurrentDefinition() {
+	public String getCurrentDefinition() {
 		return super.getCurrentDefinition();
 	}
 	
@@ -78,5 +80,10 @@ public class VodPlayer extends BasePlayer{
 	@Override
 	public String getVideoName() {
 		return super.getVideoName();
+	}
+	
+	@Override
+	public ArrayList<String> getAllDefinitions() {
+		return super.getAllDefinitions();
 	}
 }

@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Handler.Callback;
 import android.os.Message;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -36,21 +37,19 @@ import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.utils.Utils;
-import bf.cloud.black_board_ui.DefinitionPanel.OnDefinitionClickListener;
 
 /**
  * @author wang Note: You should change your project to UTF8
  */
 public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		PlayErrorListener, PlayEventListener, View.OnClickListener,
-		View.OnTouchListener {
+		View.OnTouchListener, Handler.Callback{
 	protected final String TAG = BFMediaPlayerControllerBase.class
 			.getSimpleName();
 	public final static int VIDEO_TYPE_VOD = 0;
 	public final static int VIDEO_TYPE_LIVE = 1;
 	protected final static int DIVISION = 4;
 	protected int mVideoType = VIDEO_TYPE_VOD;
-	private final static int DELAY_TIME_LONG = 10000; // ms
 	private final static int DELAY_TIME_STANDARD = 5000; // ms
 	private final static int DELAY_TIME_SHORT = 3000; // ms
 	protected LayoutInflater mLayoutInflater = null;
@@ -81,8 +80,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected Formatter mFormatter = null;
 	// 切换屏幕
 	protected Button mControllerChangeScreen = null;
-	// 清晰度图标
-	protected TextView mControllerDefinition = null;
 	// 全屏标志
 	protected boolean mIsFullScreen = false;
 	// 自适应屏幕
@@ -105,90 +102,9 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected static final int MSG_HIDE_VOLUME = 2005;
 	protected static final int MSG_CHANGE_SCREEN_PORTRAIT = 2006;
 	protected static final int MSG_CHANGE_SCREEN_LANDSCAPE = 2007;
-	protected static final int MSG_HIDE_DEFINITION_PANEL = 2008;
-	protected static final int MSG_SHOW_DEFINITION_PANEL = 2009;
 	public static final int MSG_ADJUST_ORIENTATION = 5;
-	private DefinitionPanel mDefinitionPanel = null;
 
-	protected Handler mMessageHandler = new Handler(new Handler.Callback() {
-
-		@Override
-		public boolean handleMessage(Message msg) {
-			int what = msg.what;
-			int arg1 = msg.arg1;
-			int arg2 = msg.arg2;
-			switch (what) {
-			case MSG_SHOW_CONTROLLER:
-				mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
-				mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
-				// 5s后，自动隐藏
-				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER,
-						DELAY_TIME_STANDARD);
-				showController();
-				break;
-			case MSG_HIDE_CONTROLLER:
-				mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
-				mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
-				showControllerHead(false);
-				showControllerBottom(false);
-				break;
-			case MSG_SHOW_BRIGHTNESS:
-				mMessageHandler.removeMessages(MSG_HIDE_BRIGHTNESS);
-				mMessageHandler.removeMessages(MSG_SHOW_BRIGHTNESS);
-				showVolumeLayer(false);
-				showBrightnessLayer(true);
-				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_BRIGHTNESS,
-						DELAY_TIME_SHORT);
-				break;
-			case MSG_HIDE_BRIGHTNESS:
-				mMessageHandler.removeMessages(MSG_HIDE_BRIGHTNESS);
-				mMessageHandler.removeMessages(MSG_SHOW_BRIGHTNESS);
-				showBrightnessLayer(false);
-				break;
-			case MSG_SHOW_VOLUME:
-				mMessageHandler.removeMessages(MSG_SHOW_VOLUME);
-				mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
-				showBrightnessLayer(false);
-				showVolumeLayer(true);
-				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_VOLUME,
-						DELAY_TIME_SHORT);
-				break;
-			case MSG_HIDE_VOLUME:
-				mMessageHandler.removeMessages(MSG_SHOW_VOLUME);
-				mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
-				showVolumeLayer(false);
-				break;
-			case MSG_ADJUST_ORIENTATION:
-				mMessageHandler.removeMessages(MSG_ADJUST_ORIENTATION);
-				int currentOrientation = mPlayerOrientationMessageListener
-						.getCurrentOrigentation();
-
-				if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_LEFT
-						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_RIGHT)
-					changeToLandscape();
-				else if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_BOTTOM
-						|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
-					changeToPortrait();
-				break;
-			case MSG_HIDE_DEFINITION_PANEL:
-				mMessageHandler.removeMessages(MSG_HIDE_DEFINITION_PANEL);
-				mMessageHandler.removeMessages(MSG_SHOW_DEFINITION_PANEL);
-				mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
-				mDefinitionPanel.dismiss();
-				break;
-			case MSG_SHOW_DEFINITION_PANEL:
-				mMessageHandler.removeMessages(MSG_HIDE_DEFINITION_PANEL);
-				mMessageHandler.removeMessages(MSG_SHOW_DEFINITION_PANEL);
-				showController();
-				mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_DEFINITION_PANEL, DELAY_TIME_LONG);
-				break;
-			default:
-				Log.d(TAG, "invailid msg");
-				break;
-			}
-			return true;
-		}
-	});
+	protected Handler mMessageHandler = new Handler(this);
 
 	public BFMediaPlayerControllerBase(Context context) {
 		super(context);
@@ -196,7 +112,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		init();
 	}
 
-	private void showController() {
+	protected void showController() {
 		if (mIsFullScreen)
 			showControllerHead(true);
 		else
@@ -384,25 +300,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		}
 	}
 
-	protected void showDefinitionPanel() {
-		Log.d(TAG, "showDefinitionPanel");
-		ArrayList<String> bbb = new ArrayList<String>();
-		bbb.add("aaaaaaaa");
-		bbb.add("bbbbbbbb");
-		if (mDefinitionPanel == null){
-			mDefinitionPanel = new DefinitionPanel(mContext, bbb);
-			mDefinitionPanel.registOnClickListener(new OnDefinitionClickListener() {
-				
-				@Override
-				public void onItemClick() {
-					mDefinitionPanel.dismiss();
-					mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
-				}
-			});
-		}
-		mDefinitionPanel.showAsPullUp(mControllerDefinition);
-	}
-
 	/**
 	 * 竖屏
 	 */
@@ -419,8 +316,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mIsFullScreen = false;
 		// 显示全屏图标
 		mControllerChangeScreen.setVisibility(View.VISIBLE);
-		// 隐藏清晰度图标
-		mControllerDefinition.setVisibility(View.INVISIBLE);
 		mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 		Log.d(TAG, "portrait end");
 	}
@@ -448,8 +343,6 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		act.setRequestedOrientation(newOrientation);
 		// 隐藏全屏图标
 		mControllerChangeScreen.setVisibility(View.GONE);
-		// 显示清晰度图标
-		mControllerDefinition.setVisibility(View.VISIBLE);
 		mMessageHandler.sendEmptyMessage(MSG_HIDE_CONTROLLER);
 		Log.d(TAG, "landscape end");
 		mIsFullScreen = true;
@@ -767,5 +660,71 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			return true;
 		}
 		return super.onKeyDown(keyCode, event);
+	}
+	
+
+	@Override
+	public boolean handleMessage(Message msg) {
+		int what = msg.what;
+		int arg1 = msg.arg1;
+		int arg2 = msg.arg2;
+		switch (what) {
+		case MSG_SHOW_CONTROLLER:
+			mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
+			mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
+			// 5s后，自动隐藏
+			mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_CONTROLLER,
+					DELAY_TIME_STANDARD);
+			showController();
+			break;
+		case MSG_HIDE_CONTROLLER:
+			mMessageHandler.removeMessages(MSG_SHOW_CONTROLLER);
+			mMessageHandler.removeMessages(MSG_HIDE_CONTROLLER);
+			showControllerHead(false);
+			showControllerBottom(false);
+			break;
+		case MSG_SHOW_BRIGHTNESS:
+			mMessageHandler.removeMessages(MSG_HIDE_BRIGHTNESS);
+			mMessageHandler.removeMessages(MSG_SHOW_BRIGHTNESS);
+			showVolumeLayer(false);
+			showBrightnessLayer(true);
+			mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_BRIGHTNESS,
+					DELAY_TIME_SHORT);
+			break;
+		case MSG_HIDE_BRIGHTNESS:
+			mMessageHandler.removeMessages(MSG_HIDE_BRIGHTNESS);
+			mMessageHandler.removeMessages(MSG_SHOW_BRIGHTNESS);
+			showBrightnessLayer(false);
+			break;
+		case MSG_SHOW_VOLUME:
+			mMessageHandler.removeMessages(MSG_SHOW_VOLUME);
+			mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
+			showBrightnessLayer(false);
+			showVolumeLayer(true);
+			mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_VOLUME,
+					DELAY_TIME_SHORT);
+			break;
+		case MSG_HIDE_VOLUME:
+			mMessageHandler.removeMessages(MSG_SHOW_VOLUME);
+			mMessageHandler.removeMessages(MSG_HIDE_VOLUME);
+			showVolumeLayer(false);
+			break;
+		case MSG_ADJUST_ORIENTATION:
+			mMessageHandler.removeMessages(MSG_ADJUST_ORIENTATION);
+			int currentOrientation = mPlayerOrientationMessageListener
+					.getCurrentOrigentation();
+
+			if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_LEFT
+					|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_RIGHT)
+				changeToLandscape();
+			else if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_BOTTOM
+					|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
+				changeToPortrait();
+			break;
+		default:
+			Log.d(TAG, "invailid msg");
+			break;
+		}
+		return true;
 	}
 }
