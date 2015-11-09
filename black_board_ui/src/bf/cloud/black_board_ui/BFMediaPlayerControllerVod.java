@@ -244,6 +244,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 							mDefinitionPanel.dismiss();
 							mMessageHandler
 									.sendEmptyMessage(MSG_HIDE_CONTROLLER);
+							if (mDefinitions != null)
+								mVodPlayer.setDefinition(mDefinitions.get(position));
 						}
 					});
 		}
