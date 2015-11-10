@@ -47,7 +47,6 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	private boolean mLowLatencyFlag = false;
 	private boolean mForceStartFlag = false;
 	private boolean mIsVr = false;
-	private String mCurrentVideoDefinition = null;
 	private String mSettingDataPath = BFYConst.LOG_PATH;
 
 	//error codes below
@@ -501,9 +500,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	 * 设置视频播放清晰度
 	 */
 	protected void setDefinition(String definition) {
-		mCurrentVideoDefinition = definition;
 		if (mBfStream != null){
-			mBfStream.changeDefinition(mCurrentVideoDefinition);
+			mBfStream.changeDefinition(definition);
 			stop();
 			start();
 		}
@@ -512,8 +510,10 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	/**
 	 * 取得当前视频清晰度
 	 */
-	protected String getCurrentDefinition() {
-		return mCurrentVideoDefinition;
+	protected String getCurrentDefinition(){
+		if (mBfStream == null)
+			return null;
+		return mBfStream.getCurrentStreamDefinition();
 	}
 	
 	protected ArrayList<String> getAllDefinitions(){

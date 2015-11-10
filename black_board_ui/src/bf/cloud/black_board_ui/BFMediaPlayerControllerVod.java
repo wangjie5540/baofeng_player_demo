@@ -42,6 +42,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	protected final static int DELAY_TIME_LONG = 10000; // ms
 	private DefinitionPanel mDefinitionPanel = null;
 	private ArrayList<String> mDefinitions = null;
+	private String mCurrentDefinition = null;
 	// 清晰度图标
 	private TextView mControllerDefinition = null;
 	private Handler mProgressHandler = new Handler(new Handler.Callback() {
@@ -93,10 +94,16 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			showPlayCompleteFrame(false);
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
+			if (mVodPlayer == null){
+				Log.d(TAG, "mVodPlayer is invailid");
+				return;
+			}
 			mDefinitions = mVodPlayer.getAllDefinitions();
+			mCurrentDefinition = mVodPlayer.getCurrentDefinition();
+			mControllerDefinition.setText(mCurrentDefinition);
 			mControllerProgressBar.setProgress(0);
-			if (mVodPlayer != null)
-				mControllerVideoTitle.setText(mVodPlayer.getVideoName());
+			mControllerVideoTitle.setText(mVodPlayer.getVideoName());
+			
 			updateButtonUI();
 			break;
 		case BasePlayer.EVENT_TYPE_MEDIAPLAYER_PAUSE:
@@ -249,7 +256,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 						}
 					});
 		}
-		mDefinitionPanel.setDatas(mDefinitions);
+		mDefinitionPanel.setDatas(mDefinitions, mCurrentDefinition);
 		mDefinitionPanel.showAsPullUp(mControllerDefinition);
 		mMessageHandler.sendEmptyMessage(MSG_SHOW_DEFINITION_PANEL);
 	}

@@ -3,7 +3,6 @@ package bf.cloud.android.playutils;
 import java.util.ArrayList;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import bf.cloud.android.modules.stat.StatInfo;
 import bf.cloud.android.modules.stat.StatReporter;

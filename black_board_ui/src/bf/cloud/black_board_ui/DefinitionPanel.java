@@ -25,13 +25,11 @@ public class DefinitionPanel extends PopupWindow {
 	private static final String TAG = DefinitionPanel.class.getSimpleName();
 	private View mRoot = null;
 	private ListView mDeflist = null;
-	// private ArrayList<String> itemList;
 	private OnDefinitionClickListener mListener = null;
 	private int mDefinitionCount = 1;
 	private int mDefinitionWidth = -1;
 	private int mDefinitionHeight = -1;
-	// private DefinitionAdapter mAdapter;
-	private int mCurrentDefIndex;
+	private String mCurrentDefinition = null;
 	private Context mContext = null;
 	private DefinitionAdapter mAdapter = null;
 	private ArrayList<String> mDefinitions = null;
@@ -76,14 +74,16 @@ public class DefinitionPanel extends PopupWindow {
 				anchorLefTop[1]);
 	}
 	
-	public void setDatas(ArrayList<String> definitions){
-		if (definitions == null){
-			Log.d(TAG, "definitions is invailid");
+	public void setDatas(ArrayList<String> allDefinitions, String currentDefinition){
+		if (allDefinitions == null || currentDefinition == null){
+			Log.d(TAG, "allDefinitions or CurrentDefinition is invailid");
 			return;
 		}
-		mDefinitions = definitions;
+		mDefinitions = allDefinitions;
+		mCurrentDefinition = currentDefinition;
 		mDefinitionCount = mDefinitions.size();
-		mAdapter  = new DefinitionAdapter(mContext, mDefinitions);
+		mAdapter = new DefinitionAdapter(mContext, mDefinitions);
+		mAdapter.setSelectedIndex(mDefinitions.indexOf(mCurrentDefinition));
         mDeflist.setAdapter(mAdapter);
 	}
 

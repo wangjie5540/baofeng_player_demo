@@ -26,10 +26,10 @@ public final class BFStream {
 	private int mStreamId = MediaCenter.INVALID_STREAM_ID;
 	private MediaCenter.MediaInfo mMediaInfo = null;
 	private ArrayList<MediaCenter.StreamInfo> mStreamInfoList = new ArrayList<MediaCenter.StreamInfo>();
+	private MediaCenter.StreamInfo mCurrentStreamInfo = null;
 	private StateCallBackHandler mCallBackHandler = null;
 	private BFStreamMessageListener mStreamListener = null;
 	private static CopyOnWriteArrayList<BFP2PListener> mP2PListeners = new CopyOnWriteArrayList<BFP2PListener>();
-	private String mDefinition = null;
 	private int mStreamWaitToPlay = MediaCenter.INVALID_STREAM_ID;
 	private int mPort = BFYConst.DEFAULT_P2P_PORT;
 	private int mStreamMode = MediaCenter.StreamMode.STREAM_HLS_MODE;
@@ -215,6 +215,7 @@ public final class BFStream {
 				MediaCenter.StreamInfo streamInfo = mStreamInfoList.get(i);
 				if (streamInfo.defaultStream) {
 					result = streamInfo.streamId;
+					updateCurrentStreamInfo(streamInfo);
 					break;
 				}
 			}
@@ -260,9 +261,16 @@ public final class BFStream {
 		int result = MediaCenter.NativeReturnType.NO_ERROR;
 		if (mStreamWaitToPlay == MediaCenter.INVALID_STREAM_ID)
 			mStreamId = getDefaultStreamId();
-		else
+		else{
 			mStreamId = mStreamWaitToPlay;
-
+			if (mStreamInfoList != null && mStreamInfoList.size() != 0){
+				for (MediaCenter.StreamInfo info : mStreamInfoList){
+					if (info.streamId == mStreamId){
+						updateCurrentStreamInfo(info);
+					}
+				}
+			}
+		}
 		for (int i = 0; i < 50; i++) {
 			if (mPort > 65400) {
 				mPort = BFYConst.DEFAULT_P2P_PORT + i;
@@ -283,6 +291,16 @@ public final class BFStream {
 		}
 		Log.d(TAG, "Bind Port fail, try to [" + mPort + "]");
 		return result;
+	}
+
+	private void updateCurrentStreamInfo(MediaCenter.StreamInfo info) {
+		mCurrentStreamInfo = info;
+	}
+	
+	public String getCurrentStreamDefinition(){
+		if (mCurrentStreamInfo == null)
+			return null;
+		return mCurrentStreamInfo.streamName;
 	}
 
 	/**
@@ -356,7 +374,7 @@ public final class BFStream {
 	public int getStreamId() {
 		return mStreamId;
 	}
-
+	
 	public String getStreamUrl() {
 		String url = null;
 		switch (mStreamMode) {
@@ -467,7 +485,6 @@ public final class BFStream {
 	}
 	
 	public void changeDefinition(String definition){
-		mDefinition = definition;
 		int streamId = getStreamIdByName(definition);
 		if (streamId < 0){
 			return;
