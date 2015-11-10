@@ -218,15 +218,19 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 			Log.d(TAG, "network type:" + type);
 			if (type == BFYNetworkUtil.NETWORK_CONNECTION_NONE){
 				Log.d(TAG, "network is unusable/mPlayErrorListener:" + mPlayErrorListener);
-				if (mPlayErrorListener != null)
+				if (mPlayErrorListener != null){
 					mPlayErrorListener.onError(ERROR_NO_NETWORK);
+					mState = STATE.ERROR;
+				}
 				return;
 			} else if (type == BFYNetworkUtil.NETWORK_CONNECTION_MOBILE){
 				if (mForceStartFlag){
 					mForceStartFlag = false;
 				} else{
-					if (mPlayErrorListener != null)
+					if (mPlayErrorListener != null){
 						mPlayErrorListener.onError(ERROR_MOBILE_NO_PLAY);
+						mState = STATE.ERROR;
+					}
 					Log.d(TAG, "network is mobile, you must set setForceStartFlag(true)");
 					return;
 				}

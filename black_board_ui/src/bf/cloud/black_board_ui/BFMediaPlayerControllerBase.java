@@ -5,9 +5,11 @@ import java.util.Formatter;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.ConnectivityManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Handler.Callback;
@@ -37,6 +39,7 @@ import bf.cloud.android.playutils.BasePlayer;
 import bf.cloud.android.playutils.BasePlayer.PlayErrorListener;
 import bf.cloud.android.playutils.BasePlayer.PlayEventListener;
 import bf.cloud.android.utils.Utils;
+import bf.cloud.black_board_ui.BFYNetworkReceiver.NetStateChangedListener;
 
 /**
  * @author wang Note: You should change your project to UTF8
@@ -46,10 +49,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		View.OnTouchListener, Handler.Callback{
 	protected final String TAG = BFMediaPlayerControllerBase.class
 			.getSimpleName();
-	public final static int VIDEO_TYPE_VOD = 0;
-	public final static int VIDEO_TYPE_LIVE = 1;
 	protected final static int DIVISION = 4;
-	protected int mVideoType = VIDEO_TYPE_VOD;
 	private final static int DELAY_TIME_STANDARD = 5000; // ms
 	private final static int DELAY_TIME_SHORT = 3000; // ms
 	protected LayoutInflater mLayoutInflater = null;
@@ -94,17 +94,19 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected int mVideoFrameOrigenalHeight = -1;
 	private BasePlayer mPlayer = null;
 
-	protected static final int MSG_SHOW_CONTROLLER = 2000;
-	protected static final int MSG_HIDE_CONTROLLER = 2001;
-	protected static final int MSG_SHOW_BRIGHTNESS = 2002;
-	protected static final int MSG_HIDE_BRIGHTNESS = 2003;
-	protected static final int MSG_SHOW_VOLUME = 2004;
-	protected static final int MSG_HIDE_VOLUME = 2005;
-	protected static final int MSG_CHANGE_SCREEN_PORTRAIT = 2006;
-	protected static final int MSG_CHANGE_SCREEN_LANDSCAPE = 2007;
-	public static final int MSG_ADJUST_ORIENTATION = 5;
+	protected static final int MSG_SHOW_CONTROLLER = 20000;
+	protected static final int MSG_HIDE_CONTROLLER = 20001;
+	protected static final int MSG_SHOW_BRIGHTNESS = 20002;
+	protected static final int MSG_HIDE_BRIGHTNESS = 20003;
+	protected static final int MSG_SHOW_VOLUME = 20004;
+	protected static final int MSG_HIDE_VOLUME = 20005;
+	protected static final int MSG_CHANGE_SCREEN_PORTRAIT = 20006;
+	protected static final int MSG_CHANGE_SCREEN_LANDSCAPE = 20007;
+	protected static final int MSG_NETWORK_CHANGED = 20008;
+	protected static final int MSG_ADJUST_ORIENTATION = 5;
 
 	protected Handler mMessageHandler = new Handler(this);
+	private BFYNetworkReceiver mNetworkReceiver = null;
 
 	public BFMediaPlayerControllerBase(Context context) {
 		super(context);
@@ -144,8 +146,26 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected abstract void doMoveRight();
 
 	private void init() {
+		if (mContext == null)
+			throw new NullPointerException("context is invarilid");
 		setOnClickListener(this);
 		setOnTouchListener(this);
+		// 注册网络监听器
+		mNetworkReceiver  = BFYNetworkReceiver.getInstance(mContext);
+		mNetworkReceiver.registNetStateChangedListener(new NetStateChangedListener() {
+			
+			@Override
+			public void onChanged(int lastNetState, int CurrentNetState) {
+				Message msg = new Message();
+				msg.what = MSG_NETWORK_CHANGED;
+				msg.arg1 = lastNetState;
+				msg.arg2 = CurrentNetState;
+				mMessageHandler.sendMessage(msg);
+			}
+		});
+		IntentFilter filter = new IntentFilter();
+		filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+		mContext.registerReceiver(mNetworkReceiver, filter);
 		mPlayerOrientationMessageListener = new PlayerOrientationMessageListener(
 				mContext, this);
 		mPlayerOrientationMessageListener.start();
@@ -720,6 +740,17 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			else if (currentOrientation == PlayerOrientationMessageListener.ORIENTATION_BOTTOM
 					|| currentOrientation == PlayerOrientationMessageListener.ORIENTATION_TOP)
 				changeToPortrait();
+			break;
+		case MSG_NETWORK_CHANGED:
+			if (mPlayer == null)
+				break;
+			if (arg2 == BFYNetworkReceiver.NET_STATE_CONNECTION_MOBILE){
+				mPlayer.stop();
+				onError(BasePlayer.ERROR_MOBILE_NO_PLAY);
+			}else if (arg2 == BFYNetworkReceiver.NET_STATE_CONNECTION_NONE){
+				mPlayer.stop();
+				onError(BasePlayer.ERROR_NO_NETWORK);
+			}
 			break;
 		default:
 			Log.d(TAG, "invailid msg");

@@ -36,10 +36,10 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	// 提示语
 	private TextView tvPlayCompleteFrameMessage = null;
 	private boolean mDragging = false;
-	private static final int MSG_HIDE_DEFINITION_PANEL = 2008;
-	private static final int MSG_SHOW_DEFINITION_PANEL = 2009;
-	private static final int MEG_UPDATE_PROGRESS = 1000;
-	protected final static int DELAY_TIME_LONG = 10000; // ms
+	private static final int MSG_HIDE_DEFINITION_PANEL = 30008;
+	private static final int MSG_SHOW_DEFINITION_PANEL = 30009;
+	private static final int MEG_UPDATE_PROGRESS = 10000;
+	protected final static int DELAY_TIME_LONG = 100000; // ms
 	private DefinitionPanel mDefinitionPanel = null;
 	private ArrayList<String> mDefinitions = null;
 	private String mCurrentDefinition = null;
