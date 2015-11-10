@@ -23,7 +23,6 @@ public class VodDemo extends Activity implements PlayErrorListener,
 		PlayEventListener {
 	private final String TAG = VodDemo.class.getSimpleName();
 	private VodPlayer mPlayer = null;
-	private boolean mVrFlag = false;
 	private Context mContext = null;
 	// private String mUrls =
 	// "servicetype=1&uid=10279577&fid=7DC146B18442BC743AEBB67E43894B7D";

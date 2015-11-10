@@ -168,7 +168,8 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mContext.registerReceiver(mNetworkReceiver, filter);
 		mPlayerOrientationMessageListener = new PlayerOrientationMessageListener(
 				mContext, this);
-		mPlayerOrientationMessageListener.start();
+		if (mIsAutoScreen)
+			mPlayerOrientationMessageListener.start();
 		getAllSize();
 
 		mLayoutInflater = (LayoutInflater) mContext
@@ -177,6 +178,19 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		setFocusable(true);
 		setFocusableInTouchMode(true);
 		requestFocus();
+	}
+	
+	public void setAutoChangeScreen(boolean flag){
+		if(flag){
+			mPlayerOrientationMessageListener.start();
+		} else {
+			mPlayerOrientationMessageListener.stop();
+		}
+		mIsAutoScreen = flag;
+	}
+	
+	public boolean getAutoChangeScreen(){
+		return mIsAutoScreen;
 	}
 
 	private void getAllSize() {

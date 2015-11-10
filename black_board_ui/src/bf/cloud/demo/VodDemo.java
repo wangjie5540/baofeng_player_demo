@@ -123,6 +123,44 @@ public class VodDemo extends Activity {
 			Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT).show();
 			break;
 		}
+		case R.id.auto_screen: {
+			String[] items = { "是", "否" };
+			int checkedItem = -1;
+			if (mMediaController.getAutoChangeScreen()) {
+				checkedItem = 0;
+			} else {
+				checkedItem = 1;
+			}
+			new AlertDialog.Builder(this)
+					.setSingleChoiceItems(items, checkedItem, null)
+					.setPositiveButton("确认",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+									int position = ((AlertDialog) dialog)
+											.getListView()
+											.getCheckedItemPosition();
+									if (position == 0) {
+										mMediaController.setAutoChangeScreen(true);
+									} else if (position == 1) {
+										mMediaController.setAutoChangeScreen(false);
+									}
+								}
+							})
+					.setNegativeButton("取消",
+							new DialogInterface.OnClickListener() {
+
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									dialog.dismiss();
+								}
+							}).show();
+			break;
+		}
 		default:
 			break;
 		}
