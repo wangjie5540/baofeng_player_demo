@@ -82,9 +82,9 @@ public class VodDemo extends Activity implements PlayErrorListener,
 		case R.id.start:{
 			Log.d(TAG, "Start onClick");
 			mPlayer.stop();
-			mPlayer.setVrFlag(mVrFlag);
 			mPlayer.setDataSource(mUrls);
 			mPlayer.start();
+			break;
 		}
 		case R.id.stop:
 			mPlayer.stop();
@@ -126,40 +126,6 @@ public class VodDemo extends Activity implements PlayErrorListener,
 			long value = mPlayer.getDuration();
 			Toast.makeText(VodDemo.this, "" + value, Toast.LENGTH_SHORT)
 					.show();
-			break;
-		}
-		case R.id.change_player_type:{
-			String[] items = new String[] { "切换至普通播放器", "切换至全景播放器" };
-			new AlertDialog.Builder(mContext)
-					.setSingleChoiceItems(items, mVrFlag ? 1 : 0, null)
-					.setPositiveButton("确认",
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-									int position = ((AlertDialog) dialog)
-											.getListView()
-											.getCheckedItemPosition();
-									if (position == 0) {
-										mVrFlag = false;
-									} else if (position == 1) {
-										mVrFlag = true;
-									}
-									mPlayer.stop();
-									mPlayer.setVrFlag(mVrFlag);
-								}
-							})
-					.setNegativeButton("取消",
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									dialog.dismiss();
-								}
-							}).show();
 			break;
 		}
 		default:

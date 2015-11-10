@@ -83,6 +83,7 @@ public class VodDemo extends Activity {
 			mVodPlayer.stop();
 			mVodPlayer.setDataSource(mUrls);
 			mVodPlayer.start();
+			break;
 		}
 		case R.id.stop:
 			mVodPlayer.stop();
