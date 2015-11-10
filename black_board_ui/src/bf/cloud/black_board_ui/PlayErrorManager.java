@@ -7,8 +7,9 @@ public class PlayErrorManager {
 	private int mErrorCode = 0;
 	// error tips below
 	public final static String PLAYER_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
+	public final static String PLAYER_ERROR_TIPS_NO_NETWORK_1014 = "无网络可用";
+	public final static String PLAYER_ERROR_TIPS_MOBILE_1015 = "非WiFi环境下，继续播放将会产生流量费用";
 	public final static String MEDIA_INFO_ERROR_SHOW_TIPS = "网络好慢啊，我都受不了了 :(";
-	public final static String P2P_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
 	public final static String MEDIA_INFO_ERROR_TIPS_VOD_2005 = "亲，你确定这个视频还在吗？";
 	public final static String MEDIA_INFO_ERROR_TIPS_LIVE_2005 = "直播还没有开始:(";
 	public final static String MEDIA_INFO_ERROR_TIPS_LIVE_2006 = "直播已经结束了,再见:)";
@@ -16,6 +17,7 @@ public class PlayErrorManager {
 	public final static String MEDIA_INFO_ERROR_TIPS_2009 = "授权失效了，重新要一个吧！";
 	public final static String P2P_ERROR_TIPS_LIVE_3009 = "直播已经结束了,再见:)";
 	public final static String P2P_ERROR_TIPS_LIVE_3010 = "直播还没有开始:)";
+	public final static String P2P_ERROR_SHOW_TIPS = "哎呀，不小心异常了 :(";
 
 	public PlayErrorManager() {
 	}
@@ -24,7 +26,17 @@ public class PlayErrorManager {
 		String tips = "";
 		if (mErrorCode >= BasePlayer.ERROR_PLAYER_ERROR_MIN
 				&& mErrorCode <= BasePlayer.ERROR_PLAYER_ERROR_MAX) {
-			tips = PLAYER_ERROR_SHOW_TIPS;
+			switch (mErrorCode) {
+			case BasePlayer.ERROR_NO_NETWORK:
+				tips = PLAYER_ERROR_TIPS_NO_NETWORK_1014;
+				break;
+			case BasePlayer.ERROR_MOBILE_NO_PLAY:
+				tips = PLAYER_ERROR_TIPS_MOBILE_1015;
+				break;
+			default:
+				tips = PLAYER_ERROR_SHOW_TIPS;
+				break;
+			}
 		} else if (mErrorCode >= BasePlayer.ERROR_MEDIA_INFO_ERROR_MIN
 				&& mErrorCode <= BasePlayer.ERROR_MEDIA_INFO_ERROR_MAX) {
 			switch (mErrorCode) {
