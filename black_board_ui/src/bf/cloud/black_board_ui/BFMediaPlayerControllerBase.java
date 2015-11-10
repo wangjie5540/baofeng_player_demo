@@ -59,7 +59,7 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	protected RelativeLayout mErrorFrame = null;
 	protected FrameLayout mStatusController = null;
 	private ProgressBar mProgressBarBuffering = null;
-	private ImageView mProgressBarIcon = null;
+	private ImageView mImageViewIcon = null;
 	private LinearLayout mBrightnessLayer = null;
 	private TextView mBrightnessPercent = null;
 	private LinearLayout mVolumeLayer = null;
@@ -263,9 +263,9 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 		mProgressBarBuffering = (ProgressBar) mStatusController
 				.findViewById(R.id.progressBar);
 		mProgressBarBuffering.setVisibility(View.INVISIBLE);
-		mProgressBarIcon = (ImageView) mStatusController
+		mImageViewIcon = (ImageView) mStatusController
 				.findViewById(R.id.icon);
-		mProgressBarIcon.setVisibility(View.INVISIBLE);
+		mImageViewIcon.setVisibility(View.INVISIBLE);
 		mBrightnessLayer = (LinearLayout) mStatusController
 				.findViewById(R.id.brightness_layout);
 		mBrightnessPercent = (TextView) mStatusController
@@ -395,6 +395,10 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STARTED:
 				showIcon(false);
 				mMessageHandler.sendEmptyMessage(MSG_SHOW_CONTROLLER);
+				break;
+			case BasePlayer.EVENT_TYPE_MEDIAPLAYER_STOP:
+				showIcon(false);
+				break;
 
 			default:
 				break;
@@ -417,12 +421,12 @@ public abstract class BFMediaPlayerControllerBase extends FrameLayout implements
 	}
 
 	private void showIcon(boolean flag) {
-		if (mProgressBarIcon == null)
+		if (mImageViewIcon == null)
 			return;
 		if (flag)
-			mProgressBarIcon.setVisibility(View.VISIBLE);
+			mImageViewIcon.setVisibility(View.VISIBLE);
 		else
-			mProgressBarIcon.setVisibility(View.INVISIBLE);
+			mImageViewIcon.setVisibility(View.INVISIBLE);
 	}
 
 	private void showBrightnessLayer(boolean flag) {
