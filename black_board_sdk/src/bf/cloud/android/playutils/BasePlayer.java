@@ -48,6 +48,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	private boolean mForceStartFlag = false;
 	private boolean mIsVr = false;
 	private String mSettingDataPath = BFYConst.LOG_PATH;
+	private int mHistoryPosition = -1;
 
 	//error codes below
     public static final int ERROR_NO_ERROR = 0;     
@@ -91,7 +92,6 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	private static final int MSG_P2P_INIT = 10004;
 	private static final int MSG_P2P_UNINIT = 10005;
 
-	private static final int MSG_UI_ = 20000;
 	
 	public static final int EVENT_TYPE_MEDIAPLAYER_ENDED = 4000;
 	public static final int EVENT_TYPE_MEDIAPLAYER_BUFFERING = 4001;
@@ -206,6 +206,11 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 			decodeMode = DecodeMode.AUTO;
 		super.setDecodeMode(decodeMode);
 	}
+	
+	public void start(int history){
+		mHistoryPosition = history;
+		start();
+	}
 
 	/**
 	 * 开始播放
@@ -284,6 +289,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 		if (mState == STATE.IDLE)
 			return;
 		mVideoView.stop();
+		mHistoryPosition = -1;
 		updateViews();
 		if (mPlayEventListener != null)
 			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_STOP);
@@ -694,6 +700,10 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	@Override
 	public void onStateReady() {
 		Log.d(TAG, "MediaPlyaerProxy onStateReady");
+		if (mHistoryPosition > 0){
+			seekTo(mHistoryPosition);
+			mHistoryPosition = -1;
+		}
 		if (mPlayEventListener != null)
 			mPlayEventListener.onEvent(EVENT_TYPE_MEDIAPLAYER_READY);
 	}

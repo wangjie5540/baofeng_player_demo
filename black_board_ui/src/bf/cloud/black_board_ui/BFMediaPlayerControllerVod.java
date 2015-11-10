@@ -43,6 +43,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	private DefinitionPanel mDefinitionPanel = null;
 	private ArrayList<String> mDefinitions = null;
 	private String mCurrentDefinition = null;
+	private long mCurrnetPosition = -1;
 	// 清晰度图标
 	private TextView mControllerDefinition = null;
 	private Handler mProgressHandler = new Handler(new Handler.Callback() {
@@ -79,6 +80,8 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 
 	@Override
 	public void onError(int errorCode) {
+		if (mVodPlayer.getState() != STATE.IDLE)
+			mCurrnetPosition = mVodPlayer.getCurrentPosition();
 		super.onError(errorCode);
 		// 子类处理个别错误码
 	}
@@ -304,7 +307,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 		if (mVodPlayer != null) {
 			mVodPlayer.stop();
 			mVodPlayer.setForceStartFlag(true);
-			mVodPlayer.start();
+			mVodPlayer.start((int)mCurrnetPosition);
 		}
 	}
 
@@ -402,6 +405,10 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 			mMessageHandler.sendEmptyMessageDelayed(MSG_HIDE_DEFINITION_PANEL,
 					DELAY_TIME_LONG);
 			return true;
+		case MSG_NETWORK_CHANGED:
+			if (mVodPlayer.getState() != STATE.IDLE)
+				mCurrnetPosition = mVodPlayer.getCurrentPosition();
+			break;
 		}
 		return super.handleMessage(msg);
 	}
