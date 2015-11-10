@@ -720,7 +720,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 //		statInfo.errorCode = mPlayErrorManager.getErrorCode();
     }
 	
-	public void setVrFlag(boolean flag){
+	private void setVrFlag(boolean flag){
 		mIsVr = flag;
 	}
 	
