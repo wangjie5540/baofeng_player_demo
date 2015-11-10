@@ -36,16 +36,10 @@ public class DefinitionPanel extends PopupWindow {
 	private DefinitionAdapter mAdapter = null;
 	private ArrayList<String> mDefinitions = null;
 
-	public DefinitionPanel(Context context, ArrayList<String> definitions) {
-		if (definitions == null || definitions.size() == 0){
-			Log.d(TAG, "definitions is invailid");
-			return;
-		}
+	public DefinitionPanel(Context context) {
 		if (context == null)
 			throw new NullPointerException("context is null");
 		mContext = context;
-		mDefinitions = definitions;
-		mDefinitionCount = mDefinitions.size();
 		init();
 	}
 
@@ -81,6 +75,17 @@ public class DefinitionPanel extends PopupWindow {
 		super.showAtLocation(anchor, Gravity.NO_GRAVITY, anchorLefTop[0],
 				anchorLefTop[1]);
 	}
+	
+	public void setDatas(ArrayList<String> definitions){
+		if (definitions == null){
+			Log.d(TAG, "definitions is invailid");
+			return;
+		}
+		mDefinitions = definitions;
+		mDefinitionCount = mDefinitions.size();
+		mAdapter  = new DefinitionAdapter(mContext, mDefinitions);
+        mDeflist.setAdapter(mAdapter);
+	}
 
 	private void init() {
 		mDefinitionWidth = (int) mContext.getResources().getDimension(
@@ -93,8 +98,6 @@ public class DefinitionPanel extends PopupWindow {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		mRoot  = inflater.inflate(R.layout.vp_definition_panel, null);
 		mDeflist = (ListView) mRoot.findViewById(R.id.definition_list);
-		mAdapter  = new DefinitionAdapter(mContext, mDefinitions);
-        mDeflist.setAdapter(mAdapter);
         mDeflist.setItemsCanFocus(false);
         mDeflist.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 

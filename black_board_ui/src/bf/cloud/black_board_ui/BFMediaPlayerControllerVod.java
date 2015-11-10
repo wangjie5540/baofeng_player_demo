@@ -235,7 +235,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 	private void showDefinitionPanel(boolean flag) {
 		Log.d(TAG, "showDefinitionPanel");
 		if (mDefinitionPanel == null) {
-			mDefinitionPanel = new DefinitionPanel(mContext, mDefinitions);
+			mDefinitionPanel = new DefinitionPanel(mContext);
 			mDefinitionPanel
 					.registOnClickListener(new OnDefinitionClickListener() {
 
@@ -249,6 +249,7 @@ public class BFMediaPlayerControllerVod extends BFMediaPlayerControllerBase {
 						}
 					});
 		}
+		mDefinitionPanel.setDatas(mDefinitions);
 		mDefinitionPanel.showAsPullUp(mControllerDefinition);
 		mMessageHandler.sendEmptyMessage(MSG_SHOW_DEFINITION_PANEL);
 	}
