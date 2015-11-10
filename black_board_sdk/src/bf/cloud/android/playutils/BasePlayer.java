@@ -220,8 +220,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 				Log.d(TAG, "network is unusable/mPlayErrorListener:" + mPlayErrorListener);
 				if (mPlayErrorListener != null){
 					mPlayErrorListener.onError(ERROR_NO_NETWORK);
-					mState = STATE.ERROR;
 				}
+				mState = STATE.ERROR;
 				return;
 			} else if (type == BFYNetworkUtil.NETWORK_CONNECTION_MOBILE){
 				if (mForceStartFlag){
@@ -229,8 +229,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 				} else{
 					if (mPlayErrorListener != null){
 						mPlayErrorListener.onError(ERROR_MOBILE_NO_PLAY);
-						mState = STATE.ERROR;
 					}
+					mState = STATE.ERROR;
 					Log.d(TAG, "network is mobile, you must set setForceStartFlag(true)");
 					return;
 				}
@@ -580,6 +580,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 					int ret = mBfStream.createStream(mDataSource, mToken, 0);
 					if (ret < 0){
 						Log.d(TAG, "createStream error");
+						mState = STATE.ERROR;
 						if (mPlayErrorListener != null)
 							mPlayErrorListener.onError(ERROR_MEDIA_CENTER_INVALID_PARAM);
 					}
@@ -635,7 +636,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 			Log.d(TAG, "onError, mode is not SOFT");
 			return;
 		}
-		
+		mState = STATE.ERROR;
 		if (mPlayErrorListener != null)
 			mPlayErrorListener.onError(ERROR_SOFT_DECODE_FAILED);
 	}
@@ -649,7 +650,7 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 			Log.d(TAG, "onError, mode is not AUTO");
 			return;
 		}
-		
+		mState = STATE.ERROR;
 		if (mPlayErrorListener != null)
 			mPlayErrorListener.onError(ERROR_EXOPLAYER_DECODE_FAILED);
 	}
