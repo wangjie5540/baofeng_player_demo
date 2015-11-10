@@ -32,35 +32,35 @@
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
-                android:text="start" />
+                android:text="开始" />
 
             <Button
                 android:id="@+id/stop"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
-                android:text="stop" />
+                android:text="停止" />
 
             <Button
                 android:id="@+id/pause"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
-                android:text="pause" />
+                android:text="暂停" />
 
             <Button
                 android:id="@+id/resume"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
-                android:text="resume" />
+                android:text="继续播放" />
 
             <Button
                 android:id="@+id/seekto"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:onClick="onClick"
-                android:text="seekto" />
+                android:text="定位播放" />
 
             <Button
                 android:id="@+id/inc_volume"
