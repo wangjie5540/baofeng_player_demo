@@ -281,6 +281,8 @@ public abstract class BasePlayer extends VideoFrame implements BFStreamMessageLi
 	public void stop() {
 		Log.d(TAG, "stop");
 		mPlayerHandlerThread.playerHandler.sendEmptyMessage(MSG_STREAM_DESTORY);
+		if (mState == STATE.IDLE)
+			return;
 		mVideoView.stop();
 		updateViews();
 		if (mPlayEventListener != null)
